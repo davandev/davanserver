@@ -1,0 +1,15 @@
+application_logger.pyc             : INFO     Logging configuration: Console[DEBUG] File[VERBOSE] Logfile[/home/pi/share/logs/applicationserver_2016-10-24_205242.log]
+ServiceInvoker.pyc                 : INFO     Invoke services
+ServiceInvoker.pyc                 : DEBUG    Failed to start service tdtool
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/share/davan/http/applicationserver.py", line 343, in <module>
+    start_server(port, config)
+  File "/home/pi/share/davan/http/applicationserver.py", line 255, in start_server
+    services.invoke_services()
+  File "/home/pi/share/davan/http/ServiceInvoker.py", line 43, in invoke_services
+    service = attributes(self.config)
+AttributeError: 'ServiceInvoker' object has no attribute 'config'

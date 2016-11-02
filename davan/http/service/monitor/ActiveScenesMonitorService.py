@@ -1,0 +1,81 @@
+'''
+'''
+import logging
+import os
+
+import json
+import urllib
+
+from threading import Thread,Event
+import davan.config.config_creator as configuration
+from davan.util import application_logger as log_manager
+from davan.http.service.base_service import BaseService
+
+
+class ActiveScenesMonitorService(BaseService):
+    '''
+    Monitor active scenes on Fibaro system, in some cases
+    scenes that should always be running are stopped.
+    Check status of each active scene and start it if stopped. 
+    '''
+
+    def __init__(self, config):
+        '''
+        Constructor
+        '''
+        BaseService.__init__(self,"ActiveScenesMonitor", config)
+        self.logger = logging.getLogger(os.path.basename(__file__))
+        self.event = Event()
+
+    def stop_service(self):
+        self.logger.info("Stopping service")
+        self.event.set()
+        pass
+    
+    def start_service(self):
+        '''
+        Start a timer that will pop repeatedly.
+        @interval time in seconds between timeouts
+        @func callback function at timeout.
+        '''
+        self.logger.info("Starting re-occuring event")
+
+        def loop():
+            while not self.event.wait(900): # the first call is in `interval` secs
+                self.increment_invoked()
+                self.timeout()
+
+        Thread(target=loop).start()    
+        return self.event.set
+                                         
+    def timeout(self):
+        '''
+        Timeout received, iterate all active scenes to check that they are running.
+        '''
+        self.logger.info("Got a timeout, check state of monitored scenes " + str(self.config['MONITOR_SCENES']))
+        try:
+            for scene in self.config['MONITOR_SCENES']:
+                scene_url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
+                self.logger.info("Check state of " + scene_url)
+
+                result = urllib.urlopen(scene_url)
+                res = result.read()
+                self.logger.info("Result:" + res)    
+
+                data = json.loads(res)
+                if data["runningInstances"] ==1:
+                    self.logger.info("Scene already running")
+                else:
+                    self.logger.info("Scene not running")
+                    scene_url = self.config['START_SCENE_URL'].replace("<ID>",scene)
+                    self.logger.info("Starting scene " + scene_url)
+                    result = urllib.urlopen(scene_url)        
+        except Exception:
+            self.increment_errors()
+            self.logger.info("Caught exception") 
+            pass
+        
+if __name__ == '__main__':
+    config = configuration.create()
+    log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
+    test = ActiveScenesMonitorService()

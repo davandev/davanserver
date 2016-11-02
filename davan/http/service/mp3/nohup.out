@@ -1,0 +1,115 @@
+application_logger.pyc             : INFO     Logging configuration: Console[DEBUG] File[VERBOSE] Logfile[/home/pi/share/logs/applicationserver_2016-10-24_204051.log]
+applicationserver.py               : INFO     Starting services
+ServiceInvoker.pyc                 : INFO     Invoke services
+ServiceInvoker.pyc                 : DEBUG    Failed to start service tdtool
+TelldusSensorService.pyc           : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [TelldusSensorService] Service key[TelldusSensorService]
+TelldusService.pyc                 : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [TelldusService] Service key[telldus]
+ActiveScenesMonitorService.pyc     : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [ActiveScenesMonitorService] Service key[ActiveScenesMonitorService]
+UpsService.pyc                     : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [UpsService] Service key[Ups]
+TtsService.pyc                     : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [TtsService] Service key[tts]
+Mp3ProviderService.pyc             : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [Mp3ProviderService] Service key[mp3]
+SpeedtestService.pyc               : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [SpeedtestService] Service key[speedtest]
+AuthenticationService.pyc          : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [AuthenticationService] Service key[authenticate]
+PresenceMgrService.pyc             : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [PresenceMgrService] Service key[presence]
+ServiceInvoker.pyc                 : DEBUG    Failed to start service phone_status
+ServiceInvoker.pyc                 : DEBUG    Failed to start service url_helper
+LogReceiverService.pyc             : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [LogReceiverService] Service key[LogEntry]
+PictureService.pyc                 : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [PictureService] Service key[TakePicture]
+DailyQuoteService.pyc              : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [DailyQuoteService] Service key[DailyQuote]
+AudioService.pyc                   : INFO     Starting service
+ServiceInvoker.pyc                 : INFO     Starting service [AudioService] Service key[AudioService]
+applicationserver.py               : INFO     Starting server on host port[8080] 
+ServiceInvoker.pyc                 : INFO     Found service: speedtest
+SpeedtestService.pyc               : DEBUG    Recevied speedtest service request
+SpeedtestService.pyc               : DEBUG    SpeedTest content: {"Ping_ms": 22.144, "Download_Mbit": 28.69, "Upload_Mbit": 7.46, "Date": "20161024 21:30"}
+
+ServiceInvoker.pyc                 : INFO     Found service: presence
+PresenceMgrService.pyc             : INFO     Got new user to monitor [david] New expire time:2016-10-24 22:52:01.129320
+PresenceMgrService.pyc             : INFO     Check presence for user: [ wilma ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[wilma] mac[04:f1:3e:5c:79:75] ip[192.168.2.11]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.414516]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ david ] Previous state [ False ]
+url_helper.pyc                     : DEBUG    Url: [http://admin:160207fibaro@192.168.2.54/api/sceneControl?id=9&action=start]
+phone_status.pyc                   : DEBUG    
+User[david] mac[64:bc:0c:4b:f6:72] ip[192.168.2.115]
+StatusChanged[True]
+StatusReporting[True] ReportingFirstActive[2016-10-24 22:45:57.995100] ReportingLastActive[] ExpireTime[2016-10-24 22:52:01.129320]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ viggo ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[viggo] mac[40:40:a7:27:2c:98] ip[192.168.2.106]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.415773]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ mia ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[mia] mac[e8:50:8b:f5:c8:8a] ip[192.168.2.86]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.416222]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     -------------------------------------------------
+ServiceInvoker.pyc                 : INFO     Found service: presence
+PresenceMgrService.pyc             : INFO     Got new user to monitor [david] New expire time:2016-10-24 22:57:01.126860
+PresenceMgrService.pyc             : INFO     Check presence for user: [ wilma ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[wilma] mac[04:f1:3e:5c:79:75] ip[192.168.2.11]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.414516]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ david ] Previous state [ True ]
+phone_status.pyc                   : DEBUG    
+User[david] mac[64:bc:0c:4b:f6:72] ip[192.168.2.115]
+StatusChanged[False]
+StatusReporting[True] ReportingFirstActive[2016-10-24 22:45:57.995100] ReportingLastActive[2016-10-24 22:51:10.763489] ExpireTime[2016-10-24 22:57:01.126860]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ viggo ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[viggo] mac[40:40:a7:27:2c:98] ip[192.168.2.106]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.415773]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     Check presence for user: [ mia ] Previous state [ False ]
+phone_status.pyc                   : DEBUG    
+User[mia] mac[e8:50:8b:f5:c8:8a] ip[192.168.2.86]
+StatusChanged[False]
+StatusReporting[False] ReportingFirstActive[] ReportingLastActive[] ExpireTime[2016-10-24 22:33:51.416222]
+StatusWifi[False] WifiFirstActive[] WifiLastActive[]
+
+PresenceMgrService.pyc             : INFO     -------------------------------------------------
+application_logger.pyc             : INFO     Logging configuration: Console[DEBUG] File[VERBOSE] Logfile[/home/pi/share/logs/applicationserver_2016-10-24_205150.log]
+ServiceInvoker.py                  : INFO     Invoke services
+ServiceInvoker.py                  : DEBUG    Failed to start service tdtool
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/home/pi/share/davan/http/applicationserver.py", line 343, in <module>
+    start_server(port, config)
+  File "/home/pi/share/davan/http/applicationserver.py", line 255, in start_server
+    services.invoke_services()
+  File "/home/pi/share/davan/http/ServiceInvoker.py", line 43, in invoke_services
+    service = attributes(self.config)
+AttributeError: 'ServiceInvoker' object has no attribute 'config'

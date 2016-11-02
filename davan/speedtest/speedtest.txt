@@ -1,0 +1,1 @@
+{"Ping_ms": 18.762, "Download_Mbit": 36.64, "Upload_Mbit": 9.53, "Date": "20161028 19:30"}
