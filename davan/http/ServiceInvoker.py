@@ -61,7 +61,6 @@ class ServiceInvoker(object):
             
     def get_service(self, service):
         result = self.expression.findall(service)[0]
-        self.logger.info("REs:" + result)
         if self.services.has_key(result):
             self.logger.info("Invoking service: ["+ result+"]")
             return self.services[result]
