@@ -12,6 +12,7 @@ import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd_executor
 from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
+import davan.util.constants as constants 
 
 class TtsService(BaseService):
     '''
@@ -24,7 +25,7 @@ class TtsService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "tts", config)
+        BaseService.__init__(self, constants.TTS_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     def handle_request(self, msg):

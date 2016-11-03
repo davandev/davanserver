@@ -23,3 +23,6 @@ WEATHER_TOKEN = "my_weather_token"
 WEATHER_STATION_ID = "my_weather_station_token"
 
 USER_PIN = {'pin':'user'}
+
+TELLDUS_PUBLIC_KEY = "my_telldus_key"
+TELLDUS_PRIVATE_KEY = "my_telldus_key"

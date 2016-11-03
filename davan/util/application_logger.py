@@ -46,7 +46,13 @@ def stop_logging():
         logging.root.removeHandler(handler)
 
 
-def start_logging(log_file_path, debug=True, loglevel=4, log_file_name=""):
+def start_logging(log_file_path, loglevel=4, log_file_name=""):
+    """
+    Start logging to file and console
+    @param log_file_path path to store logfile
+    @param loglevel loglevel of console logging
+    @param log_file_name logfile name
+    """
     if loglevel < 0 or loglevel > 5 :
         loglevel = 4
     if not os.path.exists(log_file_path):
@@ -72,7 +78,7 @@ def start_logging(log_file_path, debug=True, loglevel=4, log_file_name=""):
     logging.getLogger('').addHandler(console)
 
     logger = logging.getLogger(os.path.basename(__file__))
-    logger.info('Logging configuration: Console['+ levels[loglevel][0] +'] File[VERBOSE] Logfile[' + logfile + ']')    
+    logger.info('Log setting: Console['+ levels[loglevel][0] +'] File[DEBUG] Logfile[' + logfile + ']')    
     
 def get_caller_name():
     """
@@ -84,4 +90,7 @@ def get_caller_name():
     return log_file_name
 
 def get_logfile_name():
+    """
+    Return the current logfile name
+    """
     return logging.getLoggerClass().root.handlers[0].baseFilename

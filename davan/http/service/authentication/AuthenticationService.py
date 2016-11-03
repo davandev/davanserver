@@ -8,6 +8,7 @@ import os
 import urllib2, base64
 import re
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
 
 class AuthenticationService(BaseService):
@@ -19,7 +20,7 @@ class AuthenticationService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self,"authenticate", config)
+        BaseService.__init__(self, constants.AUTH_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.ok_rsp = 200
         self.nok_rsp = 401

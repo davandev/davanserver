@@ -8,6 +8,7 @@ import urllib
 
 from threading import Thread,Event
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.util import application_logger as log_manager
 from davan.http.service.base_service import BaseService
 
@@ -23,14 +24,13 @@ class ActiveScenesMonitorService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self,"ActiveScenesMonitor", config)
+        BaseService.__init__(self,constants.ACTIVE_SCENES_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()
 
     def stop_service(self):
         self.logger.info("Stopping service")
         self.event.set()
-        pass
     
     def start_service(self):
         '''

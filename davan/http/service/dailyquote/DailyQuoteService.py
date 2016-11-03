@@ -10,6 +10,7 @@ import os
 import time
 import urllib2
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.util import application_logger as app_logger
 from davan.http.service.tts.TtsService import TtsService 
 from davan.http.service.audio.AudioService import AudioService
@@ -26,7 +27,7 @@ class DailyQuoteService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "DailyQuote", config)
+        BaseService.__init__(self, constants.QUOTE_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -48,7 +49,11 @@ class DailyQuoteService(BaseService):
         self.play_file()
         
     def add_prefix(self):
-        quote="ding dong ding dong ding dong. God morgon Familjen Haraldsson "
+        """
+        Add some extra spoken text to handle case when first couple of 
+        seconds disappear
+        """
+        quote="ding dong ding dong ding dong. Nu kommer ett meddelande "
         return quote
     
     def play_file(self):

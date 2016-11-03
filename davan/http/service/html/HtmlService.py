@@ -14,7 +14,6 @@ import davan.util.cmd_executor as cmd
 import davan.config.config_creator as configuration
 from davan.http.service.base_service import BaseService
 import __builtin__
-from davan.http.ServiceInvoker import ServiceInvoker
 from davan.http.service.audio.AudioService import AudioService
 from davan.util import application_logger as log_config
 import davan.util.constants as constants
@@ -28,8 +27,9 @@ class HtmlService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "HtmlService", config)
+        BaseService.__init__(self, constants.HTML_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
+        
         self.start_date = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
         self.expression = re.compile('<(.*?)object')
    
@@ -38,6 +38,7 @@ class HtmlService(BaseService):
         Received request for html statistics.
         '''
         self.logger.debug("Received html request: [" + msg + "}")
+        
         self.increment_invoked()
         if (msg == "/index.html"):
             f = open(self.config["HTML_INDEX_FILE"])
@@ -63,9 +64,12 @@ class HtmlService(BaseService):
         elif (msg == "/status.html"):
             content = self.getStatus()
            
-        return 200, content
+        return constants.RESPONSE_OK, content
     
     def get_logfile(self):
+        """
+        Return the content of the current logfile
+        """
         logfile = log_config.get_logfile_name()
         self.logger.info("LogFile:" + logfile)   
         f = open(logfile)
@@ -76,6 +80,9 @@ class HtmlService(BaseService):
         return content 
     
     def get_statistics(self):
+        """
+        Return statistics of running services
+        """
         self.logger.info("Statistics")
         f = open(self.config["HTML_STATISTICS_FILE"])
         content = f.read()
@@ -90,6 +97,9 @@ class HtmlService(BaseService):
         return content
     
     def getWeatherInfo(self, content):
+        """
+        Return weatherstation measurements
+        """
         result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
         data = json.loads(result)
         htmlresult = "<li>Temp: " + str(data["current_observation"]["temp_c"]) + "</li>\n"
@@ -104,6 +114,9 @@ class HtmlService(BaseService):
         return content
 
     def getUpsInfo(self, content):
+        """
+        Return UPS measurements
+        """
         from davan.http.service.ups.UpsService import UpsService
         _, result = __builtin__.davan_services.services['Ups'].handle_request("Status")
         data = json.loads(result)
@@ -115,7 +128,9 @@ class HtmlService(BaseService):
         return content
 
     def getInternetInfo(self, content):
-        
+        """
+        Return speedtest measurements
+        """
         _, result = __builtin__.davan_services.services['speedtest'].handle_request("speedtest")
         data = json.loads(result)
         htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"

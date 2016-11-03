@@ -9,26 +9,50 @@ class BaseService(ServiceIf):
         self.config = config
         
     def handle_request(self, input):
-        """Retrieve data from the input source and return an object."""
+        """
+        Retrieve data from the input source and return an object.
+        @param input 
+        """
         return "Function not implemented"
 
     def get_name(self):
+        """
+        Return service name
+        """
         return self.service_name
     
     def stop_service(self):
+        """
+        Default implementation when stopping service
+        """
         pass
     
     def start_service(self):
+        """
+        Default implementation when starting service
+        """
         pass
     
     def get_counters(self):
+        """
+        Return counters
+        """
         return self.invoked, self.error
 
     def increment_invoked(self):
+        """
+        Increment counter when service is invoked
+        """
         self.invoked +=1 
 
     def increment_errors(self):
+        """
+        Increment counter when error has occured
+        """
         self.error +=1 
 
     def is_enabled(self):
+        """
+        Return True if service is enabled, false otherwise
+        """
         return self.config[self.service_name+"Enabled"]

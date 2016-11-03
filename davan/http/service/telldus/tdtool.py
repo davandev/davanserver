@@ -5,9 +5,16 @@ import sys, getopt, httplib, urllib, json, os
 import oauth.oauth as oauth
 import datetime
 from configobj import ConfigObj
+import logging 
+
+global logger
+logger = logging.getLogger(os.path.basename(__file__))
+
 #insert your own public_key and private_key
-PUBLIC_KEY = 'FEHUVEW84RAFR5SP22RABURUPHAFRUNU'
-PRIVATE_KEY = 'ZUXEVEGA9USTAZEWRETHAQUBUR69U6EF'
+import davan.config.config_creator as config_creator
+configuration = config_creator.create()
+PUBLIC_KEY = configuration["TELLDUS_PUBLIC_KEY"]
+PRIVATE_KEY = configuration["TELLDUS_PRIVATE_KEY"]
 
 TELLSTICK_TURNON = 1
 TELLSTICK_TURNOFF = 2
@@ -75,10 +82,10 @@ def printUsage():
 
 def listSensors():
 	response = doRequest('sensors/list', {'includeIgnored': 1});
-	print("Number of sensors: %i" % len(response['sensor']));
+	logger.debug("Number of sensors: %i" % len(response['sensor']));
 	for sensor in response['sensor']:
 		lastupdate = datetime.datetime.fromtimestamp(int(sensor['lastUpdated']));
-		print "%s\t%s\t%s" % (sensor['id'], sensor['name'], lastupdate)
+		logger.debug( "%s\t%s\t%s" % (sensor['id'], sensor['name'], lastupdate))
 
 
 def listSensorsAndValues():
@@ -90,11 +97,11 @@ def getSensorData(sensorId):
 	lastupdate = datetime.datetime.fromtimestamp(int(response['lastUpdated']));
 	sensor_name = response['name'];
 	for data in response['data']:
-		print "%s\t%s\t%s\t%s" % (sensor_name, data['name'], data['value'], lastupdate)	
+		logger.debug( "%s\t%s\t%s\t%s" % (sensor_name, data['name'], data['value'], lastupdate)	)
 
 def listDevices():
 	response = doRequest('devices/list', {'supportedMethods': SUPPORTED_METHODS})
-	print("Number of devices: %i" % len(response['device']));
+	logger.debug("Number of devices: %i" % len(response['device']));
 	for device in response['device']:
 		if (device['state'] == TELLSTICK_TURNON):
 			state = 'ON'
@@ -109,7 +116,7 @@ def listDevices():
 		else:
 			state = 'Unknown state'
 
-		print("%s\t%s\t%s" % (device['id'], device['name'], state));
+		logger.debug("%s\t%s\t%s" % (device['id'], device['name'], state));
 
 def doMethod(deviceId, methodId, methodValue = 0):
 	response = doRequest('device/info', {'id': deviceId})
@@ -137,11 +144,11 @@ def doMethod(deviceId, methodId, methodValue = 0):
 			retString = response['status']
 
 	if (methodId in (TELLSTICK_TURNON, TELLSTICK_TURNOFF)):
-		print("Turning %s device %s, %s - %s" % ( method, deviceId, name, retString));
+		logger.debug("Turning %s device %s, %s - %s" % ( method, deviceId, name, retString));
 	elif (methodId in (TELLSTICK_BELL, TELLSTICK_UP, TELLSTICK_DOWN)):
-		print("Sending %s to: %s %s - %s" % (method, deviceId, name, retString))
+		logger.debug("Sending %s to: %s %s - %s" % (method, deviceId, name, retString))
 	elif (methodId == TELLSTICK_DIM):
-		print("Dimming device: %s %s to %s - %s" % (deviceId, name, methodValue, retString))
+		logger.debug("Dimming device: %s %s to %s - %s" % (deviceId, name, methodValue, retString))
 
 
 def doRequest(method, params):
@@ -163,8 +170,7 @@ def doRequest(method, params):
 	try:	
 		return json.load(response)
 	except:
-		print 'Failed to decode response'
-		print 'Response:%s'%str(response)
+		logger.debug( 'Failed to decode response :%s'%str(response))
 		return ""
 
 def requestToken():
@@ -177,8 +183,8 @@ def requestToken():
 
 	resp = conn.getresponse().read()
 	token = oauth.OAuthToken.from_string(resp)
-	print 'Open the following url in your webbrowser:\nhttp://api.telldus.com/oauth/authorize?oauth_token=%s\n' % token.key
-	print 'After logging in and accepting to use this application run:\n%s --authenticate' % (sys.argv[0])
+	logger.debug( 'Open the following url in your webbrowser:\nhttp://api.telldus.com/oauth/authorize?oauth_token=%s\n' % token.key)
+	logger.debug( 'After logging in and accepting to use this application run:\n%s --authenticate' % (sys.argv[0]))
 	config['requestToken'] = str(token.key)
 	config['requestTokenSecret'] = str(token.secret)
 	saveConfig()
@@ -194,14 +200,14 @@ def getAccessToken():
 
 	resp = conn.getresponse()
 	if resp.status != 200:
-		print 'Error retreiving access token, the server replied:\n%s' % resp.read()
+		logger.debug( 'Error retreiving access token, the server replied:\n%s' % resp.read())
 		return
 	token = oauth.OAuthToken.from_string(resp.read())
 	config['requestToken'] = None
 	config['requestTokenSecret'] = None
 	config['token'] = str(token.key)
 	config['tokenSecret'] = str(token.secret)
-	print 'Authentication successful, you can now use tdtool'
+	logger.debug( 'Authentication successful, you can now use tdtool')
 	saveConfig()
 
 def authenticate():
@@ -262,7 +268,7 @@ def main(argv):
 
 		elif opt in ("-d", "--dim"):
 			if (dimlevel < 0):
-				print("Dimlevel must be set with --dimlevel before --dim")
+				logger.debug("Dimlevel must be set with --dimlevel before --dim")
 			else:
 				doMethod(arg, TELLSTICK_DIM, dimlevel)
 
