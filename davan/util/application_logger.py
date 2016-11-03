@@ -66,15 +66,11 @@ def start_logging(log_file_path, loglevel=4, log_file_name=""):
                     datefmt='%m-%d %H:%M',
                     filename=logfile,
                     filemode='w')
-    # define a Handler which writes INFO messages or higher to the sys.stderr
     console = logging.StreamHandler()
     console.setLevel(levels[loglevel][1])
 
-    # set a format which is simpler for console use
     formatter = logging.Formatter('%(name)-35s: %(levelname)-8s %(message)s')
-    # tell the handler to use this format
     console.setFormatter(formatter)
-    # add the handler to the root logger
     logging.getLogger('').addHandler(console)
 
     logger = logging.getLogger(os.path.basename(__file__))
