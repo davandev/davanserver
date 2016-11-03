@@ -6,6 +6,9 @@ Created on 27 okt. 2016
 RESPONSE_OK = 200
 RESPONSE_NOT_OK = 401
 
+KEYPAD_NOT_ANSWERING = "Keypad is not responding anymore"
+KEYPAD_ANSWERING = "Keypad is responding"
+
 UPS_SERVICE_NAME = "Ups"
 AUTH_SERVICE_NAME = "authenticate"
 AUDIO_SERVICE_NAME = "AudioService"

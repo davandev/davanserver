@@ -77,7 +77,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config['CHATID'] = secret_config.TELEGRAM_CHATID
     config['TOKEN'] = secret_config.TELEGRAM_TOKEN
-    
+    config['TELEGRAM_PATH'] = "https://api.telegram.org/bot"+config['TOKEN']+"/sendMessage?chat_id=<CHATID>&text="
     #---------------------------------------------------------------------------------------------    
     # Outdoor camera configuration
     #---------------------------------------------------------------------------------------------
