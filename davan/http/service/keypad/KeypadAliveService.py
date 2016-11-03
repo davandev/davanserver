@@ -8,6 +8,7 @@ import os
 import urllib
 from threading import Thread,Event
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
 
 class KeypadAliveService(BaseService):
@@ -22,6 +23,7 @@ class KeypadAliveService(BaseService):
         BaseService.__init__(self,"KeypadAliveService", config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()    
+        self.connected = False
         
     def stop_service(self):
         self.logger.info("Stopping service")
@@ -52,10 +54,25 @@ class KeypadAliveService(BaseService):
         self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
         try:
             urllib.urlopen(self.config['KEYPAD_URL'])
+            self.maybe_send_update(True)
         except:
             self.logger.info("Failed to connect to keypad")
-            pass
+            self.maybe_send_update(False)
+            
+    
+    def maybe_send_update(self, state):
         
+        if self.connected == True and state == False:
+            self.connected = False
+            for chatid in self.config['CHATID']:
+                url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_NOT_ANSWERING
+                urllib.urlopen(url)
+        elif self.connected ==False and state == True:
+            self.connected = True
+            for chatid in self.config['CHATID']:
+                url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_ANSWERING
+                urllib.urlopen(url)
+
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
     import time
