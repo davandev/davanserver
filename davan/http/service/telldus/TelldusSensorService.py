@@ -7,35 +7,23 @@ import logging
 import os
 from urllib import quote
 import davan.http.service.telldus.tdtool as telldus
-#import urllib2, base64
 import urllib
 import datetime
 from threading import Thread,Event
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
 
 class TelldusSensorService(BaseService):
     '''
     classdocs
-    Number of sensors: 10
-2513889 None    23.8    114     2016-08-16 09:56:46
-144895  Badrum  27.1    54      2016-08-19 17:32:55
-365850  Datarum 26.3    49      2016-06-29 09:57:40
-135627  Garage  16.5    44      2016-06-10 02:51:50
-128361  Gillestuga      21.4    31      2016-03-19 17:24:20
-105675  Kk     21.7    2015-10-30 06:17:44
-424124  Sovrum  19.9    43      2015-05-15 09:06:24
-421645  Tv-rum  22.6    50      2015-09-10 22:44:10
-2354043 Tvtstuga      25.6    46      2016-08-19 23:54:02
-134588  Wilma   24.0    56      2016-08-19 23:54:45
-
     '''
 
     def __init__(self, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "TelldusSensorService", config)
+        BaseService.__init__(self, constants.TELLDUS_SENSOR_SERVICE, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()
 
@@ -60,8 +48,8 @@ class TelldusSensorService(BaseService):
                                          
     def timeout(self):
         '''
-        Timeout received, send a "ping" to key pad, to keep the http server socket on 
-        keypad open.
+        Timeout received, fetch sensor values from Telldus Live
+        Push sensor data to Fibaro virtual device  
         '''
         self.logger.info("Got a timeout, fetch sensor states")
 #        try:

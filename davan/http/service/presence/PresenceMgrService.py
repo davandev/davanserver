@@ -10,6 +10,7 @@ import datetime
 from threading import Thread,Event
 import davan.config.config_creator as configuration
 import davan.http.service.presence.url_helper as url_util
+import davan.util.constants as constants
 import davan.util.cmd_executor as cmd_executor
 import time
 
@@ -27,9 +28,9 @@ class PresenceMgrService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "presence", config)
+        BaseService.__init__(self, constants.PRESENCE_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.hping_cmd = ['sudo','/usr/sbin/hping3', '-2', '-c', '10', '-p', '5353', '-i' ,'u1','','-q']# "<ipaddress> -q >/dev/null 2>&1']
+        self.hping_cmd = ['sudo','/usr/sbin/hping3', '-2', '-c', '10', '-p', '5353', '-i' ,'u1','','-q']
         self.devices_cmd =['sudo','/usr/sbin/arp', '-an']#, | awk '{print $4} '"]
         self.delete_device_cmd =['sudo','/usr/sbin/arp', '-i' ,'eth0', '-d', '']
 

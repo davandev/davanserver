@@ -11,29 +11,29 @@ from davan.util import application_logger as app_logger
 import pychromecast.pychromecast as chromecast
 import davan.util.cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
-
+import davan.util.constants as constants
 
 class AudioService(BaseService):
     '''
-    Following service requires https://github.com/miracle2k/onkyo-eiscp to 
-    control the onkyo receiver
+    Following service requires :
+    - https://github.com/miracle2k/onkyo-eiscp to control the onkyo receiver 
+    - https://github.com/balloob/pychromecast/tree/master/pychromecast for controlling chromecast 
     sys.setdefaultencoding('latin-1')
-
     '''
 
     def __init__(self, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "AudioService",config)
+        BaseService.__init__(self, constants.AUDIO_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     # Implementation of BasePlugin abstract methods        
     def handle_request(self, msg):
         '''
-        Recevied request from Fibaro system to speak message.
-        Check if message if already available, otherwise contact
-        VoiceRSS to translate and get the mp3 file.
+        Received a request from Fibaro system to play a message through a onkyo receiver via chromecast.
+        Check if message is already available (cached), otherwise generate
+        a mp3 file via VoiceRSS service.
         @param msg to translate and speak.
         '''
         try:
@@ -47,16 +47,25 @@ class AudioService(BaseService):
             self.increment_errors()
             
     def turn_on_receiver(self):
+        """
+        Turn on receiver, select input and set volume level.
+        """
         self.logger.info("Turn on receiver")
         cmd_executor.execute_block(self.config['RECEIVER_TURN_ON'], "onkyo")
         cmd_executor.execute_block(self.config['RECEIVER_SELECT_INPUT'], "onkyo")
         cmd_executor.execute_block(self.config['RECEIVER_SET_VOLUME'], "onkyo")
         
     def turn_off_receiver(self):
+        """
+        Turn off receiver
+        """
         self.logger.info("Turn off receiver")
         cmd_executor.execute_block(self.config['RECEIVER_TURN_OFF'], "onkyo")        
         
     def play_message(self, msg):
+        """
+        Connect to configured chromecast, and tell it to play file.
+        """
         self.logger.info("Play message : " + msg)
         self.logger.info("Connect")
 

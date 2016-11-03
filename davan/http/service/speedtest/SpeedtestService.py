@@ -11,6 +11,7 @@ from threading import Thread,Event
 import davan.config.config_creator as configuration
 from davan.http.service.base_service import BaseService
 import davan.util.cmd_executor as cmd
+import davan.util.constants as constants
 
 class SpeedtestService(BaseService):
     '''
@@ -21,7 +22,7 @@ class SpeedtestService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "speedtest", config)
+        BaseService.__init__(self, constants.SPEEDTEST_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()
         
@@ -31,7 +32,7 @@ class SpeedtestService(BaseService):
                 
     def handle_request(self, msg):
         '''
-        Received request for speedtest statistics.
+        Received request for the latest speedtest measurements.
         '''
         self.increment_invoked()
         self.logger.debug("Recevied speedtest service request")
@@ -59,7 +60,7 @@ class SpeedtestService(BaseService):
 
     def timeout(self):
         '''
-        Timeout received, iterate all active scenes to check that they are running.
+        Timeout received, start measure internet speed.
         '''
         self.logger.info("Got a timeout, fetch internet speed")
         cmd.execute(self.config['SPEED_TEST_FILE'], "Speedtest")

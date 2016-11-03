@@ -43,18 +43,24 @@ class UpsService(BaseService):
             self.increment_invoked()
             result =""
             service = self.parse_request(msg)
-            if "BatteryMode" in service or "PowerMode" in service:
+            if (constants.UPS_BATTERY_MODE in service or 
+                constants.UPS_POWER_MODE in service):
                 self._update_changed_status_on_fibaro()
-            if "Status" in service:
+            
+            if constants.UPS_STATUS_REQ in service:
                 result = self._handle_status_request()
-            return 200, result
+            
+            return constants.RESPONSE_OK, result
   
         except:
             self.logger.info("Failed to carry out ups request")
+            self.increment_errors()
             traceback.print_exc(sys.exc_info())
-            pass
  
     def _update_changed_status_on_fibaro(self):
+        """
+        Status changed on UPS, update virtual device on Fibaro system.
+        """
         self.logger.info("UPS status changed")
         # Build URL to Fibaro virtual device
         pressButton_url = self.config["VD_PRESS_BUTTON_URL"].replace("<ID>", self.config['UPS_VD_ID'])
@@ -70,7 +76,7 @@ class UpsService(BaseService):
         @return result json formatted
         '''
         self.logger.info("Ups status request")
-        response = cmd_executor.execute_block(self.command, "apcaccess", True)
+        response = cmd_executor.execute_block(self.command, self.command, True)
         parsedResponse = response.rstrip().split('\n')
         jsonResult = "{"
         for line in parsedResponse:

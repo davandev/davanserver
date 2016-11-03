@@ -134,7 +134,9 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["TelldusSensorServiceEnabled"] = True
     config["telldusEnabled"] = True
-
+    config["TELLDUS_PUBLIC_KEY"] = secret_config.TELLDUS_PUBLIC_KEY
+    config["TELLDUS_PRIVATE_KEY"] =  secret_config.TELLDUS_PRIVATE_KEY
+    
     config['SENSOR_MAP'] = {'Badrum':'147', # Room name : HC2 Virtualdevice ID
                            'Garage':'149',
                            'Gillestuga':'153',
@@ -199,7 +201,7 @@ def create_config(secret_config, config):
 
 
 
-def create(private_config_file="", debugPrint=False):
+def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):
         try:
             filename = os.path.basename(private_config_file)
