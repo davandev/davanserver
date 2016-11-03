@@ -40,7 +40,7 @@ def stop_file_logging(file_name):
 
 def stop_logging():
     """
-    Stop all logging, by removing all handlers
+    Stop logging
     """
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)

@@ -17,6 +17,8 @@ class AudioService(BaseService):
     '''
     Following service requires https://github.com/miracle2k/onkyo-eiscp to 
     control the onkyo receiver
+    and https://github.com/balloob/pychromecast/tree/master/pychromecast
+    for controlling chromecast 
     sys.setdefaultencoding('latin-1')
 
     '''

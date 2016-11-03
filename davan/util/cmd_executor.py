@@ -12,7 +12,7 @@ def execute_block_in_shell(command, process_debug_name=""):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    out, err = p.communicate()
+    _, _= p.communicate()
 
     if p.returncode == 1:
         return False
