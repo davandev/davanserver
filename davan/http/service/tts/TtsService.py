@@ -44,7 +44,7 @@ class TtsService(BaseService):
         
         self.logger.info("Received request for new TTS message ["+ msg + "]")
         
-        mp3_file = self.config['TTS_PRECOMPILED_MSG_PATH'] + msg + ".mp3"
+        mp3_file = self.config['TTS_PRECOMPILED_ALARM_MSG_PATH'] + msg + ".mp3"
 
         self.logger.debug("Search for cached file: "+ mp3_file)
         if os.path.exists(mp3_file):
