@@ -197,9 +197,9 @@ if __name__ == '__main__':
     args = _parse_arguments() 
     config = config_factory.create(args.privateconfig)
     if args.debug: 
-        log_manager.start_file_logging(config["LOGFILE_PATH"])
+        #log_manager.start_file_logging(config["LOGFILE_PATH"])
         helper.debug_formated(config)
-        #log_manager.start_logging(config["LOGFILE_PATH"],loglevel=4)
+        log_manager.start_logging(config["LOGFILE_PATH"],loglevel=4)
     else:
         log_manager.start_logging(config["LOGFILE_PATH"],loglevel=0)
 

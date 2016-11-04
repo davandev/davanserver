@@ -151,10 +151,10 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
-    config["KeypadAliveServiceEnabled"] = False
+    config["KeypadAliveServiceEnabled"] = True
     
-    config['KEYPAD_IP_ADDRESS'] = "192.168.2.91:8080"
-    config['KEYPAD_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/KeepAlive"
+    config['KEYPAD_IP_ADDRESS'] = "192.168.2.49:8080"
+    config['KEYPAD_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
 
     #---------------------------------------------------------------------------------------------
     # Scenes to monitor, start if not running
