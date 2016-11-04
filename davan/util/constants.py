@@ -6,8 +6,8 @@ Created on 27 okt. 2016
 RESPONSE_OK = 200
 RESPONSE_NOT_OK = 401
 
-KEYPAD_NOT_ANSWERING = "Keypad is not responding anymore"
-KEYPAD_ANSWERING = "Keypad is responding"
+KEYPAD_NOT_ANSWERING = "Alarm Keypad har slutat svara"
+KEYPAD_ANSWERING = "Alarm Keypad har startats"
 
 UPS_SERVICE_NAME = "Ups"
 AUTH_SERVICE_NAME = "authenticate"
