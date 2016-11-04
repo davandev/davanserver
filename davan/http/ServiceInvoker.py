@@ -11,6 +11,7 @@ import re
 
 import davan.config.config_creator as app_config
 import davan.util.application_logger as app_logger
+import davan.util.constants as constants
 
 class ServiceInvoker(object):
     '''
@@ -40,7 +41,7 @@ class ServiceInvoker(object):
                 if (service_file.endswith(".pyc") and 
                     not service_file.endswith("__init__.pyc") and 
                     not service_file.endswith("base_service.pyc")):
-                        module_name = file.replace(".pyc","")
+                        module_name = service_file.replace(".pyc","")
                         mod = imp.load_compiled(module_name,os.path.join(root, service_file))
                         try:    
                             attributes = getattr(mod, module_name)
@@ -75,7 +76,7 @@ class ServiceInvoker(object):
             self.logger.info("Invoking service: ["+ result+"]")
             return self.services[result]
         
-        elif service.endswith(self.html) or service.endswith(self.css):
+        elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
             self.logger.info("Invoking service: [html]")
             return self.services["HtmlService"]
             
