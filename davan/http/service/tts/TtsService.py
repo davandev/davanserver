@@ -40,6 +40,7 @@ class TtsService(BaseService):
         @param msg to translate and speak.
         '''
         self.increment_invoked()
+
         if os.path.exists(self.config['SPEAK_FILE']):
             os.remove(self.config['SPEAK_FILE'])
         

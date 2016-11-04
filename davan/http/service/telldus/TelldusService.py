@@ -8,6 +8,7 @@ import os
 
 import davan.config.config_creator as configuration
 import davan.http.service.telldus.tdtool as telldus
+import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
 
 class TelldusService(BaseService):
@@ -20,20 +21,22 @@ class TelldusService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "telldus", config)
+        BaseService.__init__(self, constants.TELLDUS_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
-    def handle_request(self, msg):
+    def parse_request(self, msg):
         msg = msg.split('?')
         res = msg[1].split('=')
-        self.start(res[0],res[1])
-        return 200,""
+        return res[0], res[1]
+        #self.start(res[0],res[1])
+        #return 200,""
             
-    def start(self, deviceId, action):
+    def start(self, msg):
         '''
         Light on/off request received from Fibaro system,
         forward to Telldus Live.
         '''
+        deviceId, action = self.parse_request(msg)
         self.increment_invoked()
         if action == "off":
             action = 2
@@ -44,6 +47,7 @@ class TelldusService(BaseService):
         
         self.logger.info("DeviceId[" +deviceId+ "] Action:[" + str(action)+"]")
         telldus.doMethod(deviceId, action)
+        return constants.RESPONSE_OK
         
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger

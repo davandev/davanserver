@@ -5,6 +5,7 @@ Created on 27 okt. 2016
 '''
 RESPONSE_OK = 200
 RESPONSE_NOT_OK = 401
+RESPONSE_FILE_NOT_FOUND = "File not found"
 
 KEYPAD_NOT_ANSWERING = "Keypad is not responding anymore"
 KEYPAD_ANSWERING = "Keypad is responding"
@@ -18,11 +19,19 @@ QUOTE_SERVICE_NAME = "DailyQuote"
 HTML_SERVICE_NAME = "HtmlService"
 ACTIVE_SCENES_SERVICE_NAME = "ActiveScenesMonitor"
 TELLDUS_SENSOR_SERVICE = "TelldusSensorService"
+TELLDUS_SERVICE_NAME = "telldus"
 PRESENCE_SERVICE_NAME = "presence"
+MP3_SERVICE_NAME = "mp3"
+
+KEYPAD_SERVICE_NAME = "KeypadAliveService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
 UPS_STATUS_REQ = "Status"
+
+HTML_EXTENSION = ".html"
+CSS_EXTENSION = ".css"
+
 
 HTML_TABLE_END = "</table>"
 HTML_TABLE_START = """<style>
