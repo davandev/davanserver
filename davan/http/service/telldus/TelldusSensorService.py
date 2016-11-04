@@ -56,7 +56,7 @@ class TelldusSensorService(BaseService):
 
         response=telldus.listSensorsAndValues()
  
-        self.logger.info("Telldus sensor values: response:!" + str(response))
+        #self.logger.debug("Telldus sensor values: response:!" + str(response))
 
         if not 'sensor' in str(response):
             self.logger.error("No response received from telldus")
@@ -87,19 +87,13 @@ class TelldusSensorService(BaseService):
 
         tempValue = quote(tempValue, safe='') 
         temp_url= temp_url.replace('<VALUE>','"' + tempValue+ '"')
-        self.logger.info(temp_url)
+        #self.logger.info(temp_url)
         return temp_url
     
     def sendUrl(self, url):
         result = urllib.urlopen(url)        
 
-        
-#        request = urllib2.Request(url)
- #       base64string = base64.encodestring(self.config["FIBARO_USER_NAME"] + ":" + 
- #                                      self.config["FIBARO_PASSWORD"])
- #       request.add_header("Authorization", "Basic %s" % base64string)   
-#        result = urllib2.urlopen(request)    
-        self.logger.info("Result: " + str(result) )                
+        #self.logger.info("Result: " + str(result) )                
         
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

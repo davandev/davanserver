@@ -20,7 +20,7 @@ class KeypadAliveService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self,"KeypadAliveService", config)
+        BaseService.__init__(self, constants.KEYPAD_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()    
         self.connected = False
@@ -48,14 +48,14 @@ class KeypadAliveService(BaseService):
                                          
     def timeout(self):
         '''
-        Timeout received, send a "ping" to key pad, to keep the http server socket on 
-        keypad open.
+        Timeout received, send a "ping" to key pad, send telegram message if failure.
         '''
         self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
         try:
             urllib.urlopen(self.config['KEYPAD_URL'])
             self.maybe_send_update(True)
         except:
+            self.increment_errors()
             self.logger.info("Failed to connect to keypad")
             self.maybe_send_update(False)
             

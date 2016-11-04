@@ -50,7 +50,8 @@ class ActiveScenesMonitorService(BaseService):
                                          
     def timeout(self):
         '''
-        Timeout received, iterate all active scenes to check that they are running.
+        Timeout received, iterate all active scenes to check that they are running on fibaro 
+        system, otherwise start them
         '''
         self.logger.info("Got a timeout, check state of monitored scenes " + str(self.config['MONITOR_SCENES']))
         try:

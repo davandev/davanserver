@@ -41,7 +41,7 @@ class SpeedtestService(BaseService):
         f.close()
 #
         self.logger.debug("SpeedTest content: " + content)
-        return 200, content
+        return constants.RESPONSE_OK, content
     
     def start_service(self):
         '''
