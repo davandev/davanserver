@@ -13,6 +13,7 @@ import httplib
 import cgi
 import argparse
 import mimetypes
+import traceback
 import signal
 import sys
 import __builtin__
@@ -83,7 +84,6 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(result)
                 return
             
-            
 # Another server is started, terminate this one.
             elif self.path.endswith("seppuku"):
                     if __builtin__.davan_services.is_running():
@@ -105,7 +105,8 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
 
             return
 
-        except IOError:
+        except :
+            logger.error(traceback.format_exc())
             self.send_error(404, 'File Not Found: %s' % self.path)
 
     def log_message(self, format, *args):
@@ -199,6 +200,7 @@ if __name__ == '__main__':
     if args.debug: 
         #log_manager.start_file_logging(config["LOGFILE_PATH"])
         helper.debug_formated(config)
+        
         log_manager.start_logging(config["LOGFILE_PATH"],loglevel=4)
     else:
         log_manager.start_logging(config["LOGFILE_PATH"],loglevel=0)

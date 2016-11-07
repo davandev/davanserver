@@ -190,4 +190,4 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = HtmlService(config)
-    test.handle_request("/index.html")
+    test.handle_request("/status.html")
