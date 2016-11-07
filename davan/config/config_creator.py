@@ -199,6 +199,12 @@ def create_config(secret_config, config):
     config["WUNDERGROUND_PATH"] = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
     config["HTML_STATISTICS_FILE"]  = config['SERVICE_PATH'] + "html/statistics_template.html"
 
+    #---------------------------------------------------------------------------------------------
+    # HTML Service configuration
+    #---------------------------------------------------------------------------------------------
+    config["SonosEnabled"] = False
+    config['SONOS_IP_ADRESS'] = "'192.168.1.102'"
+
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):

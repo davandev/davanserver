@@ -107,6 +107,7 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
 
         except :
             logger.error(traceback.format_exc())
+            service.increment_errors()
             self.send_error(404, 'File Not Found: %s' % self.path)
 
     def log_message(self, format, *args):

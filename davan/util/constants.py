@@ -23,6 +23,7 @@ TELLDUS_SENSOR_SERVICE = "TelldusSensorService"
 TELLDUS_SERVICE_NAME = "telldus"
 PRESENCE_SERVICE_NAME = "presence"
 MP3_SERVICE_NAME = "mp3"
+SONOS_SERVICE_NAME = "Sonos"
 
 KEYPAD_SERVICE_NAME = "KeypadAliveService"
 
