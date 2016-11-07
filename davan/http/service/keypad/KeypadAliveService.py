@@ -63,14 +63,16 @@ class KeypadAliveService(BaseService):
     def maybe_send_update(self, state):
         
         if self.connected == True and state == False:
+            self.logger.info("Keypad state changed: False") 
             self.connected = False
             for chatid in self.config['CHATID']:
-                url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_NOT_ANSWERING
+                url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_NOT_ANSWERING
                 urllib.urlopen(url)
         elif self.connected ==False and state == True:
+            self.logger.info("Keypad state changed : True") 
             self.connected = True
             for chatid in self.config['CHATID']:
-                url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_ANSWERING
+                url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_ANSWERING
                 urllib.urlopen(url)
 
 if __name__ == '__main__':

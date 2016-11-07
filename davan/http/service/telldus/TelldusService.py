@@ -31,10 +31,11 @@ class TelldusService(BaseService):
         #self.start(res[0],res[1])
         #return 200,""
             
-    def start(self, msg):
+    def handle_request(self, msg):
         '''
         Light on/off request received from Fibaro system,
         forward to Telldus Live.
+        telldus?122379=on
         '''
         deviceId, action = self.parse_request(msg)
         self.increment_invoked()
@@ -47,7 +48,7 @@ class TelldusService(BaseService):
         
         self.logger.info("DeviceId[" +deviceId+ "] Action:[" + str(action)+"]")
         telldus.doMethod(deviceId, action)
-        return constants.RESPONSE_OK
+        return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
         
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger
@@ -55,5 +56,6 @@ if __name__ == '__main__':
     
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = TelldusService()
+    test = TelldusService(config)
     telldus.listSensorsAndValues()
+    test.start("telldus?489605=on")
