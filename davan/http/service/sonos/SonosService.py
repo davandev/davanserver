@@ -40,9 +40,6 @@ class SonosService(BaseService):
         self.increment_invoked()
         tts_content = self._parse_request(msg)
 
-        if os.path.exists(self.config['SPEAK_FILE']):
-            os.remove(self.config['SPEAK_FILE'])
-        
         self.logger.info("Received request for new TTS message ["+ tts_content + "]")
         
         mp3_file = self.config['TTS_PRECOMPILED_ALARM_MSG_PATH'] + tts_content + ".mp3"

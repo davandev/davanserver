@@ -53,8 +53,9 @@ def create_config(secret_config, config):
     # TTS configuration
     #-----------------------------------------------------------------------------------------
     config["ttsEnabled"] = True
-    # Path to precompiled tts messages
+    # Path to cached tts messages
     config['TTS_PRECOMPILED_MSG_PATH'] = config["ROOT"] + "davan/tts_mp3/"
+    # Path to cached tts alarm messages
     config['TTS_PRECOMPILED_ALARM_MSG_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "alarm/"
     # Mp3 file to play
     config['SPEAK_FILE'] = '/dev/shm/speak.mp3'
@@ -66,7 +67,6 @@ def create_config(secret_config, config):
     # DailyQuote configuration
     #-----------------------------------------------------------------------------------------
     config["DailyQuoteEnabled"] = True
-
     # Path to dailyquote path
     config['TTS_DAILY_QUOTE_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "daily_quote/"
     # Path to dailyquote file
@@ -75,16 +75,22 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Telegram configuration
     #---------------------------------------------------------------------------------------------
+    # Telegram chat id, stored in a dict 
     config['CHATID'] = secret_config.TELEGRAM_CHATID
+    # Telegram token
     config['TOKEN'] = secret_config.TELEGRAM_TOKEN
+    # Telegram api path for sending messages
     config['TELEGRAM_PATH'] = "https://api.telegram.org/bot"+config['TOKEN']+"/sendMessage?chat_id=<CHATID>&text="
+    
     #---------------------------------------------------------------------------------------------    
     # Outdoor camera configuration
     #---------------------------------------------------------------------------------------------
     config["TakePictureEnabled"] = True
     config['CAMERAS'] = {'Farstukvist':'http://192.168.2.119:99/snapshot.cgi/snapshot.cgi',
                          'Uterum':'http://192.168.2.76:99/snapshot.cgi/snapshot.cgi'}
+    # Username used when accessing cameras
     config['CAMERA_USER'] = secret_config.CAMERA_USER
+    # Password used when accessing cameras
     config['CAMERA_PASSWORD'] = secret_config.CAMERA_PASSWORD
     
     #-----------------------------------------------------------------------------------------
@@ -97,15 +103,16 @@ def create_config(secret_config, config):
     # TTS Service configuration
     #---------------------------------------------------------------------------------------
     config["ttsEnabled"] = True
-
-    config['VOICERSS_TOKEN'] = secret_config.VOICERSS_TOKEN 
+    # VoiceRSS token
+    config['VOICERSS_TOKEN'] = secret_config.VOICERSS_TOKEN
+    # VoiceRSS api path for generating mp3 from message 
     config['VOICERSS_URL'] = "http://api.voicerss.org/?key=" + config['VOICERSS_TOKEN'] + "&src=REPLACE_WITH_MESSAGE&f=22khz_16bit_mono&hl=sv-se"
  
  
     #---------------------------------------------------------------------------------------
     # Presence Service configuration
     #---------------------------------------------------------------------------------------
-    config["presenceEnabled"] = True
+    config["presenceEnabled"] = False
     # Scene ids for each user
     config['MIA_AWAY_SCENE_ID'] = "13"
     config['MIA_HOME_SCENE_ID'] = "12"
@@ -126,7 +133,7 @@ def create_config(secret_config, config):
     config['armSkalskydd'] = config['FIBARO_API_ADDRESS'] + "sceneControl?id=34&action=start"
     config['armAlarm'] = config['FIBARO_API_ADDRESS'] + "sceneControl?id=35&action=start"
     
-    
+    # User pin codes    
     config['USER_PIN'] = secret_config.USER_PIN
 
     #---------------------------------------------------------------------------------------------
@@ -134,9 +141,11 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["TelldusSensorServiceEnabled"] = True
     config["telldusEnabled"] = True
+    # Telldus public key
     config["TELLDUS_PUBLIC_KEY"] = secret_config.TELLDUS_PUBLIC_KEY
+    # Telldus private key
     config["TELLDUS_PRIVATE_KEY"] =  secret_config.TELLDUS_PRIVATE_KEY
-    
+    # Dict holding name of room and virtual device id
     config['SENSOR_MAP'] = {'Badrum':'147', # Room name : HC2 Virtualdevice ID
                            'Garage':'149',
                            'Gillestuga':'153',
@@ -152,8 +161,9 @@ def create_config(secret_config, config):
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
     config["KeypadAliveServiceEnabled"] = True
-    
+    # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESS'] = "192.168.2.49:8080"
+    # URI used to verify if keypad is alive
     config['KEYPAD_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
 
     #---------------------------------------------------------------------------------------------
@@ -161,13 +171,16 @@ def create_config(secret_config, config):
     # Monitors running scens on fibaro system
     #---------------------------------------------------------------------------------------------
     config["ActiveScenesMonitorEnabled"] = True
+    # List of scenes that should be monitored
     config['MONITOR_SCENES'] = {'32'} # Clock scene
     
     #---------------------------------------------------------------------------------------------
     # UPS Virtual device configuration
     #---------------------------------------------------------------------------------------------
     config["UpsEnabled"] = True
+    # UPS virtual id on fibaro system
     config["UPS_VD_ID"] = "156"
+    # 
     config["UPS_BUTTON_ID"] = "6"
 
     #---------------------------------------------------------------------------------------------
@@ -200,9 +213,10 @@ def create_config(secret_config, config):
     config["HTML_STATISTICS_FILE"]  = config['SERVICE_PATH'] + "html/statistics_template.html"
 
     #---------------------------------------------------------------------------------------------
-    # HTML Service configuration
+    # Sonos Service configuration
     #---------------------------------------------------------------------------------------------
     config["SonosEnabled"] = False
+    # Adress to Sonos speaker
     config['SONOS_IP_ADRESS'] = "'192.168.1.102'"
 
 
