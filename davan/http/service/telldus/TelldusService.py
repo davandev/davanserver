@@ -50,6 +50,10 @@ class TelldusService(BaseService):
         telldus.doMethod(deviceId, action)
         return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
         
+    def list_all_devices(self):
+        self.logger.info("List all Telldus devices")
+        telldus.listDevices()
+        
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger
     config = configuration.create()
@@ -57,5 +61,6 @@ if __name__ == '__main__':
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = TelldusService(config)
-    telldus.listSensorsAndValues()
-    test.start("telldus?489605=on")
+    test.list_all_devices()
+    #telldus.listSensorsAndValues()
+    #test.start("telldus?489605=on")
