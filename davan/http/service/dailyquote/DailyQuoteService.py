@@ -99,6 +99,24 @@ class DailyQuoteService(BaseService):
         self.logger.info("Result:" + result)
         return result
         
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        quote = self.fetch_quote()
+        column  = column.replace("<SERVICE_VALUE>", quote)
+
+        return column
+
 if __name__ == '__main__':
     config = configuration.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
