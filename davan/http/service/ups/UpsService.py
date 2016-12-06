@@ -11,6 +11,7 @@ import davan.config.config_creator as configuration
 from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants
+import json
 
 class UpsService(BaseService):
     '''
@@ -97,6 +98,27 @@ class UpsService(BaseService):
         jsonResult += "}"
         self.logger.info("Result: "+ jsonResult)
         return jsonResult
+    
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column.replace("<SERVICE_NAME>", self.service_name)
+        _, result = self.handle_request("Status")
+        data = json.loads(result)
+        htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
+        htmlresult += "<li>Load: " + data["Load"] + " </li>\n"
+        htmlresult += "<li>Battery: " + data["Battery"] + " </li>\n"
+        htmlresult += "<li>Time: " + data["Time"] + " </li>\n"
+        column = column.replace("<SERVICE_VALUE>", htmlresult)
+        return column
     
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

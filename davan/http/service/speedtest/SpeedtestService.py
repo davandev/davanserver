@@ -16,6 +16,7 @@ import davan.util.constants as constants
 class SpeedtestService(BaseService):
     '''
     classdocs
+    Requires speedtest-cli : install with "sudo pip install speedtest-cli"
     '''
 
     def __init__(self, config):

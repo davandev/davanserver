@@ -41,6 +41,7 @@ class HtmlService(BaseService):
         
         self.increment_invoked()
         if (msg == "/index.html"):
+            self.generateServicePage()
             f = open(self.config["HTML_INDEX_FILE"])
             content = f.read()
             f.close()
@@ -66,6 +67,24 @@ class HtmlService(BaseService):
            
         return constants.RESPONSE_OK, content
     
+    def generateServicePage(self):
+        self.logger.info("GenerateServicePage")
+        #services = ServiceInvoker(config)
+        #services.discover_services()
+        #services.start_services()
+        id = 1
+        tot_result = '<div id="columns">\n'
+        for name, service in __builtin__.davan_services.iteritems():
+            if service.has_html_gui():
+                tot_result += service.get_html_gui(id)
+            id += 1
+            if id == 4:
+                tot_result += '<div style="clear: both;"> </div></div>\n' 
+                id = 1
+
+        self.logger.info("tot_result:" + tot_result)
+#        for key, value in __builtin__.davan_services.services.iteritems():
+        
     def get_logfile(self):
         """
         Return the content of the current logfile
@@ -181,13 +200,17 @@ class HtmlService(BaseService):
 if __name__ == '__main__':
     from davan.http.ServiceInvoker import ServiceInvoker
     from davan.http.service.tts.TtsService import TtsService
+    from davan.http.service.ups.UpsService import UpsService
+    
     config = configuration.create()
     service = ServiceInvoker(config)
     service.services['A'] = AudioService(config)
     service.services['B'] = TtsService(config)
+    service.services['C'] = UpsService(config)
     __builtin__.davan_services = service
 
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = HtmlService(config)
-    test.handle_request("/status.html")
+    test.generateServicePage()
+    #test.handle_request("/status.html")

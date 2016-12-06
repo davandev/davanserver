@@ -57,3 +57,12 @@ tr:nth-child(even) {
     <th>Successful</th> 
     <th>Error</th>
   </tr>"""
+
+COLUMN_TAG="""
+    <div id="column<COLUMN_ID>">
+    <h3><SERVICE_NAME></h3>
+    <ul>
+    <SERVICE_VALUE>
+    </ul>
+    </div>
+"""

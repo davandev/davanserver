@@ -56,3 +56,15 @@ class BaseService(ServiceIf):
         Return True if service is enabled, false otherwise
         """
         return self.config[self.service_name+"Enabled"]
+    
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return False
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        return ""
