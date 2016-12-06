@@ -41,7 +41,6 @@ class HtmlService(BaseService):
         
         self.increment_invoked()
         if (msg == "/index.html"):
-            self.generateServicePage()
             f = open(self.config["HTML_INDEX_FILE"])
             content = f.read()
             f.close()
@@ -74,10 +73,10 @@ class HtmlService(BaseService):
         #services.start_services()
         id = 1
         tot_result = '<div id="columns">\n'
-        for name, service in __builtin__.davan_services.iteritems():
+        for name, service in __builtin__.davan_services.services.iteritems():
             if service.has_html_gui():
                 tot_result += service.get_html_gui(id)
-            id += 1
+                id += 1
             if id == 4:
                 tot_result += '<div style="clear: both;"> </div></div>\n' 
                 id = 1

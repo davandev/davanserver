@@ -110,7 +110,7 @@ class UpsService(BaseService):
         Override and provide gui
         """
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
-        column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_NAME>", self.service_name)
         _, result = self.handle_request("Status")
         data = json.loads(result)
         htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
