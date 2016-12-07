@@ -9,6 +9,7 @@ import os
 import davan.config.config_creator as configuration
 from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
+import davan.util.constants as constants
 import traceback
 import sys
 
@@ -77,6 +78,21 @@ class PictureService(BaseService):
             cmd_executor.execute("sudo mv snapshot.cgi /var/tmp/snapshot.jpg")
         else:
             raise Exception("No camera url for [" + camera + "] configured")   
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", "<li>Cameras: " + str(self.config["CAMERAS"].keys()) + " </li>\n")
+        return column
             
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

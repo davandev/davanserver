@@ -206,10 +206,6 @@ def create_config(secret_config, config):
     config["HtmlServiceEnabled"] = True
     config["HTML_INDEX_FILE"] = config['SERVICE_PATH'] + "html/index_template.html"
     config["HTML_STYLE_FILE"] = config['SERVICE_PATH'] + "html/style.css"
-    config["WEATHER_API_PATH"] = "http://api.wunderground.com/api/"
-    config["WEATHER_TOKEN"] = secret_config.WEATHER_TOKEN
-    config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
-    config["WUNDERGROUND_PATH"] = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
     config["HTML_STATISTICS_FILE"]  = config['SERVICE_PATH'] + "html/statistics_template.html"
 
     #---------------------------------------------------------------------------------------------
@@ -219,6 +215,14 @@ def create_config(secret_config, config):
     # Adress to Sonos speaker
     config['SONOS_IP_ADRESS'] = "'192.168.1.102'"
 
+    #---------------------------------------------------------------------------------------------
+    # Weather Service configuration
+    #---------------------------------------------------------------------------------------------
+    config["WeatherEnabled"] = True
+    config["WEATHER_API_PATH"] = "http://api.wunderground.com/api/"
+    config["WEATHER_TOKEN"] = secret_config.WEATHER_TOKEN
+    config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
+    config["WUNDERGROUND_PATH"] = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):

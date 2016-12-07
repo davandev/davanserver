@@ -151,6 +151,13 @@ width: 230px;
 background: #C3D9FF;
 margin-top: 20px;
 }
+#column4 {
+float: left;
+margin-left: 20px;
+width: 230px;
+background: #FF6347;
+margin-top: 20px;
+}
 
 #footer { 
 background: #2C2D2F;

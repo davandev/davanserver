@@ -1,4 +1,5 @@
 from davan.http.service.serviceIf import ServiceIf
+import davan.util.constants as constants
  
 class BaseService(ServiceIf):
 
@@ -67,4 +68,7 @@ class BaseService(ServiceIf):
         """
         Override and provide gui
         """
-        return ""
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", "<li>Enabled: " + str(self.config[self.service_name+"Enabled"]) + " </li>\n")
+        return column

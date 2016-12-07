@@ -24,6 +24,7 @@ TELLDUS_SERVICE_NAME = "telldus"
 PRESENCE_SERVICE_NAME = "presence"
 MP3_SERVICE_NAME = "mp3"
 SONOS_SERVICE_NAME = "Sonos"
+WEATHER_SERVICE = "Weather"
 
 KEYPAD_SERVICE_NAME = "KeypadAliveService"
 

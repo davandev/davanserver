@@ -75,6 +75,21 @@ class ActiveScenesMonitorService(BaseService):
             self.increment_errors()
             self.logger.info("Caught exception") 
             pass
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", "<li>Monitor: " + str(self.config['MONITOR_SCENES']) + " </li>\n")
+        return column
         
 if __name__ == '__main__':
     config = configuration.create()

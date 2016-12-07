@@ -7,8 +7,6 @@ Created on 8 feb. 2016
 import logging
 import os
 import time
-import json
-import urllib2
 import re
 import davan.util.cmd_executor as cmd
 import davan.config.config_creator as configuration
@@ -44,11 +42,9 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_INDEX_FILE"])
             content = f.read()
             f.close()
+            result = self.generateServicePage()
+            content = content.replace("<SERVICES>", result)
             content = self.getServerInfo(content)
-            content = self.getDailyQuote(content)
-            content = self.getUpsInfo(content)
-            content = self.getInternetInfo(content)
-            content = self.getWeatherInfo(content)
         
         elif (msg == "/style.css"):
             f = open(self.config["HTML_STYLE_FILE"])
@@ -68,22 +64,22 @@ class HtmlService(BaseService):
     
     def generateServicePage(self):
         self.logger.info("GenerateServicePage")
-        #services = ServiceInvoker(config)
-        #services.discover_services()
-        #services.start_services()
         id = 1
-        tot_result = '<div id="columns">\n'
+        tot_result = ""
         for name, service in __builtin__.davan_services.services.iteritems():
-            if service.has_html_gui():
-                tot_result += service.get_html_gui(id)
-                id += 1
+#            if service.has_html_gui():
+            if id == 1:
+                tot_result += '<div id="columns">\n'
+                    
+            tot_result += service.get_html_gui(id)
+            id += 1
             if id == 4:
                 tot_result += '<div style="clear: both;"> </div></div>\n' 
                 id = 1
 
         tot_result += '<div style="clear: both;"> </div></div>\n' 
-        self.logger.info("tot_result:" + tot_result)
-#        for key, value in __builtin__.davan_services.services.iteritems():
+        #self.logger.info("tot_result:" + tot_result)
+        return tot_result 
         
     def get_logfile(self):
         """
@@ -115,76 +111,18 @@ class HtmlService(BaseService):
         content = content.replace("<SERVICES_STATISTICS_VALUE>", stat)
         return content
     
-    def getWeatherInfo(self, content):
-        """
-        Return weatherstation measurements
-        """
-        result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
-        data = json.loads(result)
-        htmlresult = "<li>Temp: " + str(data["current_observation"]["temp_c"]) + "</li>\n"
-        htmlresult += "<li>Humidity: " + str(data["current_observation"]["relative_humidity"]) + " </li>\n"
-        htmlresult += "<li>Pressure: " + str(data["current_observation"]["pressure_mb"]) + " bar </li>\n"
-        htmlresult += "<li>Feels like: " + str(data["current_observation"]["feelslike_c"]) + " </li>\n"
-        htmlresult += "<li>Rain: " + str(data["current_observation"]["precip_today_metric"]) + " mm</li>\n"
-        htmlresult += "<li>Wind dir: " + str(data["current_observation"]["wind_dir"]) + " </li>\n"
-        htmlresult += "<li>Wind degree: " + str(data["current_observation"]["wind_degrees"]) + " </li>\n"
-        htmlresult += "<li>Time: " + str(data["current_observation"]["observation_time_rfc822"]) + " </li>\n"
-        content = content.replace("<WEATHER_SERVICE_VALUE>", htmlresult)
-        return content
-
-    def getUpsInfo(self, content):
-        """
-        Return UPS measurements
-        """
-        from davan.http.service.ups.UpsService import UpsService
-        _, result = __builtin__.davan_services.services['Ups'].handle_request("Status")
-        data = json.loads(result)
-        htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
-        htmlresult += "<li>Load: " + data["Load"] + " </li>\n"
-        htmlresult += "<li>Battery: " + data["Battery"] + " </li>\n"
-        htmlresult += "<li>Time: " + data["Time"] + " </li>\n"
-        content = content.replace("<UPS_SERVICE_VALUE>", htmlresult)
-        return content
-
-    def getInternetInfo(self, content):
-        """
-        Return speedtest measurements
-        """
-        _, result = __builtin__.davan_services.services['speedtest'].handle_request("speedtest")
-        data = json.loads(result)
-        htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"
-        htmlresult += "<li>Download: " + str(data["Download_Mbit"]) + " Mbit</li>\n"
-        htmlresult += "<li>Upload: " + str(data["Upload_Mbit"]) + " Mbit</li>\n"
-        htmlresult += "<li>Date: " + data["Date"] + " </li>\n"
-        content = content.replace("<INTERNET_SERVICE_VALUE>", htmlresult)
-        return content
-    
-    def getDailyQuote(self, content):
-        from davan.http.service.dailyquote.DailyQuoteService import DailyQuoteService
-        quote = __builtin__.davan_services.services['DailyQuote'].fetch_quote()
-        content  = content.replace("<DAILY_QUOTE_VALUE>", quote)
-        return content
     
     def getServerInfo(self, content):
         content = content.replace('<SERVER_STARTED_VALUE>', self.start_date)
         result = (cmd.execute_block("uptime", "uptime", True)).split()
-        self.logger.info(str(result))
+        #self.logger.info(str(result))
         
         content = content.replace('<UPTIME>', result[2] + " " + result[3])
         content = content.replace('<CPU_VALUE>', result[9])
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
         content = content.replace('<DISK_VALUE>', result[4] + " ( Free " + result[3] + " )")
         
-        self.logger.info(str(result))
-         
-        self.logger.info(str(__builtin__.davan_services.services))
-        running_services = ""
-        for key, value in __builtin__.davan_services.services.iteritems():
-            service = self.expression.findall(str(value))[0]
-            service_name = service.split(".")[0]
-
-            running_services += str(service_name) + "</br>"
-        content = content.replace('<RUNNING_SERVICES_VALUE>', running_services) 
+        content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(__builtin__.davan_services.services.items()))) 
         return content
     
     def getStatus(self):
@@ -201,27 +139,25 @@ if __name__ == '__main__':
     from davan.http.ServiceInvoker import ServiceInvoker
     from davan.http.service.tts.TtsService import TtsService
     from davan.http.service.ups.UpsService import UpsService
-<<<<<<< HEAD
-
     from davan.http.service.dailyquote.DailyQuoteService import DailyQuoteService
-
-
-=======
     from davan.http.service.speedtest.SpeedtestService import SpeedtestService
     from davan.http.service.keypad.KeypadAliveService import KeypadAliveService
->>>>>>> f81c9c359ae312096c1f57d12e2a780cb739b1d8
+    from davan.http.service.monitor.ActiveScenesMonitorService import ActiveScenesMonitorService
+    from davan.http.service.picture.PictureService import PictureService
+    from davan.http.service.weather.WeatherService import WeatherService
+    
     config = configuration.create()
     service = ServiceInvoker(config)
     service.services['A'] = AudioService(config)
     service.services['B'] = TtsService(config)
     service.services['C'] = UpsService(config)
-<<<<<<< HEAD
     service.services['D'] = DailyQuoteService(config) 
-=======
     service.services['D'] = SpeedtestService(config)
     service.services['E'] = KeypadAliveService(config)
+    service.services['F'] = ActiveScenesMonitorService(config)
+    service.services['F'] = PictureService(config)
+    service.services['G'] = WeatherService(config)
 
->>>>>>> f81c9c359ae312096c1f57d12e2a780cb739b1d8
     __builtin__.davan_services = service
 
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)

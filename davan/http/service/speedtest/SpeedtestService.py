@@ -79,8 +79,7 @@ class SpeedtestService(BaseService):
         """
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        column = column.replace("<SERVICE_VALUE>", "<li>Status: " + str(self.connected) + " </li>\n")
-        ok, result = self.handle_request()
+        ok, result = self.handle_request("")
         data = json.loads(result)
         htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"
         htmlresult += "<li>Download: " + str(data["Download_Mbit"]) + " Mbit</li>\n"
