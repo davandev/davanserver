@@ -201,16 +201,27 @@ if __name__ == '__main__':
     from davan.http.ServiceInvoker import ServiceInvoker
     from davan.http.service.tts.TtsService import TtsService
     from davan.http.service.ups.UpsService import UpsService
+<<<<<<< HEAD
 
     from davan.http.service.dailyquote.DailyQuoteService import DailyQuoteService
 
 
+=======
+    from davan.http.service.speedtest.SpeedtestService import SpeedtestService
+    from davan.http.service.keypad.KeypadAliveService import KeypadAliveService
+>>>>>>> f81c9c359ae312096c1f57d12e2a780cb739b1d8
     config = configuration.create()
     service = ServiceInvoker(config)
     service.services['A'] = AudioService(config)
     service.services['B'] = TtsService(config)
     service.services['C'] = UpsService(config)
+<<<<<<< HEAD
     service.services['D'] = DailyQuoteService(config) 
+=======
+    service.services['D'] = SpeedtestService(config)
+    service.services['E'] = KeypadAliveService(config)
+
+>>>>>>> f81c9c359ae312096c1f57d12e2a780cb739b1d8
     __builtin__.davan_services = service
 
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
