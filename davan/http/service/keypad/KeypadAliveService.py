@@ -59,7 +59,6 @@ class KeypadAliveService(BaseService):
             self.logger.info("Failed to connect to keypad")
             self.maybe_send_update(False)
             
-    
     def maybe_send_update(self, state):
         
         if self.connected == True and state == False:
@@ -74,7 +73,22 @@ class KeypadAliveService(BaseService):
             for chatid in self.config['CHATID']:
                 url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_ANSWERING
                 urllib.urlopen(url)
-
+    
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", "<li>Status: " + str(self.connected) + " </li>\n")
+        return column
+    
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
     import time
