@@ -12,6 +12,7 @@ import davan.config.config_creator as configuration
 from davan.http.service.base_service import BaseService
 import davan.util.cmd_executor as cmd
 import davan.util.constants as constants
+import json
 
 class SpeedtestService(BaseService):
     '''
@@ -65,6 +66,30 @@ class SpeedtestService(BaseService):
         '''
         self.logger.info("Got a timeout, fetch internet speed")
         cmd.execute(self.config['SPEED_TEST_FILE'], "Speedtest")
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", "<li>Status: " + str(self.connected) + " </li>\n")
+        ok, result = self.handle_request()
+        data = json.loads(result)
+        htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"
+        htmlresult += "<li>Download: " + str(data["Download_Mbit"]) + " Mbit</li>\n"
+        htmlresult += "<li>Upload: " + str(data["Upload_Mbit"]) + " Mbit</li>\n"
+        htmlresult += "<li>Date: " + data["Date"] + " </li>\n"
+        
+        column = column.replace("<SERVICE_VALUE>", htmlresult)
+        
+        return column
 
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

@@ -81,6 +81,7 @@ class HtmlService(BaseService):
                 tot_result += '<div style="clear: both;"> </div></div>\n' 
                 id = 1
 
+        tot_result += '<div style="clear: both;"> </div></div>\n' 
         self.logger.info("tot_result:" + tot_result)
 #        for key, value in __builtin__.davan_services.services.iteritems():
         
