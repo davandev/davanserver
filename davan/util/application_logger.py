@@ -1,7 +1,9 @@
 import logging.handlers
+from logging.handlers import TimedRotatingFileHandler
 import os
 import time
 import inspect
+
 
 levels = [('CRITICAL' , logging.CRITICAL),
           ('ERROR' , logging.ERROR),
@@ -11,7 +13,7 @@ levels = [('CRITICAL' , logging.CRITICAL),
 
 def start_file_logging(log_file_path, log_file_name =""):
     """
-    Starts logging to a specific file. 
+    Starts logging to file. Rotate file at midnight, keep 30 logfiles 
     """
     if not os.path.exists(log_file_path):
         os.makedirs(log_file_path)
@@ -19,10 +21,10 @@ def start_file_logging(log_file_path, log_file_name =""):
     if not log_file_name:
         log_file_name = get_caller_name()
 
-    logfile = log_file_path + '/' + log_file_name + '_' + time.strftime("%Y-%m-%d_%H%M%S", time.gmtime()) + '.log'
+    logfile = log_file_path + '/' + log_file_name +'.log'
     masterLog = logging.getLogger('')
     masterLog.setLevel(logging.DEBUG)
-    masterHandler = logging.FileHandler(logfile)
+    masterHandler = TimedRotatingFileHandler(logfile, 'MIDNIGHT', backupCount=30)
     formatter = logging.Formatter('%(asctime)s %(name)-35s %(levelname)-8s %(message)s')
     masterHandler.setFormatter(formatter)
     logging.getLogger('').addHandler(masterHandler)
