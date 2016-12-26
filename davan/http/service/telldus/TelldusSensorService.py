@@ -74,7 +74,7 @@ class TelldusSensorService(BaseService):
                 if 'humidity' in sensor:
                     sensorUrl = self.createSensorUrl(url, self.config['LABEL_HUMIDITY'], sensor['humidity'])
                     self.sendUrl(sensorUrl)
-                    self.maybe_notify_humidity_level(self,sensor['name'], sensor['humidity'])
+                    self.maybe_notify_humidity_level(sensor['name'], sensor['humidity'])
                           
         
     def createSensorUrl(self, baseurl, labelId, tempValue):
