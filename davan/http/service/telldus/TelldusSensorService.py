@@ -13,6 +13,7 @@ from threading import Thread,Event
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
+import traceback
 
 class TelldusSensorService(BaseService):
     '''
@@ -52,18 +53,15 @@ class TelldusSensorService(BaseService):
         Push sensor data to Fibaro virtual device  
         '''
         self.logger.info("Got a timeout, fetch sensor states")
-#        try:
 
         response=telldus.listSensorsAndValues()
- 
-        #self.logger.debug("Telldus sensor values: response:!" + str(response))
 
         if not 'sensor' in str(response):
             self.logger.error("No response received from telldus")
             return 
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])
-            self.logger.info("Sensor name: %s" %name )
+            self.logger.debug("Sensor name: %s" %name )
             
             if self.config["SENSOR_MAP"].has_key(name):
                 device_id = self.config["SENSOR_MAP"][name]
@@ -76,25 +74,50 @@ class TelldusSensorService(BaseService):
                 if 'humidity' in sensor:
                     sensorUrl = self.createSensorUrl(url, self.config['LABEL_HUMIDITY'], sensor['humidity'])
                     self.sendUrl(sensorUrl)
+                    self.maybe_notify_humidity_level(self,sensor['name'], sensor['humidity'])
                           
         
-#        except Exception as e:
-#            self.logger.info("Caught exception") 
-#            pass
     def createSensorUrl(self, baseurl, labelId, tempValue):
+        '''
+        Create url to update virtual device on fibaro system 
+        @baseurl, base url
+        @labelId, label id of virtual device 
+        @tempValue, current temperature value.
+        '''
         temp_url = baseurl.replace('<LABELID>',labelId)
-
-
         tempValue = quote(tempValue, safe='') 
         temp_url= temp_url.replace('<VALUE>','"' + tempValue+ '"')
-        #self.logger.info(temp_url)
         return temp_url
     
     def sendUrl(self, url):
+        '''
+        Update fibaro system with sensor values
+        @param url, url with sensor values
+        '''
         result = urllib.urlopen(url)        
 
-        #self.logger.info("Result: " + str(result) )                
-        
+    def maybe_notify_humidity_level(self, sensor_name, humidity_value):
+        '''
+        Check if the received humidity value is higher than the configured limit.
+        If higher then send telegram notifications to all configured receivers.
+        @param sensor_name, name of the sensor
+        @param humidity_value, humidity value
+        '''
+        try:
+            if self.config["SENSOR_HUMIDITY_LIMITS"].has_key(sensor_name):
+                self.logger.info("Sensor "+ sensor_name +" has humidity limits configured. Current value["+humidity_value+"]")
+                
+                sensor_limit = self.config['SENSOR_HUMIDITY_LIMITS'][sensor_name]
+                if int(humidity_value) > sensor_limit :
+                    self.logger.info("Humidity value higher exceeds limit, send notifications")
+                    message= constants.HUMIDITY_HIGH.replace("<room_name>", sensor_name + " " + humidity_value)
+                    for chatid in self.config['CHATID']:
+                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + message
+                        urllib.urlopen(url)
+        except :
+            self.logger.error(traceback.format_exc())
+            self.increment_errors()
+            
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
 

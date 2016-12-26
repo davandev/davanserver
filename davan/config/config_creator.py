@@ -152,6 +152,9 @@ def create_config(secret_config, config):
                            'Farstukvist':'152',
                            'Sovrum':'151',
                            'Wilma':'150'}
+    config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 70}
+    config['SENSOR_TEMP_HIGH_LIMITS'] = {}
+    config['SENSOR_TEMP_LOW_LIMITS'] = {}
     # Temperature virtual devices 
     config['LABEL_TEMP'] = "ui.Label1.value"
     config['LABEL_HUMIDITY'] = "ui.Label2.value"
