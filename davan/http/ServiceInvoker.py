@@ -50,7 +50,7 @@ class ServiceInvoker(object):
                         
                         service = attributes(self.config)
                         self.services[service.get_name()] = service
-                        self.logger.info("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
+                        self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
         return self.services
     
     def start_services(self):
@@ -62,7 +62,7 @@ class ServiceInvoker(object):
             if service.is_enabled():
                 service.start_service()
             else:
-                self.logger.info("Service " + name + " is disabled")
+                self.logger.debug("Service " + name + " is disabled")
         self.running = True 
             
     def get_service(self, service):
@@ -73,11 +73,11 @@ class ServiceInvoker(object):
         result = self.expression.findall(service)[0]
         
         if self.services.has_key(result):
-            self.logger.info("Invoking service: ["+ result+"]")
+            self.logger.debug("Invoking service: ["+ result+"]")
             return self.services[result]
         
         elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
-            self.logger.info("Invoking service: [html]")
+            self.logger.debug("Invoking service: [html]")
             return self.services["HtmlService"]
             
     def stop_services(self):
@@ -87,7 +87,7 @@ class ServiceInvoker(object):
         self.logger.info("Stopping all services")
 
         for service in self.services.itervalues():
-            self.logger.info("Stopping: " + str(service.get_name()))
+            self.logger.debug("Stopping: " + str(service.get_name()))
             service.stop_service()
         self.running = False
         
