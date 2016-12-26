@@ -57,7 +57,7 @@ class ActiveScenesMonitorService(BaseService):
         try:
             for scene in self.config['MONITOR_SCENES']:
                 scene_url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
-                self.logger.info("Check state of " + scene_url)
+                self.logger.info("Check state of " + scene)
 
                 result = urllib.urlopen(scene_url)
                 res = result.read()
