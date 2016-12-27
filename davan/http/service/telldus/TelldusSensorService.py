@@ -118,6 +118,7 @@ class TelldusSensorService(BaseService):
                     self.logger.info("Message:" + message)
                     for chatid in self.config['CHATID']:
                         url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + message
+                        self.logger.info("Url:" + url)
                         urllib.urlopen(url)
         except :
             self.logger.error(traceback.format_exc())
