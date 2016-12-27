@@ -1,8 +1,7 @@
 '''
-Created on 8 feb. 2016
-
-@author: davandeb
+@author: davandev
 '''
+
 import logging
 import os
 import urllib

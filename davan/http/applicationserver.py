@@ -1,18 +1,17 @@
 """
+@author: davandev
 """
 #!/bin/env python
 import logging
 import os
 import time
 from BaseHTTPServer import BaseHTTPRequestHandler
-from socket import gethostname
 from SocketServer import ThreadingMixIn
 import socket
 import BaseHTTPServer
 import httplib
 import cgi
 import argparse
-import mimetypes
 import traceback
 import signal
 import sys
@@ -48,9 +47,10 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         """
         Handles POST requests.
+        Currently not implemented
         """
         try:
-            logger.info("Received POST request for image from external host : " + self.address_string())
+            logger.info("Received POST request from external host : " + self.address_string())
 
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             postvars = {}
@@ -119,7 +119,7 @@ class ApplicationServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
 # Send a request to running server to shutdown.
 def _tear_down_running_server(config):
     """
-    Sends a request to an distribution server running on the same host 
+    Sends a request to an instance of the server running on the same host 
     requesting it to shutdown.
     @param port: The port where to send the tear down request.
     """
@@ -136,11 +136,11 @@ def _tear_down_running_server(config):
         response_msg = r1.read()
 
 
-# Try to start the server, return exception if an
-# instance is already running
+# Try to start the server, 
 def start_server(configuration):
     """
     Starts the server on the provided port.
+    Raises exception if an instance is already running on the host
     @param port: The port that the server listens to
     """
     try:
@@ -206,8 +206,6 @@ if __name__ == '__main__':
         log_manager.start_logging(config["LOGFILE_PATH"],loglevel=4)
     else:
         log_manager.start_file_logging(config["LOGFILE_PATH"])
-
-    
 
     try:
         if args.stop:

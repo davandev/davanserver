@@ -1,14 +1,16 @@
 '''
+@author: davandev
 '''
+
 import logging
 import os
-
 import json
 import urllib
-
 from threading import Thread,Event
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+
 from davan.util import application_logger as log_manager
 from davan.http.service.base_service import BaseService
 
@@ -82,11 +84,11 @@ class ActiveScenesMonitorService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_ud):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Monitor: " + str(self.config['MONITOR_SCENES']) + " </li>\n")
         return column

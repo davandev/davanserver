@@ -1,8 +1,7 @@
 '''
-Created on 22 okt. 2016
-
 @author: davandev
 '''
+
 import os
 import logging
 import imp

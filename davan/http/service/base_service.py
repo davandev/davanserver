@@ -1,8 +1,14 @@
+'''
+@author: davandev
+'''
+
 from davan.http.service.serviceIf import ServiceIf
 import davan.util.constants as constants
  
 class BaseService(ServiceIf):
-
+    '''
+    Default implementations of a few service methods  
+    '''
     def __init__(self, service_name, config):
         self.invoked = 0
         self.error = 0
@@ -64,11 +70,11 @@ class BaseService(ServiceIf):
         """
         return False
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_ud):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Enabled: " + str(self.config[self.service_name+"Enabled"]) + " </li>\n")
         return column

@@ -1,8 +1,7 @@
 '''
-Created on 6 mars 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 import datetime
@@ -11,8 +10,6 @@ class PhoneStatus(object):
     '''
     classdocs
     '''
-
-
     def __init__(self, user, mac_adress, ip_adress, iphone=False):
         '''
         Constructor

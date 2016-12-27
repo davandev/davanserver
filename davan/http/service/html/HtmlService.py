@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
+import __builtin__
 import logging
 import os
 import time
 import re
+
 import davan.util.cmd_executor as cmd
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
-import __builtin__
 from davan.http.service.audio.AudioService import AudioService
 from davan.util import application_logger as log_config
-import davan.util.constants as constants
 
 class HtmlService(BaseService):
     '''
@@ -33,18 +33,18 @@ class HtmlService(BaseService):
    
     def handle_request(self, msg):
         '''
-        Received request for html statistics.
+        Received html request.
         '''
         self.logger.debug("Received html request: [" + msg + "}")
-        
         self.increment_invoked()
+
         if (msg == "/index.html"):
             f = open(self.config["HTML_INDEX_FILE"])
             content = f.read()
             f.close()
-            result = self.generateServicePage()
+            result = self.generate_service_fragment()
             content = content.replace("<SERVICES>", result)
-            content = self.getServerInfo(content)
+            content = self.get_server_info(content)
         
         elif (msg == "/style.css"):
             f = open(self.config["HTML_STYLE_FILE"])
@@ -58,27 +58,28 @@ class HtmlService(BaseService):
         elif (msg == "/statistics.html"):
             content = self.get_statistics()
         elif (msg == "/status.html"):
-            content = self.getStatus()
+            content = self.get_status()
            
         return constants.RESPONSE_OK, content
     
-    def generateServicePage(self):
-        self.logger.info("GenerateServicePage")
-        id = 1
+    def generate_service_fragment(self):
+        '''
+        Iterate all services, generate and return the services page 
+        '''
+        column_id = 1
         tot_result = ""
         for name, service in __builtin__.davan_services.services.iteritems():
 #            if service.has_html_gui():
-            if id == 1:
-                tot_result += '<div id="columns">\n'
+            if column_id == 1:
+                tot_result += '<div column_id="columns">\n'
                     
-            tot_result += service.get_html_gui(id)
-            id += 1
-            if id == 4:
+            tot_result += service.get_html_gui(column_id)
+            column_id += 1
+            if column_id == 4:
                 tot_result += '<div style="clear: both;"> </div></div>\n' 
-                id = 1
+                column_id = 1
 
         tot_result += '<div style="clear: both;"> </div></div>\n' 
-        #self.logger.info("tot_result:" + tot_result)
         return tot_result 
         
     def get_logfile(self):
@@ -112,11 +113,12 @@ class HtmlService(BaseService):
         return content
     
     
-    def getServerInfo(self, content):
+    def get_server_info(self, content):
+        '''
+        Return information/statistics about server
+        '''
         content = content.replace('<SERVER_STARTED_VALUE>', self.start_date)
         result = (cmd.execute_block("uptime", "uptime", True)).split()
-        #self.logger.info(str(result))
-        
         content = content.replace('<UPTIME>', result[2] + " " + result[3])
         content = content.replace('<CPU_VALUE>', result[9])
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
@@ -125,7 +127,11 @@ class HtmlService(BaseService):
         content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(__builtin__.davan_services.services.items()))) 
         return content
     
-    def getStatus(self):
+    def get_status(self):
+        '''
+        Return the status of the server.
+        @return: status json formatted
+        '''
         result = (cmd.execute_block("uptime", "uptime", True)).split()
         uptime = result[2] + " " + result[3]
         cpuload = result[9]
@@ -163,5 +169,5 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = HtmlService(config)
-    test.generateServicePage()
+    test.generate_service_fragment()
     #test.handle_request("/status.html")

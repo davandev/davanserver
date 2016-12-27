@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*- 
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
-import davan.config.config_creator as configuration
-from davan.util import cmd_executor as cmd_executor
-from davan.http.service.base_service import BaseService
-import davan.util.constants as constants
 import traceback
 import sys
+
+import davan.config.config_creator as configuration
+import davan.util.constants as constants
+
+from davan.util import cmd_executor as cmd_executor
+from davan.http.service.base_service import BaseService
 
 class PictureService(BaseService):
     '''
     Motion detected on sensors, take photo from camera and send to 
-    Telegram
+    all Telegram receivers
     '''
 
     def __init__(self, config):
@@ -28,6 +29,10 @@ class PictureService(BaseService):
     
     def handle_request(self, msg):
         '''
+        Handle received request, 
+        - Take pictures from all configured cameras,
+        - Send pictures to all configured receivers
+        - Delete pictures.
         '''
         try:
             self.increment_invoked()
@@ -43,6 +48,9 @@ class PictureService(BaseService):
             pass
 
     def parse_request(self, msg):
+        '''
+        Return camera name from received msg.
+        '''
         self.logger.info("Parsing: " + msg ) 
         msg = msg.replace("/TakePicture?text=", "")
         return msg
@@ -56,7 +64,8 @@ class PictureService(BaseService):
         
     def send_picture(self, camera):
         '''
-        Send picture to telegram
+        Send picture to all configured telegram receivers
+        @param camera: camera name 
         '''
         for chatid in self.config['CHATID']:
             self.logger.info("Sending picture to chatid[" + chatid + "]")
@@ -71,10 +80,16 @@ class PictureService(BaseService):
             cmd_executor.execute_block(telegram_url,"curl")
         
     def take_picture(self, camera):
+        '''
+        Take a picture from the camera, store it temporary on file system
+        Verify that camera is configured (has ip adress, user and password) otherwise rais an exception
+        @param camera: camera name 
+        '''
         self.logger.info("Take picture from camera " + camera)
         if self.config["CAMERAS"].has_key(camera):
             cam_picture_url = self.config["CAMERAS"][camera]
-            cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] + " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
+            cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] +
+                                 " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
             cmd_executor.execute("sudo mv snapshot.cgi /var/tmp/snapshot.jpg")
         else:
             raise Exception("No camera url for [" + camera + "] configured")   
@@ -85,11 +100,11 @@ class PictureService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_id):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Cameras: " + str(self.config["CAMERAS"].keys()) + " </li>\n")
         return column

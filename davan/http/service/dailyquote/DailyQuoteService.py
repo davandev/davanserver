@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
 import logging
 import os
 import time
 import urllib2
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+
 from davan.util import application_logger as app_logger
 from davan.http.service.tts.TtsService import TtsService 
 from davan.http.service.audio.AudioService import AudioService
@@ -57,6 +57,9 @@ class DailyQuoteService(BaseService):
         return quote
     
     def play_file(self):
+        '''
+        Play the mp3 file using receiver and chromecast
+        '''
         self.logger.info("Play file")
         audio = AudioService(self.config)
         audio.turn_on_receiver()
@@ -66,7 +69,11 @@ class DailyQuoteService(BaseService):
         time.sleep(30)
         audio.turn_off_receiver()
             
-    def generate_mp3(self,quote):
+    def generate_mp3(self, quote):
+        '''
+        Generate an mp3 file base on the quote
+        @param quote, the text to generate
+        '''
         self.logger.info("Generate mp3")
         tts = TtsService(self.config)
 
@@ -78,7 +85,10 @@ class DailyQuoteService(BaseService):
         tts.generate_mp3(quote, self.config['TTS_DAILY_QUOTE_FILE'])
         
     def encode_quote(self, quote):
-        self.logger.info("Encoding qoute")
+        '''
+        Encode the quote
+        '''
+        self.logger.debug("Encoding qoute")
         quote = quote.replace(" ","%20") # Whitespace
         quote = quote.replace('&auml;','%C3%A4') # ä
         quote = quote.replace('&aring;','%C3%A5') # å
@@ -87,10 +97,14 @@ class DailyQuoteService(BaseService):
         quote = quote.replace('ä','%C3%A4') # Whitespace
         quote = quote.replace('å','%C3%A5') # Whitespace
         quote = quote.replace('ö','%C3%B6') # Whitespace
-        self.logger.info("Encoded quote:" + quote)
+        self.logger.debug("Encoded quote:" + quote)
         return quote
     
     def fetch_quote(self):
+        '''
+        Fetch quote from dagenscitat.nu 
+        @return the result
+        '''
         self.logger.info("Fetching quote")
         quote = urllib2.urlopen("http://www.dagenscitat.nu/citat.js").read()
         self.logger.info("Received quote:" + quote)
@@ -106,11 +120,11 @@ class DailyQuoteService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_id):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         quote = self.fetch_quote()
         column  = column.replace("<SERVICE_VALUE>", quote)

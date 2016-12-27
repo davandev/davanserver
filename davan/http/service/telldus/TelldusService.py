@@ -1,8 +1,7 @@
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 
@@ -13,8 +12,8 @@ from davan.http.service.base_service import BaseService
 
 class TelldusService(BaseService):
     '''
-    Telldus service, handling connection towards telldus Live
-    Turn on and off of light controlled by telldus Live
+    Telldus service, acts as a proxy between Fibaro system and Telldus Live.
+    Forwards on/off triggering of lights from Fibaro system towards Telldus Live
     '''
 
     def __init__(self, config):
@@ -25,17 +24,19 @@ class TelldusService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     def parse_request(self, msg):
+        '''
+        Strip received request from uninteresting parts
+        Example msg :"telldus?122379=on"
+        @param msg, received request
+        '''
         msg = msg.split('?')
         res = msg[1].split('=')
         return res[0], res[1]
-        #self.start(res[0],res[1])
-        #return 200,""
             
     def handle_request(self, msg):
         '''
         Light on/off request received from Fibaro system,
         forward to Telldus Live.
-        telldus?122379=on
         '''
         deviceId, action = self.parse_request(msg)
         self.increment_invoked()
@@ -51,6 +52,9 @@ class TelldusService(BaseService):
         return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
         
     def list_all_devices(self):
+        '''
+        List all devices configured in Telldus Live
+        '''
         self.logger.info("List all Telldus devices")
         telldus.listDevices()
         
@@ -62,5 +66,3 @@ if __name__ == '__main__':
     
     test = TelldusService(config)
     test.list_all_devices()
-    #telldus.listSensorsAndValues()
-    #test.start("telldus?489605=on")

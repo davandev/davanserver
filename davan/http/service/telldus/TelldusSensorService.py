@@ -1,23 +1,23 @@
 '''
-Created on 8 feb. 2016
-
-@author: Wilma
+@author: davandev
 '''
 import logging
 import os
 from urllib import quote
-import davan.http.service.telldus.tdtool as telldus
 import urllib
 import datetime
+import traceback
 from threading import Thread,Event
+import davan.http.service.telldus.tdtool as telldus
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
-import traceback
 
 class TelldusSensorService(BaseService):
     '''
-    classdocs
+    Starts a re-occuring service that fetches sensor values from Telldus Live and 
+    pushes the results(temperature, humidity and date) of each sensor to a 
+    virtual device on the Fibaro system. 
     '''
 
     def __init__(self, config):
@@ -29,6 +29,9 @@ class TelldusSensorService(BaseService):
         self.event = Event()
 
     def stop_service(self):
+        '''
+        Stops the service
+        '''
         self.logger.info("Stopping service")
         self.event.set()
 
@@ -94,7 +97,7 @@ class TelldusSensorService(BaseService):
         Update fibaro system with sensor values
         @param url, url with sensor values
         '''
-        result = urllib.urlopen(url)        
+        urllib.urlopen(url)        
 
     def maybe_notify_humidity_level(self, sensor_name, humidity_value):
         '''

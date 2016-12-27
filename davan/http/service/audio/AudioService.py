@@ -1,6 +1,4 @@
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
 import logging

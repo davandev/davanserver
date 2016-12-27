@@ -1,19 +1,22 @@
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 import urllib2, base64
 import re
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
 
 class AuthenticationService(BaseService):
     '''
-    classdocs
+    Service used to authenticate triggering (arm/disarm) of Fibaro home alarm via
+    Android alarm keypad.
+    Notice that Android alarm keypad can be configured to arm/disarm Fibaro alarm itself and 
+    does not require request through this service
     '''
 
     def __init__(self, config ):
@@ -29,11 +32,34 @@ class AuthenticationService(BaseService):
 
     # Implementation of BasePlugin abstract methods        
     def handle_request(self, msg):
-        self.increment_invoked()
-        response_code, result = self.start(msg)
-        return response_code, result
+        '''
+        Recevied request from Android keypad to authenticate
+        user and arm/disarm alarm..
+        '''
+        self.logger.info("Received request for authentication")
 
-    def parse_request(self,msg):
+        self.increment_invoked()
+        action, pin = self.parse_request(msg)
+        
+        if action and not pin: # arm alarm
+            if action == "armAlarm" or action == "armSkalskydd":
+                self.perform_security_action(action)
+                return constants.RESPONSE_OK, ""
+        
+        elif action and pin: # disarm alarm, requires pin code
+            user = self.authenticate_user(pin)
+            if user == None:
+                return constants.RESPONSE_NOT_OK, ""            
+            else:
+                self.perform_security_action(action)
+                return constants.RESPONSE_OK, "{user:" + user + "}"
+
+    def parse_request(self, msg):
+        '''
+        Return the interesting parts from the message, 
+        @param msg, received msg
+        @return user, pincode
+        '''
         self.logger.info("Parse request:" + msg)
         match = self.reg_exp_disarm.search(msg)
         if match:
@@ -46,34 +72,20 @@ class AuthenticationService(BaseService):
         return None, None
     
     def authenticate_user(self, pin):
+        '''
+        Verify that the pincode matches the configured pin code
+        @param pin, pincode to verify
+        @return the name of the user matching the pin code
+        
+        '''
         if self.config['USER_PIN'].has_key(pin):
             return self.config['USER_PIN'][pin]
         return None
         
-    def start(self, msg):
-        '''
-        Recevied request from Android keypad system to authenticate
-        user, arm/disarm alarm..
-        '''
-        
-        self.logger.info("Received request for authentication ["+ msg + "]")
-        action, pin = self.parse_request(msg)
-        if action and not pin:
-            if action == "armAlarm" or action == "armSkalskydd":
-                self.perform_security_action(action)
-                return self.ok_rsp, ""
-        
-        elif action and pin:
-            user = self.authenticate_user(pin)
-            if user == None:
-                return self.nok_rsp, ""            
-            else:
-                self.perform_security_action(action)
-                return self.ok_rsp, "{user:" + user + "}"
-        
-    
     def perform_security_action(self, action):
         ''' 
+        Create the url and perform arm/disarm of Fibaro system
+        @param action, arm/disarm
         '''  
         
         if action in self.config:

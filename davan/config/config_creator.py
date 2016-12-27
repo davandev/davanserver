@@ -1,6 +1,8 @@
 """
-Creates the config data used by scripts.
+Creates the config data used by services.
+@author: davandev
 """
+
 import davan.util.helper_functions as common
 import os
 import imp
@@ -122,7 +124,7 @@ def create_config(secret_config, config):
     config['WILMA_HOME_SCENE_ID'] = "14"
     config['VIGGO_HOME_SCENE_ID'] = "16"
     config['VIGGO_AWAY_SCENE_ID'] = "17"
-    
+    config['PRESENCE'] = {'wilma': ["04:F1:3E:5C:79:75","192.168.2.11"] }
     #---------------------------------------------------------------------------------------
     # Authentication configuration
     #---------------------------------------------------------------------------------------

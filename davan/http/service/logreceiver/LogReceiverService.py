@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 import urllib
 import time
+
 import davan.config.config_creator as configuration
 from davan.http.service.base_service import BaseService
 

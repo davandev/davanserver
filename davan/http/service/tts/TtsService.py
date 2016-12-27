@@ -1,8 +1,7 @@
 '''
-Created on 8 feb. 2016
-
-@author: davandeb
+@author: davandev
 '''
+
 import logging
 import os
 import urllib
@@ -29,6 +28,10 @@ class TtsService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     def handle_request(self, msg):
+        '''
+        Received request to generate speech from msg
+        @param msg, received request 
+        '''
         self.start(msg.split('=')[1])
         return 200, ""
     

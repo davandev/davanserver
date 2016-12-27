@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
+import json
 from threading import Thread,Event
 
 import davan.config.config_creator as configuration
-from davan.http.service.base_service import BaseService
 import davan.util.cmd_executor as cmd
 import davan.util.constants as constants
-import json
+from davan.http.service.base_service import BaseService
 
 class SpeedtestService(BaseService):
     '''
-    classdocs
+    Starts a re-occuring service that will measure internet speed (Download/Upload/ping)
     Requires speedtest-cli : install with "sudo pip install speedtest-cli"
     '''
 
@@ -73,11 +72,11 @@ class SpeedtestService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_ud):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         ok, result = self.handle_request("")
         data = json.loads(result)

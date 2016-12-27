@@ -1,8 +1,7 @@
 '''
-Created on 27 okt. 2016
-
-@author: Wilma
+@author: davandev
 '''
+
 RESPONSE_OK = 200
 RESPONSE_NOT_OK = 401
 RESPONSE_FILE_NOT_FOUND = "File not found"

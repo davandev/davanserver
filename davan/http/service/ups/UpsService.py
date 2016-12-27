@@ -1,17 +1,19 @@
 '''
 @author: davandev
 '''
+
 import logging
 import os
 import traceback
 import sys
 import urllib
+import json
 
 import davan.config.config_creator as configuration
+import davan.util.constants as constants
 from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
-import davan.util.constants as constants
-import json
+
 
 class UpsService(BaseService):
     '''
@@ -30,6 +32,10 @@ class UpsService(BaseService):
         self.payload = "/Ups?text="
                     
     def parse_request(self, msg):
+        '''
+        Parse received request to get interesting parts
+        @param msg: received request 
+        '''
         self.logger.info("Parsing: " + msg ) 
         msg = msg.replace(self.payload, "")
         return msg
@@ -60,9 +66,11 @@ class UpsService(BaseService):
  
     def _update_changed_status_on_fibaro(self):
         """
-        Status changed on UPS, update virtual device on Fibaro system.
+        Status changed on UPS, to either battery mode or power mode.
+        Update virtual device on Fibaro system.
         """
         self.logger.info("UPS status changed")
+        
         # Build URL to Fibaro virtual device
         pressButton_url = self.config["VD_PRESS_BUTTON_URL"].replace("<ID>", self.config['UPS_VD_ID'])
         pressButton_url = pressButton_url.replace("<BUTTONID>", self.config["UPS_BUTTON_ID"]) 
@@ -105,11 +113,11 @@ class UpsService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_ud):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         _, result = self.handle_request("Status")
         data = json.loads(result)

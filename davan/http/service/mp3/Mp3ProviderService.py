@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+
 from davan.http.service.base_service import BaseService
 
 class Mp3ProviderService(BaseService):
@@ -24,6 +25,8 @@ class Mp3ProviderService(BaseService):
     def handle_request(self, msg):
         '''
         Received request for mp3 file.
+        Verify that the mp3 file exist and return it
+        @param msg, the wanted file.
         '''
         try:
             self.increment_invoked()

@@ -1,8 +1,7 @@
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 import urllib
@@ -80,11 +79,11 @@ class KeypadAliveService(BaseService):
         """
         return True
     
-    def get_html_gui(self, id):
+    def get_html_gui(self, column_ud):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(id))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Status: " + str(self.connected) + " </li>\n")
         return column
