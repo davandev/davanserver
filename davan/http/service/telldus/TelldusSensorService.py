@@ -115,6 +115,7 @@ class TelldusSensorService(BaseService):
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
                     message= constants.HUMIDITY_HIGH.replace("<room_name>", str(sensor_name) + " " + str(humidity_value))
+                    self.logger.info("Message:" + message)
                     for chatid in self.config['CHATID']:
                         url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + message
                         urllib.urlopen(url)
