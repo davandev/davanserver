@@ -1,5 +1,6 @@
 '''
 @author: davandev
+sys.setdefaultencoding('latin-1')
 '''
 
 RESPONSE_OK = 200
