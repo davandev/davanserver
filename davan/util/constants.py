@@ -1,5 +1,5 @@
 '''
-@author: davandev
+@author: davandev 
 sys.setdefaultencoding('latin-1')
 '''
 
