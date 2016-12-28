@@ -44,7 +44,7 @@ class TelldusSensorService(BaseService):
         self.logger.info("Starting re-occuring event")
 
         def loop():
-            while not self.event.wait(60): # the first call is in `interval` secs
+            while not self.event.wait(900): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
         Thread(target=loop).start()    
