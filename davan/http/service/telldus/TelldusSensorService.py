@@ -44,7 +44,7 @@ class TelldusSensorService(BaseService):
         self.logger.info("Starting re-occuring event")
 
         def loop():
-            while not self.event.wait(900): # the first call is in `interval` secs
+            while not self.event.wait(60): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
         Thread(target=loop).start()    
@@ -115,7 +115,7 @@ class TelldusSensorService(BaseService):
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
                     for chatid in self.config['CHATID']:
-                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.HUMIDITY_HIGH
+                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(constants.HUMIDITY_HIGH)
                         self.logger.info("Url:" + url)
                         urllib.urlopen(url)
         except :

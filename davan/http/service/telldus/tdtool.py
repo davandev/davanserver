@@ -9,7 +9,7 @@ import logging
 
 global logger
 logger = logging.getLogger(os.path.basename(__file__))
-
+import davan.util.application_logger as log_manager
 #insert your own public_key and private_key
 import davan.config.config_creator as config_creator
 configuration = config_creator.create()
@@ -283,4 +283,8 @@ def main(argv):
 
 if __name__ == "__main__":
 	config = ConfigObj(os.environ['HOME'] + '/.config/Telldus/tdtool.conf')
-	main(sys.argv[1:])
+        configuration = config_creator.create()
+ 
+        log_manager.start_logging(configuration["LOGFILE_PATH"],loglevel=4)
+	
+        main(sys.argv[1:])
