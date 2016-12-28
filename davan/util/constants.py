@@ -8,7 +8,7 @@ RESPONSE_NOT_OK = 401
 RESPONSE_FILE_NOT_FOUND = "File not found"
 RESPONSE_EMPTY_MSG = ""
 
-HUMIDITY_HIGH = "Luftfuktigheten \u00e4r F\u00f6r h\u00f6g i badrummet, s\u00e4tt p\u00e4 fl\u00e5kten"
+HUMIDITY_HIGH = "Luftfuktigheten är för hög i badrummet, sätt på fläkten"
 KEYPAD_NOT_ANSWERING = "Alarm Keypad har slutat svara"
 KEYPAD_ANSWERING = "Alarm Keypad har startats"
 
