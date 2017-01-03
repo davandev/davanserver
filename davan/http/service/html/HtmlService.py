@@ -53,6 +53,8 @@ class HtmlService(BaseService):
         
         elif (msg == "/logfile.html"):
             content = self.get_logfile()
+        elif (msg == "/logfiles.html"):
+            content = self.get_logfiles()
         elif (msg == "/reboot.html"):
             content = "Server restarting"
         elif (msg == "/statistics.html"):
@@ -92,6 +94,17 @@ class HtmlService(BaseService):
         content = ""
         for line in f.readlines():
             content += line + "</br>"
+        f.close()
+        return content 
+
+    def get_logfiles(self):
+        """
+        Return the content of the current logfile
+        """
+        logfile = log_config.get_logfile_name()
+        self.logger.info("LogFile:html/log_file_template.html" )   
+        f = open(config['SERVICE_PATH'] + "html/log_file_template.html")
+        content = f.read()
         f.close()
         return content 
     
