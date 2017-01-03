@@ -101,9 +101,8 @@ class HtmlService(BaseService):
         """
         Return the content of the current logfile
         """
-        logfile = log_config.get_logfile_name()
         self.logger.info("LogFile:html/log_file_template.html" )   
-        f = open(config['SERVICE_PATH'] + "html/log_file_template.html")
+        f = open(self.config['SERVICE_PATH'] + "html/log_file_template.html")
         content = f.read()
         f.close()
         return content 
