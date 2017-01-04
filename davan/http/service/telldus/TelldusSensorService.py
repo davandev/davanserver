@@ -107,7 +107,6 @@ class TelldusSensorService(BaseService):
         @param humidity_value, humidity value
         '''
         try:
-            self.logger.info(" Check if sensor" +sensor_name+ " has limit configured" )
             if self.config["SENSOR_HUMIDITY_LIMITS"].has_key(sensor_name):
                 self.logger.info("Sensor "+ sensor_name +" has humidity limits configured. Current value["+humidity_value+"]")
                 

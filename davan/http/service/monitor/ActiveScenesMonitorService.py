@@ -63,13 +63,13 @@ class ActiveScenesMonitorService(BaseService):
 
                 result = urllib.urlopen(scene_url)
                 res = result.read()
-                self.logger.info("Result:" + res)    
 
                 data = json.loads(res)
                 if data["runningInstances"] ==1:
                     self.logger.info("Scene already running")
                 else:
                     self.logger.info("Scene not running")
+                    self.logger.debug("Result:" + res)    
                     scene_url = self.config['START_SCENE_URL'].replace("<ID>",scene)
                     self.logger.info("Starting scene " + scene_url)
                     result = urllib.urlopen(scene_url)        
