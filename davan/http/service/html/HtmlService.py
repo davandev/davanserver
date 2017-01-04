@@ -50,7 +50,11 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
-        
+        elif(msg.endswith(".log")):
+            logfile = msg.split("/")[-1:]
+            self.logger.info("Logfile: "+ self.config['LOGFILE_PATH'] + logfile)
+            f = open(self.config['LOGFILE_PATH'] + logfile) 
+            content = f.read()
         elif (msg == "/logfile.html"):
             content = self.get_logfile()
         elif (msg == "/logfiles.html"):
@@ -105,6 +109,13 @@ class HtmlService(BaseService):
         f = open(self.config['SERVICE_PATH'] + "html/log_file_template.html")
         content = f.read()
         f.close()
+
+        options = ""
+        for logfile in os.listdir(self.config["LOGFILE_PATH"]):
+            if logfile.endswith(".log"):
+                self.logger.info("Found logfile:" + logfile)
+                options +='<option value="http://192.168.2.50:8080/' + logfile + '">' + logfile + '</option>'
+        content = content.replace("<OPTIONS_LOGFILES>", options)
         return content 
     
     def get_statistics(self):
