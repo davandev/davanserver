@@ -212,7 +212,7 @@ def create_config(secret_config, config):
     config["HTML_INDEX_FILE"] = config['SERVICE_PATH'] + "html/index_template.html"
     config["HTML_STYLE_FILE"] = config['SERVICE_PATH'] + "html/style.css"
     config["HTML_STATISTICS_FILE"]  = config['SERVICE_PATH'] + "html/statistics_template.html"
-
+    config["HTML_SELECT_LOGFILE"] = config['SERVICE_PATH'] + "html/select_logfile.html"
     #---------------------------------------------------------------------------------------------
     # Sonos Service configuration
     #---------------------------------------------------------------------------------------------

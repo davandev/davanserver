@@ -38,25 +38,30 @@ class HtmlService(BaseService):
         self.logger.debug("Received html request: [" + msg + "}")
         self.increment_invoked()
 
-        if (msg == "/index.html"):
+        if ("applicationserver.log" in msg):
+            logfile = msg.replace(".html","")
+            self.logger.info("Logfile: "+ self.config['LOGFILE_PATH'] + " File "+ logfile)
+            f = open(self.config['LOGFILE_PATH'] + logfile) 
+            content = f.read()
+            content = content.replace("\n","<br>")
+        elif (msg == "/index.html"):
             f = open(self.config["HTML_INDEX_FILE"])
             content = f.read()
             f.close()
             result = self.generate_service_fragment()
             content = content.replace("<SERVICES>", result)
             content = self.get_server_info(content)
+        elif (msg == "/select_logfile.html"):
+            f = open(self.config["HTML_SELECT_LOGFILE"])
+            content = f.read()
+            f.close()
         
         elif (msg == "/style.css"):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
-        elif(msg.endswith(".log")):
-            logfile = msg.split("/")[-1:]
-            self.logger.info("Logfile: "+ self.config['LOGFILE_PATH'] + logfile)
-            f = open(self.config['LOGFILE_PATH'] + logfile) 
-            content = f.read()
-        elif (msg == "/logfile.html"):
-            content = self.get_logfile()
+    #   elif (msg == "/logfile.html"):
+    #        content = self.get_logfile()
         elif (msg == "/logfiles.html"):
             content = self.get_logfiles()
         elif (msg == "/reboot.html"):
@@ -111,11 +116,14 @@ class HtmlService(BaseService):
         f.close()
 
         options = ""
+        self.logger.info("Search logfiles in :"+self.config["LOGFILE_PATH"])
         for logfile in os.listdir(self.config["LOGFILE_PATH"]):
-            if logfile.endswith(".log"):
+            self.logger.info("Found file:"+logfile) 
+            if "applicationserver" in logfile:
                 self.logger.info("Found logfile:" + logfile)
-                options +='<option value="http://192.168.2.50:8080/' + logfile + '">' + logfile + '</option>'
+                options +='<option value="http://192.168.2.50:8080/' + logfile + '.html">' + logfile + '</option>'
         content = content.replace("<OPTIONS_LOGFILES>", options)
+        self.logger.info(content)
         return content 
     
     def get_statistics(self):

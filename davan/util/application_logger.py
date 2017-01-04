@@ -25,7 +25,7 @@ def start_file_logging(log_file_path, log_file_name =""):
     masterLog = logging.getLogger('')
     masterLog.setLevel(logging.DEBUG)
     masterHandler = TimedRotatingFileHandler(logfile, 'MIDNIGHT', backupCount=30)
-    formatter = logging.Formatter('%(asctime)s %(name)-35s %(levelname)-8s %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(name)-35s %(levelname)-8s %(message)s',"%H:%M:%S")
     masterHandler.setFormatter(formatter)
     logging.getLogger('').addHandler(masterHandler)
 
