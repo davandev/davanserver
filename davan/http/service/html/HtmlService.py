@@ -123,7 +123,6 @@ class HtmlService(BaseService):
                 self.logger.info("Found logfile:" + logfile)
                 options +='<option value="http://192.168.2.50:8080/' + logfile + '.html">' + logfile + '</option>'
         content = content.replace("<OPTIONS_LOGFILES>", options)
-        self.logger.info(content)
         return content 
     
     def get_statistics(self):
