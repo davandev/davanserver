@@ -113,11 +113,14 @@ class UpsService(BaseService):
         """
         return True
     
-    def get_html_gui(self, column_ud):
+    def get_html_gui(self, column_id):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
+            
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         _, result = self.handle_request("Status")
         data = json.loads(result)

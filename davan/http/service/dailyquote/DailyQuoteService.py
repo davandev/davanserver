@@ -124,6 +124,9 @@ class DailyQuoteService(BaseService):
         """
         Override and provide gui
         """
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
+
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         quote = self.fetch_quote()

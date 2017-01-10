@@ -84,11 +84,14 @@ class ActiveScenesMonitorService(BaseService):
         """
         return True
     
-    def get_html_gui(self, column_ud):
+    def get_html_gui(self, column_id):
         """
         Override and provide gui
         """
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_ud))
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
+
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Monitor: " + str(self.config['MONITOR_SCENES']) + " </li>\n")
         return column
