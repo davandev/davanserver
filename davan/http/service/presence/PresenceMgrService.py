@@ -35,12 +35,12 @@ class PresenceMgrService(BaseService):
         self.delete_device_cmd =['sudo','/usr/sbin/arp', '-i' ,'eth0', '-d', '']
 
         self.users = []
-        wilma = PhoneStatus("wilma","04:F1:3E:5C:79:75","192.168.2.11", iphone=True)
-        self.users.append(wilma)
-        david = PhoneStatus("david","64:BC:0C:4B:F6:72","192.168.2.115",iphone=True)
+#        wilma = PhoneStatus("wilma","04:F1:3E:5C:79:75","192.168.2.11", iphone=True)
+#        self.users.append(wilma)
+        david = PhoneStatus("david","7c:91:22:2c:98:c8","192.168.2.39",iphone=False)
         self.users.append(david)
-        viggo = PhoneStatus("viggo","40:40:A7:27:2C:98","192.168.2.106",iphone=True)
-        self.users.append(viggo)
+#        viggo = PhoneStatus("viggo","40:40:A7:27:2C:98","192.168.2.233",iphone=True)
+#        self.users.append(viggo)
         mia = PhoneStatus("mia","E8:50:8B:F5:C8:8A","192.168.2.86",iphone=True)
         self.users.append(mia)
         self.event = Event()
@@ -164,5 +164,5 @@ if __name__ == '__main__':
     config = configuration.create()
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=3)
     
-    test = PresenceMgrService()
-    test.monitor_user("david")
+    test = PresenceMgrService(config)
+    test.timeout()
