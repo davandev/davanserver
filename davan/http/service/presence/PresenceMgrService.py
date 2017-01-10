@@ -13,11 +13,14 @@ import davan.http.service.presence.url_helper as url_util
 import davan.util.constants as constants
 import davan.util.cmd_executor as cmd_executor
 import time
-
+import telnetlib
 from davan.http.service.presence.phone_status import PhoneStatus
 from davan.http.service.base_service import BaseService
 '''
-
+Enable telnet in asus router
+log into router with user + passwd
+run cmd:  "/usr/sbin/ip neigh" or  /usr/sbin/ip neigh | grep REACHABLE 
+list shows online devices
 '''
 class PresenceMgrService(BaseService):
     '''
@@ -81,6 +84,24 @@ class PresenceMgrService(BaseService):
         for user in self.users:
             if user.user == user_name:
                 user.expire_time = expire_time 
+
+    def check_router_status(self):
+        self.logger.info("Check router status")
+        HOST = "192.168.2.1"
+#        user = raw_input("Enter your remote account: ")
+#        password = getpass.getpass()
+        
+        tn = telnetlib.Telnet(HOST)
+        
+        tn.read_until("login: ")
+        tn.write("admin\n")
+        tn.read_until("Password: ")
+        tn.write("\n")
+        
+        tn.write("ls\n")
+        tn.write("exit\n")
+        
+        print tn.read_all()
 
     def timeout(self):
         for user in self.users:
@@ -165,4 +186,4 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=3)
     
     test = PresenceMgrService(config)
-    test.timeout()
+    test.check_router_status()
