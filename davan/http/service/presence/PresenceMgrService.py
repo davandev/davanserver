@@ -37,15 +37,15 @@ class PresenceMgrService(BaseService):
         self.devices_cmd =['sudo','/usr/sbin/arp', '-an']#, | awk '{print $4} '"]
         self.delete_device_cmd =['sudo','/usr/sbin/arp', '-i' ,'eth0', '-d', '']
 
-        self.users = []
+        self.monitored_devices = []
 #        wilma = PhoneStatus("wilma","04:F1:3E:5C:79:75","192.168.2.11", iphone=True)
-#        self.users.append(wilma)
+#        self.monitored_devices.append(wilma)
         david = PhoneStatus("david","7c:91:22:2c:98:c8","192.168.2.39",iphone=False)
-        self.users.append(david)
+        self.monitored_devices.append(david)
 #        viggo = PhoneStatus("viggo","40:40:A7:27:2C:98","192.168.2.233",iphone=True)
-#        self.users.append(viggo)
+#        self.monitored_devices.append(viggo)
         mia = PhoneStatus("mia","E8:50:8B:F5:C8:8A","192.168.2.86",iphone=True)
-        self.users.append(mia)
+        self.monitored_devices.append(mia)
         self.event = Event()
 
     def handle_request(self, msg):
@@ -81,30 +81,12 @@ class PresenceMgrService(BaseService):
         expire_time = now + datetime.timedelta(minutes = 7)
         self.logger.info("Got new user to monitor [" + user_name + "] New expire time:" +str(expire_time))
 
-        for user in self.users:
+        for user in self.monitored_devices:
             if user.user == user_name:
                 user.expire_time = expire_time 
 
-    def check_router_status(self):
-        self.logger.info("Check router status")
-        HOST = "192.168.2.1"
-#        user = raw_input("Enter your remote account: ")
-#        password = getpass.getpass()
-        
-        tn = telnetlib.Telnet(HOST)
-        
-        tn.read_until("login: ")
-        tn.write("admin\n")
-        tn.read_until("Password: ")
-        tn.write("\n")
-        
-        tn.write("ls\n")
-        tn.write("exit\n")
-        
-        print tn.read_all()
-
     def timeout(self):
-        for user in self.users:
+        for user in self.monitored_devices:
             user.status_changed = False
             previous_state = user.phone_status 
             
@@ -144,7 +126,7 @@ class PresenceMgrService(BaseService):
                 user.set_wifi_status(True)
                 user.wifi_first_active = str(datetime.datetime.now())
                 
-            if user.has_iphone: #Special case for Iphone users, 
+            if user.has_iphone: #Special case for Iphone monitored_devices, 
                 now = datetime.datetime.now()
                 expire_time = now + datetime.timedelta(minutes = 60)
                 self.logger.info("User["+user.user+"] has iphone increase expire time to "+ str(expire_time) + " Current time:" + str(now))

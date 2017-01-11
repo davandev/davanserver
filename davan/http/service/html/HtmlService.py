@@ -60,8 +60,6 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
-    #   elif (msg == "/logfile.html"):
-    #        content = self.get_logfile()
         elif (msg == "/logfiles.html"):
             content = self.get_logfiles()
         elif (msg == "/reboot.html"):
@@ -93,18 +91,18 @@ class HtmlService(BaseService):
         tot_result += '<div style="clear: both;"> </div></div>\n' 
         return tot_result 
         
-    def get_logfile(self):
+#    def get_logfile(self):
         """
         Return the content of the current logfile
         """
-        logfile = log_config.get_logfile_name()
-        self.logger.info("LogFile:" + logfile)   
-        f = open(logfile)
-        content = ""
-        for line in f.readlines():
-            content += line + "</br>"
-        f.close()
-        return content 
+#        logfile = log_config.get_logfile_name()
+#        self.logger.info("LogFile:" + logfile)   
+#        f = open(logfile)
+#        content = ""
+#        for line in f.readlines():
+#            content += line + "</br>"
+#        f.close()
+#        return content 
 
     def get_logfiles(self):
         """

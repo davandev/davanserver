@@ -15,13 +15,13 @@ def getUserHomeUrl(config, user):
     Return the url to the fibaro scene to activate the user presence
     '''
     home_url = ""
-    if user == "mia":
+    if user == "Mia":
         home_url = config["START_SCENE_URL"].replace("<ID>", config['MIA_HOME_SCENE_ID'])
-    if user == "david":
+    if user == "David":
         home_url = config["START_SCENE_URL"].replace("<ID>", config['DAVID_HOME_SCENE_ID'])
-    if user == "viggo":
+    if user == "Viggo":
         home_url = config["START_SCENE_URL"].replace("<ID>", config['VIGGO_HOME_SCENE_ID'])
-    if user == "wilma":
+    if user == "Wilma":
         home_url = config["START_SCENE_URL"].replace("<ID>", config['WILMA_HOME_SCENE_ID'])
     
     logger.debug("Url: ["+ home_url + "]")

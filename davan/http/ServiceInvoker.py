@@ -44,10 +44,9 @@ class ServiceInvoker(object):
                         mod = imp.load_compiled(module_name,os.path.join(root, service_file))
                         try:    
                             attributes = getattr(mod, module_name)
+                            service = attributes(self.config)
                         except :
                             continue
-                        
-                        service = attributes(self.config)
                         self.services[service.get_name()] = service
                         self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
         return self.services
