@@ -43,7 +43,11 @@ def createFibaroUrl(baseurl, vd_id, labelId, value):
     return baseurl
 
 def send_telegram_message(config, msg):
+    '''
+    Send telegram message to all configured receivers
+    @param msg message to send
+    '''
+    logger.info("Sending telegram msg[ " + msg + "]")
     for chatid in config['CHATID']:
         url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(msg)
-        logger.info("Send telegram msg[ " + msg + "]")
         urllib.urlopen(url)

@@ -6,13 +6,16 @@ import logging
 import os
 import urllib
 from threading import Thread,Event
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+import davan.util.helper_functions as helper
 from davan.http.service.base_service import BaseService
 
 class KeypadAliveService(BaseService):
     '''
-    classdocs
+    Check if keypad is still running by sending a http request towards the keypad
+    if there is no response from the keypad then a telegram message is sent.
     '''
 
     def __init__(self, config):
@@ -59,19 +62,19 @@ class KeypadAliveService(BaseService):
             self.maybe_send_update(False)
             
     def maybe_send_update(self, state):
-        
+        '''
+        Send telegram message if state has changed
+        @param state, current state of keypad
+        '''
         if self.connected == True and state == False:
             self.logger.info("Keypad state changed: False") 
             self.connected = False
-            for chatid in self.config['CHATID']:
-                url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_NOT_ANSWERING
-                urllib.urlopen(url)
+            helper.send_telegram_message(self.config, constants.KEYPAD_NOT_ANSWERING)
+
         elif self.connected ==False and state == True:
             self.logger.info("Keypad state changed : True") 
             self.connected = True
-            for chatid in self.config['CHATID']:
-                url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + constants.KEYPAD_ANSWERING
-                urllib.urlopen(url)
+            helper.send_telegram_message(self.config, constants.KEYPAD_ANSWERING)
     
     def has_html_gui(self):
         """

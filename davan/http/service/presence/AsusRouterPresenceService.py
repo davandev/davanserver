@@ -8,17 +8,29 @@ import os
 import urllib
 import datetime
 from threading import Thread,Event
+import telnetlib
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
-import telnetlib
 from davan.http.service.presence.AsusRouterDeviceStatus import AsusRouterDeviceStatus
 from davan.http.service.base_service import BaseService
+
 '''
 '''
 class AsusRouterPresenceService(BaseService):
     '''
-    classdocs
+    This service is tested on an Asus router and relies on Telnet being enabled in the router.
+    It is enabled in the router configuration.
+    The presence of the monitored devices are determined on whether the device is 
+    connected on the wifi network.
+    The check is done by logging into the router via Telnet, and checking the connections
+    using command "/usr/sbin/ip neigh" this gives a list of devices registered.
+    Each device can be in state ESTABLISHED, STALE or FAILED.
+    FAILED means that the device is not connected to the network. The states ESTABLISHED and STALE is
+    interpreted as being available on wifi network.
+    At state change a telegram message is sent to the receivers. Virtual device on Fibaro HC2 is also updated 
+    with the state change.
     '''
 
     def __init__(self, config ):
@@ -27,9 +39,10 @@ class AsusRouterPresenceService(BaseService):
         '''
         BaseService.__init__(self, constants.DEVICE_PRESENCE_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.monitored_devices = {}
+        # Command to run on router to list available devices
         self.list_active_devices_cmd = "/usr/sbin/ip neigh"
-        
+
+        self.monitored_devices = {}
         for key, value in self.config['MONITORED_DEVICES'].items():
             self.monitored_devices[key]= AsusRouterDeviceStatus(key, value)
 
@@ -41,11 +54,11 @@ class AsusRouterPresenceService(BaseService):
             
     def notify_change(self, device):
         '''
-        Update Virtual device on Fibaro system send Telegram messages
+        Update Virtual device on Fibaro system and send Telegram messages
         with the changed device and status
         @param device device that changed state
         '''
-        self.logger.info("Notify status change")
+        #self.logger.info("Notify status change")
         if device.active :
             status = "Hemma"
         else:
@@ -74,10 +87,10 @@ class AsusRouterPresenceService(BaseService):
      
     def fetch_active_devices(self):
         '''
-        Fetch device status from router. 
+        Fetch a list of all devices status from router. 
         @return list of found devices
         '''
-        self.logger.info("Fetch active devices from router")
+#        self.logger.info("Fetch active devices from router")
         tn = telnetlib.Telnet(self.config['ROUTER_ADRESS'])
         
         tn.read_until("login: ")
@@ -102,12 +115,14 @@ class AsusRouterPresenceService(BaseService):
             if line.startswith("192."):
                 items = line.split()
                 if items[0] in monitored_devices.keys():
-                    self.logger.info("Found a monitored device [" + items[0] +"]")
+#                    self.logger.info("Found a monitored device [" + items[0] +"]")
                     self.update_device_status(items, monitored_devices)
 
     def update_device_status(self, status, monitored_devices):
         '''
         Update device status of a monitored device
+        @param status the status from router
+        @param monitored_devices list of configured monitored devices
         '''
         device = monitored_devices[status[0]]
         device.changed = False
@@ -118,19 +133,19 @@ class AsusRouterPresenceService(BaseService):
         elif "FAILED" in status:
             device.active = False
             
-        if (previous_status == device.active):
-            self.logger.info("No change of status for device[" + status[0] + "]")
+        if (previous_status == device.active): # No state changed
+#            self.logger.info("No change of status for device[" + status[0] + "]")
             device.changed = False
             if device.active:
                 device.last_active = str(datetime.datetime.now())
-        else:
-            self.logger.info("Change of status for device[" + status[0] + "]")
+        else: # State is changed
+#            self.logger.info("Change of status for device[" + status[0] + "]")
             device.changed = True
             if device.active:
                 device.first_active = str(datetime.datetime.now())
 
     def timeout(self):
-        self.logger.info("Check active devices")
+        self.logger.info("Check presence of monitored devices")
         active_devices = self.fetch_active_devices()
         self.update_presence(self.monitored_devices, active_devices)
         
