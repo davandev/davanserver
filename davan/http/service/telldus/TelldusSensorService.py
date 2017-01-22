@@ -129,7 +129,7 @@ class TelldusSensorService(BaseService):
                 sensor_limit = self.config['SENSOR_HUMIDITY_LIMITS'][sensor_name]
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
-                    helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet")
+                    helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+humidity_value+"], var god och ventilera")
 #                    for chatid in self.config['CHATID']:
 #                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus("Luftfuktigheten i badrummet ")
 #                        self.logger.info("Url: " + url)

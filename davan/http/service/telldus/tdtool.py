@@ -92,6 +92,10 @@ def listSensorsAndValues():
 	response = doRequest('sensors/list', {'includeValues': 1});
 	return response
 
+def listDevicesAndValues():
+	response = doRequest('devices/list', {'supportedMethods': SUPPORTED_METHODS})
+	return response
+
 def getSensorData(sensorId):
 	response = doRequest('sensor/info', {'id': sensorId });
 	lastupdate = datetime.datetime.fromtimestamp(int(response['lastUpdated']));

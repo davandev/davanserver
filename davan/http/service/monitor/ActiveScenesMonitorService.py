@@ -6,6 +6,7 @@ import logging
 import os
 import json
 import urllib
+import traceback
 from threading import Thread,Event
 
 import davan.config.config_creator as configuration
@@ -74,6 +75,8 @@ class ActiveScenesMonitorService(BaseService):
                     self.logger.info("Starting scene " + scene_url)
                     result = urllib.urlopen(scene_url)        
         except Exception:
+            self.logger.error(traceback.format_exc())
+
             self.increment_errors()
             self.logger.info("Caught exception") 
             pass
