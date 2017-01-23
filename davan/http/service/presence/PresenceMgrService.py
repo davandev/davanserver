@@ -98,7 +98,7 @@ class PresenceMgrService(BaseService):
         tn.read_until("Password: ")
         tn.write("\n")
         
-        tn.write("ls\n")
+        tn.write("/usr/sbin/ip neigh | grep REACHABLE\n")
         tn.write("exit\n")
         
         print tn.read_all()
