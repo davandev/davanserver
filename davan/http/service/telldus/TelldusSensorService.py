@@ -8,10 +8,13 @@ import urllib
 import datetime
 import traceback
 from threading import Thread,Event
+
 import davan.http.service.telldus.tdtool as telldus
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+import davan.util.helper_functions as helper
 from davan.http.service.base_service import BaseService
+
 
 class TelldusSensorService(BaseService):
     '''
@@ -67,15 +70,28 @@ class TelldusSensorService(BaseService):
             self.logger.debug("Sensor name: %s" %name )
             
             if self.config["SENSOR_MAP"].has_key(name):
-                device_id = self.config["SENSOR_MAP"][name]
-                url = self.config['UPDATE_DEVICE']
-                url = url.replace('<DEVICEID>',device_id)
-                sensorUrl = self.createSensorUrl(url, self.config['LABEL_TEMP'], sensor['temp'])
+                sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                                   self.config["SENSOR_MAP"][name], 
+                                                   self.config['LABEL_TEMP'], 
+                                                   sensor['temp'])
+
+#                device_id = self.config["SENSOR_MAP"][name]
+#                url = self.config['UPDATE_DEVICE']
+#                url = url.replace('<DEVICEID>',device_id)
+#                sensorUrl = self.createSensorUrl(url, self.config['LABEL_TEMP'], sensor['temp'])
                 self.sendUrl(sensorUrl)
-                sensorUrl = self.createSensorUrl(url, self.config['LABEL_DATE'], str(datetime.datetime.fromtimestamp(int(sensor['lastUpdated']))))
+                sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                                   self.config["SENSOR_MAP"][name], 
+                                                   self.config['LABEL_DATE'], 
+                                                   str(datetime.datetime.fromtimestamp(int(sensor['lastUpdated']))))
+#                sensorUrl = self.createSensorUrl(url, self.config['LABEL_DATE'], str(datetime.datetime.fromtimestamp(int(sensor['lastUpdated']))))
                 self.sendUrl(sensorUrl)
                 if 'humidity' in sensor:
-                    sensorUrl = self.createSensorUrl(url, self.config['LABEL_HUMIDITY'], sensor['humidity'])
+                    sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                                       self.config["SENSOR_MAP"][name], 
+                                                       self.config['LABEL_HUMIDITY'], 
+                                                       sensor['humidity'])
+#                   sensorUrl = self.createSensorUrl(url, self.config['LABEL_HUMIDITY'], sensor['humidity'])
                     self.sendUrl(sensorUrl)
                     self.maybe_notify_humidity_level(sensor['name'], sensor['humidity'])
                           
@@ -87,10 +103,10 @@ class TelldusSensorService(BaseService):
         @labelId, label id of virtual device 
         @tempValue, current temperature value.
         '''
-        temp_url = baseurl.replace('<LABELID>',labelId)
-        tempValue = quote(tempValue, safe='') 
-        temp_url= temp_url.replace('<VALUE>','"' + tempValue+ '"')
-        return temp_url
+#        temp_url = baseurl.replace('<LABELID>',labelId)
+#        tempValue = quote(tempValue, safe='') 
+#        temp_url= temp_url.replace('<VALUE>','"' + tempValue+ '"')
+#        return temp_url
     
     def sendUrl(self, url):
         '''
@@ -113,10 +129,11 @@ class TelldusSensorService(BaseService):
                 sensor_limit = self.config['SENSOR_HUMIDITY_LIMITS'][sensor_name]
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
-                    for chatid in self.config['CHATID']:
-                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus("Luftfuktigheten i badrummet ")
-                        self.logger.info("Url: " + url)
-                        urllib.urlopen(url)
+                    helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+humidity_value+"], var god och ventilera")
+#                    for chatid in self.config['CHATID']:
+#                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus("Luftfuktigheten i badrummet ")
+#                        self.logger.info("Url: " + url)
+#                        urllib.urlopen(url)
         except :
             self.logger.error(traceback.format_exc())
             self.increment_errors()

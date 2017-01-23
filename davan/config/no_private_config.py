@@ -26,3 +26,6 @@ USER_PIN = {'pin':'user'}
 
 TELLDUS_PUBLIC_KEY = "my_telldus_key"
 TELLDUS_PRIVATE_KEY = "my_telldus_key"
+
+ROUTER_USER = "my_router_user"
+ROUTER_PASSWORD = "my_router_password"

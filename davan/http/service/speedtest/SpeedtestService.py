@@ -16,7 +16,7 @@ from davan.http.service.base_service import BaseService
 class SpeedtestService(BaseService):
     '''
     Starts a re-occuring service that will measure internet speed (Download/Upload/ping)
-    Requires speedtest-cli : install with "sudo pip install speedtest-cli"
+    Requires speedtest-cli : installed with "sudo pip install speedtest-cli"
     '''
 
     def __init__(self, config):

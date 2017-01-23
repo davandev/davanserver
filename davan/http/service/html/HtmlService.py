@@ -60,8 +60,6 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
-    #   elif (msg == "/logfile.html"):
-    #        content = self.get_logfile()
         elif (msg == "/logfiles.html"):
             content = self.get_logfiles()
         elif (msg == "/reboot.html"):
@@ -93,34 +91,34 @@ class HtmlService(BaseService):
         tot_result += '<div style="clear: both;"> </div></div>\n' 
         return tot_result 
         
-    def get_logfile(self):
+#    def get_logfile(self):
         """
         Return the content of the current logfile
         """
-        logfile = log_config.get_logfile_name()
-        self.logger.info("LogFile:" + logfile)   
-        f = open(logfile)
-        content = ""
-        for line in f.readlines():
-            content += line + "</br>"
-        f.close()
-        return content 
+#        logfile = log_config.get_logfile_name()
+#        self.logger.info("LogFile:" + logfile)   
+#        f = open(logfile)
+#        content = ""
+#        for line in f.readlines():
+#            content += line + "</br>"
+#        f.close()
+#        return content 
 
     def get_logfiles(self):
         """
         Return the content of the current logfile
         """
-        self.logger.info("LogFile:html/log_file_template.html" )   
+ #       self.logger.info("LogFile:html/log_file_template.html" )   
         f = open(self.config['SERVICE_PATH'] + "html/log_file_template.html")
         content = f.read()
         f.close()
 
         options = ""
-        self.logger.info("Search logfiles in :"+self.config["LOGFILE_PATH"])
+#        self.logger.info("Search logfiles in :"+self.config["LOGFILE_PATH"])
         for logfile in os.listdir(self.config["LOGFILE_PATH"]):
             self.logger.info("Found file:"+logfile) 
             if "applicationserver" in logfile:
-                self.logger.info("Found logfile:" + logfile)
+#                self.logger.info("Found logfile:" + logfile)
                 options +='<option value="http://192.168.2.50:8080/' + logfile + '.html">' + logfile + '</option>'
         content = content.replace("<OPTIONS_LOGFILES>", options)
         return content 

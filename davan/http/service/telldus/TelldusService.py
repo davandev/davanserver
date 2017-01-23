@@ -44,13 +44,30 @@ class TelldusService(BaseService):
             action = 2
         elif action == "on":
             action = 1
+        elif action == "toggle":
+            action = self.get_toggled_device_state(deviceId)
         else: # turn on Bell
             action = 4 
         
         self.logger.info("DeviceId[" +deviceId+ "] Action:[" + str(action)+"]")
         telldus.doMethod(deviceId, action)
         return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
+    
+    def get_toggled_device_state(self, wanted_deviceId):
+        self.logger.info("Find state of device: " + wanted_deviceId)
+        response = telldus.listDevicesAndValues()
+        for device in response['device']:
+            if wanted_deviceId == device['id']:
+                if (device['state'] == telldus.TELLSTICK_TURNON):
+                    state = telldus.TELLSTICK_TURNOFF
+                elif (device['state'] == telldus.TELLSTICK_TURNOFF):
+                    state = telldus.TELLSTICK_TURNON
+                else:
+                    state = 'Unknown state'
         
+        self.logger.info("Toggled device state ==" + str(state))
+        return state
+    
     def list_all_devices(self):
         '''
         List all devices configured in Telldus Live

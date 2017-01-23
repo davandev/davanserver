@@ -124,8 +124,28 @@ def create_config(secret_config, config):
     config['WILMA_HOME_SCENE_ID'] = "14"
     config['VIGGO_HOME_SCENE_ID'] = "16"
     config['VIGGO_AWAY_SCENE_ID'] = "17"
-    #config['PRESENCE'] = {'wilma': ["04:F1:3E:5C:79:75","192.168.2.11"] }
+
     #---------------------------------------------------------------------------------------
+    # Asus router presence Service configuration
+    #---------------------------------------------------------------------------------------
+    config["DevicePresenceServiceEnabled"] = True
+    config["ROUTER_ADRESS"] = "192.168.2.1"
+    config["ROUTER_USER"] = secret_config.ROUTER_USER
+    config["ROUTER_PASSWORD"] = secret_config.ROUTER_PASSWORD
+    # Virtual device id of the virtual device in HC2 that shows the presence of the users 
+    config['FIBARO_VD_PRESENCE_ID'] = "75"
+    # Mappings of users and the label in the presense virtual device
+    config['FIBARO_VD_MAPPINGS'] = {'Wilma':'ui.Label3.value', # User : HC2 Virtualdevice ID
+                                 'David':'ui.Label1.value',
+                                 'Mia':'ui.Label2.value',
+                                 'Viggo':'ui.Label4.value'}
+
+    # Ipadresses of devices where its wifi presence should be monitored
+    config['MONITORED_DEVICES'] = {'192.168.2.11':"Wilma", 
+                                   '192.168.2.88':"David",
+                                   '192.168.2.86':"Mia",
+                                   '192.168.2.233':"Viggo" }
+#---------------------------------------------------------------------------------------
     # Authentication configuration
     #---------------------------------------------------------------------------------------
     config["authenticateEnabled"] = False
