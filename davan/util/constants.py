@@ -27,6 +27,7 @@ DEVICE_PRESENCE_SERVICE_NAME = "DevicePresenceService"
 MP3_SERVICE_NAME = "mp3"
 SONOS_SERVICE_NAME = "Sonos"
 WEATHER_SERVICE = "Weather"
+LIGHTSCHEMA_SERVICE = "LightSchemaService"
 
 KEYPAD_SERVICE_NAME = "KeypadAliveService"
 
