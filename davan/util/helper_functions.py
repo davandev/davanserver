@@ -32,12 +32,26 @@ def debug_formated(obj):
 def createFibaroUrl(baseurl, vd_id, labelId, value):
     '''
     Create url to update virtual device on fibaro system 
-    @baseurl, base url
-    @labelId, label id of virtual device 
-    @tempValue, current temperature value.
+    @param baseurl, base url to fibaro system
+    @param vd_id, virtual device id
+    @param labelId, label id of virtual device 
+    @param value, value to set.
     '''
     baseurl = baseurl.replace('<DEVICEID>', vd_id)
     baseurl = baseurl.replace('<LABELID>', labelId)
+    tempValue = quote(value, safe='') 
+    baseurl = baseurl.replace('<VALUE>','"' + tempValue+ '"')
+    return baseurl
+
+def create_fibaro_url_set_device_value(baseurl, vd_id, value):
+    '''
+    Create url to update virtual device on fibaro system 
+    @param baseurl, base url to fibaro system
+    @param vd_id, virtual device id
+    @param labelId, label id of virtual device 
+    @param value, value to set.
+    '''
+    baseurl = baseurl.replace('<ID>', vd_id)
     tempValue = quote(value, safe='') 
     baseurl = baseurl.replace('<VALUE>','"' + tempValue+ '"')
     return baseurl

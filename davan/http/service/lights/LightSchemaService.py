@@ -9,14 +9,18 @@ import sys
 import time
 #import ntplib
 import urllib
+from random import randint
 from threading import Thread,Event
 import davan.config.config_creator as configuration
-import davan.util.constants as constants 
+import davan.util.constants as constants
+import davan.util.helper_functions as helper 
 from davan.http.service.base_service import BaseService
 from datetime import datetime, timedelta
+from datetime import *
 
 class TimeEvent():
-    def __init__(self, t, dv ,di, bi, vd, onoff):
+    def __init__(self, s, t, dv ,di, bi, vd, onoff):
+        self.slogan = s
         self.time = t
         self.virtualDevice =vd
         self.onoff = onoff
@@ -25,7 +29,7 @@ class TimeEvent():
         self.dimmerValue = dv
 
     def toString(self):
-        return "VD["+self.virtualDevice+"] Action["+self.onoff+"] DeviceId["+self.deviceId+"] DimmerValue["+self.dimmerValue+"] ButtonId["+self.buttonId+"]"
+        return "Room[ "+self.slogan+" ] VD[ "+self.virtualDevice+" ] Action[ "+self.onoff+" ] DeviceId[ "+self.deviceId+" ] DimmerValue[ "+self.dimmerValue+" ] ButtonId[ "+self.buttonId+" ]"
         
 class LightSchemaService(BaseService):
     '''
@@ -66,9 +70,9 @@ class LightSchemaService(BaseService):
                 continue
             
             starttime = self.add_random_time(items[1],int(items[7]))
-            self.todaySchema.append(TimeEvent(starttime,items[4],items[5],items[6], items[8],"on"))
+            self.todaySchema.append(TimeEvent(items[0],starttime,items[4],items[5],items[6], items[8],"turnOn"))
             stoptime = self.add_random_time(items[2],int(items[7]))
-            self.todaySchema.append(TimeEvent(stoptime,items[4],items[5],items[6], items[8],"off"))
+            self.todaySchema.append(TimeEvent(items[0],stoptime,items[4],items[5],items[6], items[8],"turnOff"))
     
     def enabled_this_day(self, configured_interval):
         if (self.currentDay < 5 and configured_interval == "weekdays"):
@@ -84,9 +88,20 @@ class LightSchemaService(BaseService):
         self.currentTime = format(n,"%H:%M:%S")
         t = n.timetuple()
         y, m, d, h, min, sec, wd, yd, i = t
-#         self.currentTime = str(h)+":"+str(min)+":"+str(sec)
         self.currentDay = wd
-        self.logger.info("Day["+str(wd)+"]" + "Time["+str(self.currentTime)+"]")
+        self.logger.info("Day["+str(wd)+"]" + " Time["+str(self.currentTime)+"]")
+    
+    def detemine_todays_events(self):
+        if(str(datetime.today().weekday()) != str(self.currentDay)):
+            self.get_current_time_and_day()
+            self.parse_configuration()
+            self.todaySchema = self.sort_events(self.todaySchema)
+            if (len(self.todaySchema) > 0):
+                self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
+                self.logger.info("Next timeout " + self.todaySchema[0].time + " in " + str(self.nextSleepTime) +  " seconds")
+        else:
+            self._calculate_time_until_midnight()
+            self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.nextSleepTime) + " seconds")
         
     def start_service(self):
         '''
@@ -95,37 +110,53 @@ class LightSchemaService(BaseService):
         @func callback function at timeout.
         '''
         self.logger.info("Starting re-occuring event")
-        self.get_current_time_and_day()
-        self.parse_configuration()
-        #self.currentTime =  datetime.strptime(now, '%H:%M')
-        self.todaySchema = self.sort_events(self.todaySchema)
-        #self.todaySchema = sorted(self.todaySchema, key=lambda timeEvent: timeEvent.time)
-        #self.logger.info("Next timer;" + self.todaySchema[0].time)
-#         n = datetime.now()
-#         t = n.timetuple()
-#         y, m, d, h, min, sec, wd, yd, i = t
-#         self.logger.info("Day["+str(wd)+"]" + "Time["+str(h)+":"+str(min)+"]")
-        if (len(self.todaySchema)>0):
-            self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
-#        nextTimeout += self.add_random_time(self.todaySchema[0].randomTime)
-            self.logger.info("Next timeout:" + str(self.nextSleepTime))
-        else:
-            self.logger.info("No more timers today")
+        self.detemine_todays_events()
+#         self.get_current_time_and_day()
+#         self.parse_configuration()
+#         self.todaySchema = self.sort_events(self.todaySchema)
+#         if (len(self.todaySchema) > 0):
+#             self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
+# #        nextTimeout += self.add_random_time(self.todaySchema[0].randomTime)
+#             self.logger.info("Next timeout " +self.todaySchema[0].time +" in "+ str(self.nextSleepTime)+ " seconds")
+#         else:
+#             self.logger.info("No more timers today")
+#             self._calculate_time_until_midnight()
         
         def loop():
             while not self.event.wait(self.nextSleepTime): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
-                if len(self.todaySchema)>0:
+                if len(self.todaySchema) > 0:
                     self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
                 else:
-                    self.logger.info("No more events today, set timer for 02:00")
+                    self.detemine_todays_events()
+
+#                     if(datetime.now().timetuple().wd != self.currentDay):
+#                         self.logger.info("New day, recalculate timers")
+#                         self.get_current_time_and_day()
+#                         self.parse_configuration()
+#                         self.todaySchema = self.sort_events(self.todaySchema)
+#                         
+#                     else:
+#                         self.logger.info("No more events today, set timer for 02:00")
+#                         self._calculate_time_until_midnight()
                     
         Thread(target=loop).start()    
         return self.event.set
-             
+    
+    def _calculate_time_until_midnight(self):   
+        tomorrow = date.today() + timedelta(1)
+        midnight = datetime.combine(tomorrow, time())
+        now = datetime.now()
+        self.nextSleepTime = (midnight - now).seconds + 60
+        self.logger.info("Sleep until midnight " + str(self.nextSleepTime) + " seconds")
+              
     def sort_events(self, events):
-        self.logger.info("Sort events ")
+        '''
+        Sort all events based on when they expire. 
+        Remove events where expire time is already passed.
+        @param events list of all events
+        '''
         future_events = []
         for event in self.todaySchema:
             if (event.time > self.currentTime):
@@ -141,13 +172,12 @@ class LightSchemaService(BaseService):
         return sorted_events
     
     def calculate_next_timeout(self, event_time):
+        '''
+        Calculate the number of seconds until the time expires
+        @param event_time, expire time
+        '''
         import datetime as dt
         self.logger.info("Calculate next timeout")
-#         n = datetime.now()
-#         t = n.timetuple()
-#         y, m, d, h, min, sec, wd, yd, i = t
-#         self.logger.info("Day["+str(wd)+"]" + "Time["+str(h)+":"+str(min)+"]")
-#         now = str(h)+":"+str(min)
         self.get_current_time_and_day()
         start_dt = dt.datetime.strptime(self.currentTime, '%H:%M:%S')
         end_dt = dt.datetime.strptime(event_time, '%H:%M')
@@ -155,19 +185,22 @@ class LightSchemaService(BaseService):
         if diff.days < 0:
             self.logger.warning("End is before start, fix it")
             diff = timedelta(days=0, seconds=diff.seconds)
-        self.logger.info("Next timeout in " + str(diff.seconds)+" seconds")
+        #self.logger.info("Next timeout in " + str(diff.seconds)+" seconds")
         return diff.seconds
     
     def add_random_time(self, configured_time, randomValue):
+        '''
+        Adds a random value to the configured time.
+        @param configured_time, configured expire time
+        @param randomValue, the configured random value
+        @return new expire time
+        '''
         if randomValue == 0:
             return configured_time
         
-        from random import randint
         random = (randint(0,randomValue))
-        #self.logger.info("New randomValue: "+ str(random))
 
         start_dt = datetime.strptime(configured_time, '%H:%M')
-        #random_dt = datetime.strptime(str(random), '%M')
         sum = (start_dt + timedelta(minutes=random)) 
         timeout = format(sum, '%H:%M')
         if "00:" in str(timeout):
@@ -179,21 +212,30 @@ class LightSchemaService(BaseService):
     
     def timeout(self):
         '''
-        Timeout received, send a "ping" to key pad, send telegram message if failure.
+        Timeout received, fetch event and perform action.
         '''
         self.logger.info("Got a timeout, trigger light event")
         try:
             event = self.todaySchema.pop(0)
             self.invoke_event(event)
-#             nextTimeout = self.calculate_next_timeout()
-#             nextTimeout += self.add_random_time(self.event.randomTime)
-#             self.logger.info("Next timeout:" + str(nextTimeout))
-#             self.maybe_send_update(True)
         except:
             self.increment_errors()
     
     def invoke_event(self, event):
         self.logger.info("Invoking event:" + event.toString())
+        if event.onoff == "turnOn":
+            url = helper.create_fibaro_url_set_device_value(
+                    self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
+                    event.deviceId, 
+                    event.dimmerValue)
+        else:
+            url = helper.create_fibaro_url_set_device_value(
+                    self.config['DEVICE_SET_VALUE_URL'], 
+                    event.deviceId, 
+                    event.onoff)
+            
+        self.logger.info("Url:" + url)
+        
     def sync_time(self):
         '''
         Sync time once a day.
@@ -216,8 +258,20 @@ class LightSchemaService(BaseService):
         """
         Override and provide gui
         """
-        if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+        #if not self.is_enabled():
+        #    return BaseService.get_html_gui(self, column_id)
+        
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        htmlresult = ""
+        if len(self.todaySchema) >0:
+            for event in self.todaySchema:
+                htmlresult += "<li>Room[" + str(event.slogan) + "] Time["+str(event.time)+"] Action["+event.onoff+"]</li>\n"
+        else:
+                htmlresult += "<li>No more scheduled events today</li>\n"            
+        column = column.replace("<SERVICE_VALUE>", htmlresult)
+
+        return column        
             
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
@@ -226,4 +280,5 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     service = LightSchemaService(config)
     service.start_service()
+    print service.get_html_gui("2")
     
