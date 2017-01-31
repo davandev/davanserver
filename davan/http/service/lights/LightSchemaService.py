@@ -125,7 +125,7 @@ class LightSchemaService(BaseService):
         return self.event.set
              
     def sort_events(self, events):
-        self.logger.info("Sort events")
+        self.logger.info("Sort events ")
         future_events = []
         for event in self.todaySchema:
             if (event.time > self.currentTime):
