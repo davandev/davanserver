@@ -62,7 +62,7 @@ class LightSchemaService(BaseService):
 
     
     def parse_configuration(self):
-        configuration = config['LIGHT_SCHEMA']
+        configuration = self.config['LIGHT_SCHEMA']
         for event in configuration:
             items = event.split(",")
             if not self.enabled_this_day(items[3]):
@@ -102,6 +102,9 @@ class LightSchemaService(BaseService):
         else:
             self._calculate_time_until_midnight()
             self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.nextSleepTime) + " seconds")
+    def stop_service(self):
+        self.logger.info("Stopping service")
+        self.event.set()
         
     def start_service(self):
         '''
@@ -128,6 +131,7 @@ class LightSchemaService(BaseService):
                 self.timeout()
                 if len(self.todaySchema) > 0:
                     self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
+                    self.logger.info("Next timeout " + self.todaySchema[0].time + " in " + str(self.nextSleepTime) +  " seconds")
                 else:
                     self.detemine_todays_events()
 
@@ -167,7 +171,7 @@ class LightSchemaService(BaseService):
         sorted_events = sorted(future_events, key=lambda timeEvent: timeEvent.time)
         id = 0
         for event in sorted_events:
-            self.logger.info("Event["+str(id)+"]" + event.time)
+            self.logger.info("Event["+str(id)+"]" + event.time + " " + event.slogan + " " + event.onoff)
             id +=1
         return sorted_events
     
@@ -218,23 +222,33 @@ class LightSchemaService(BaseService):
         try:
             event = self.todaySchema.pop(0)
             self.invoke_event(event)
+                                
         except:
             self.increment_errors()
     
     def invoke_event(self, event):
         self.logger.info("Invoking event:" + event.toString())
         if event.onoff == "turnOn":
-            url = helper.create_fibaro_url_set_device_value(
-                    self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
-                    event.deviceId, 
-                    event.dimmerValue)
+            if event.dimmerValue != "-1":
+                url = helper.create_fibaro_url_set_device_value(
+                        self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
+                        event.deviceId, 
+                        event.dimmerValue)
+            else:
+                url = helper.create_fibaro_url_set_device_value(
+                        self.config['DEVICE_SET_VALUE_URL'], 
+                        event.deviceId, 
+                        event.onoff)
+                
         else:
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_URL'], 
                     event.deviceId, 
                     event.onoff)
-            
         self.logger.info("Url:" + url)
+        result = urllib.urlopen(url)        
+            
+        self.logger.info("Result:" + result)
         
     def sync_time(self):
         '''

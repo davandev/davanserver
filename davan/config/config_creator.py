@@ -257,13 +257,17 @@ def create_config(secret_config, config):
     # LightSchema Service configuration
     # Slogan, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
     #---------------------------------------------------------------------------------------------
-    config["LightSchemaServiceEnabled"] = False
+    config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
-                           'Kitchen,07:10,08:15,weekdays,60,173,2,15,183',
-                         #  'Kitchen,16:15,22:34,weekdays,30,173,2,15,183',
-                         #  'Wilma,23:45,23:50,weekdays,30,173,2,15,183',
-                         #  'Wilma,23:55,23:59,weekend,30,173,2,0,183',
-                           'Viggo,20:40,21:22,weekdays,30,173,2,0,183']
+        #Room | start | stop | Interval | lightlevel | deviceId | buttonId | random | virtualdevice  
+        'Kitchen,06:35,08:15,weekdays,10,65,2,15,-1',
+        'Kitchen,17:00,23:45,week,10,65,2,5,-1',
+        'Outdoor,17:12,23:35,week,-1,191,0,10,-1',
+        'Uterum,16:55,23:05,week,-1,192,0,10,-1',
+                           #'Wilma,23:45,23:50,weekdays,30,173,2,15,183',
+                           #'Wilma,23:55,23:59,weekend,30,173,2,0,183',
+                           #'Viggo,21:55,21:59,weekdays,30,173,2,0,183'
+   ]
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
