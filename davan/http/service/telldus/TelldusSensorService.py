@@ -75,39 +75,21 @@ class TelldusSensorService(BaseService):
                                                    self.config['LABEL_TEMP'], 
                                                    sensor['temp'])
 
-#                device_id = self.config["SENSOR_MAP"][name]
-#                url = self.config['UPDATE_DEVICE']
-#                url = url.replace('<DEVICEID>',device_id)
-#                sensorUrl = self.createSensorUrl(url, self.config['LABEL_TEMP'], sensor['temp'])
                 self.sendUrl(sensorUrl)
                 sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                                    self.config["SENSOR_MAP"][name], 
                                                    self.config['LABEL_DATE'], 
                                                    str(datetime.datetime.fromtimestamp(int(sensor['lastUpdated']))))
-#                sensorUrl = self.createSensorUrl(url, self.config['LABEL_DATE'], str(datetime.datetime.fromtimestamp(int(sensor['lastUpdated']))))
                 self.sendUrl(sensorUrl)
                 if 'humidity' in sensor:
                     sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                                        self.config["SENSOR_MAP"][name], 
                                                        self.config['LABEL_HUMIDITY'], 
                                                        sensor['humidity'])
-#                   sensorUrl = self.createSensorUrl(url, self.config['LABEL_HUMIDITY'], sensor['humidity'])
                     self.sendUrl(sensorUrl)
                     self.maybe_notify_humidity_level(sensor['name'], sensor['humidity'])
                           
         
-    def createSensorUrl(self, baseurl, labelId, tempValue):
-        '''
-        Create url to update virtual device on fibaro system 
-        @baseurl, base url
-        @labelId, label id of virtual device 
-        @tempValue, current temperature value.
-        '''
-#        temp_url = baseurl.replace('<LABELID>',labelId)
-#        tempValue = quote(tempValue, safe='') 
-#        temp_url= temp_url.replace('<VALUE>','"' + tempValue+ '"')
-#        return temp_url
-    
     def sendUrl(self, url):
         '''
         Update fibaro system with sensor values
@@ -130,10 +112,6 @@ class TelldusSensorService(BaseService):
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
                     helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+humidity_value+"], var god och ventilera")
-#                    for chatid in self.config['CHATID']:
-#                        url = self.config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus("Luftfuktigheten i badrummet ")
-#                        self.logger.info("Url: " + url)
-#                        urllib.urlopen(url)
         except :
             self.logger.error(traceback.format_exc())
             self.increment_errors()

@@ -42,6 +42,10 @@ def create_config(secret_config, config):
     config['GET_STATE_SCENE_URL'] = config['FIBARO_API_ADDRESS'] + "scenes/<ID>"
     # Command to start a scene
     config['START_SCENE_URL'] = config['FIBARO_API_ADDRESS'] + "sceneControl?id=<ID>&action=start"
+    # Command to set a value on a device (dimmer)
+    config['DEVICE_SET_VALUE_WITH_ARG_URL'] =  config['FIBARO_API_ADDRESS'] + "callAction?deviceID=<ID>&name=setValue&arg1=<VALUE>"
+    config['DEVICE_SET_VALUE_URL'] =  config['FIBARO_API_ADDRESS'] + "callAction?deviceID=<ID>&name=<VALUE>"
+
 
     #-----------------------------------------------------------------------------------------
     # Logreceiver configuration
@@ -256,10 +260,10 @@ def create_config(secret_config, config):
     config["LightSchemaServiceEnabled"] = False
     config['LIGHT_SCHEMA'] = [
                            'Kitchen,07:10,08:15,weekdays,60,173,2,15,183',
-                           'Kitchen,16:15,22:34,weekdays,30,173,2,15,183',
-                           'Wilma,23:45,23:50,weekdays,30,173,2,15,183',
-                           'Wilma,23:55,23:59,weekend,30,173,2,0,183',
-                           'Viggo,23:46,23:48,weekdays,30,173,2,0,183']
+                         #  'Kitchen,16:15,22:34,weekdays,30,173,2,15,183',
+                         #  'Wilma,23:45,23:50,weekdays,30,173,2,15,183',
+                         #  'Wilma,23:55,23:59,weekend,30,173,2,0,183',
+                           'Viggo,20:40,21:22,weekdays,30,173,2,0,183']
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
