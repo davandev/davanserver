@@ -62,7 +62,7 @@ class LightSchemaService(BaseService):
 
     
     def parse_configuration(self):
-        configuration = config['LIGHT_SCHEMA']
+        configuration = self.config['LIGHT_SCHEMA']
         for event in configuration:
             items = event.split(",")
             if not self.enabled_this_day(items[3]):
