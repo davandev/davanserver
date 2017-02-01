@@ -13,7 +13,7 @@ from davan.http.service.base_service import BaseService
 
 class LogReceiverService(BaseService):
     '''
-    classdocs
+    Service receiving log messages from HC2 and writes to a log file
     '''
 
     def __init__(self, config):

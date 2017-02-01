@@ -6,7 +6,7 @@ import logging
 import os
 import urllib
 from threading import Thread,Event
-
+from datetime import datetime
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
@@ -16,6 +16,7 @@ class KeypadAliveService(BaseService):
     '''
     Check if keypad is still running by sending a http request towards the keypad
     if there is no response from the keypad then a telegram message is sent.
+    Re-occuring event every 5th minute 
     '''
 
     def __init__(self, config):
@@ -26,8 +27,13 @@ class KeypadAliveService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()    
         self.connected = False
+        self.connected_at =""
+        self.disconnected_at = ""
         
     def stop_service(self):
+        '''
+        Stop the service
+        '''
         self.logger.info("Stopping service")
         self.event.set()
 
@@ -66,14 +72,20 @@ class KeypadAliveService(BaseService):
         Send telegram message if state has changed
         @param state, current state of keypad
         '''
+        n = datetime.now()
+        currentTime = format(n,"%H:%M")
+        
         if self.connected == True and state == False:
             self.logger.info("Keypad state changed: False") 
             self.connected = False
+            self.disconnected_at = currentTime
             helper.send_telegram_message(self.config, constants.KEYPAD_NOT_ANSWERING)
 
         elif self.connected ==False and state == True:
             self.logger.info("Keypad state changed : True") 
             self.connected = True
+            self.connected_at = currentTime
+            self.disconnected_at = ""
             helper.send_telegram_message(self.config, constants.KEYPAD_ANSWERING)
     
     def has_html_gui(self):
@@ -91,7 +103,10 @@ class KeypadAliveService(BaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        column = column.replace("<SERVICE_VALUE>", "<li>Status: " + str(self.connected) + " </li>\n")
+        html = "<li>Connected: " + str(self.connected) + " </li>\n"
+        html += "<li>Ok at: " + str(self.connected_at) + " </li>\n"
+        html += "<li>Failed at: " + str(self.disconnected_at) + " </li>\n"
+        column = column.replace("<SERVICE_VALUE>", html)
         return column
     
 if __name__ == '__main__':

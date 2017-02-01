@@ -61,7 +61,7 @@ class LightSchemaService(BaseService):
         self.event = Event()    
 
     
-    def parse_configuration(self):
+    def schedule_events(self):
         configuration = self.config['LIGHT_SCHEMA']
         for event in configuration:
             items = event.split(",")
@@ -73,7 +73,19 @@ class LightSchemaService(BaseService):
             self.todaySchema.append(TimeEvent(items[0],starttime,items[4],items[5],items[6], items[8],"turnOn"))
             stoptime = self.add_random_time(items[2],int(items[7]))
             self.todaySchema.append(TimeEvent(items[0],stoptime,items[4],items[5],items[6], items[8],"turnOff"))
+            
+            self.update_virtual_device(items[4],items[6],starttime,stoptime)
     
+    def update_virtual_device(self, virtualdevice, labelid, start, stop):
+        if virtualdevice != "-1":
+            self.logger.info("Update virtual device "+ virtualdevice)
+            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                   virtualdevice, 
+                                   config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
+                                   str(start + "=>" + stop))
+            self.logger.info("url:"+url)
+        
+        
     def enabled_this_day(self, configured_interval):
         if (self.currentDay < 5 and configured_interval == "weekdays"):
             return True
@@ -84,6 +96,9 @@ class LightSchemaService(BaseService):
         return False
         
     def get_current_time_and_day(self):
+        '''
+        Set currentDay and currentTime
+        '''
         n = datetime.now()
         self.currentTime = format(n,"%H:%M:%S")
         t = n.timetuple()
@@ -92,9 +107,12 @@ class LightSchemaService(BaseService):
         self.logger.info("Day["+str(wd)+"]" + " Time["+str(self.currentTime)+"]")
     
     def detemine_todays_events(self):
-        if(str(datetime.today().weekday()) != str(self.currentDay)):
+        '''
+        run at midnight, calculates all events that should occur this day. 
+        '''
+        if(str(datetime.today().weekday()) != str(self.currentDay)): # Check if new day
             self.get_current_time_and_day()
-            self.parse_configuration()
+            self.schedule_events()
             self.todaySchema = self.sort_events(self.todaySchema)
             if (len(self.todaySchema) > 0):
                 self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
@@ -102,7 +120,11 @@ class LightSchemaService(BaseService):
         else:
             self._calculate_time_until_midnight()
             self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.nextSleepTime) + " seconds")
+    
     def stop_service(self):
+        '''
+        Stop the current service
+        '''
         self.logger.info("Stopping service")
         self.event.set()
         
@@ -115,7 +137,7 @@ class LightSchemaService(BaseService):
         self.logger.info("Starting re-occuring event")
         self.detemine_todays_events()
 #         self.get_current_time_and_day()
-#         self.parse_configuration()
+#         self.schedule_events()
 #         self.todaySchema = self.sort_events(self.todaySchema)
 #         if (len(self.todaySchema) > 0):
 #             self.nextSleepTime = self.calculate_next_timeout(self.todaySchema[0].time)
@@ -138,7 +160,7 @@ class LightSchemaService(BaseService):
 #                     if(datetime.now().timetuple().wd != self.currentDay):
 #                         self.logger.info("New day, recalculate timers")
 #                         self.get_current_time_and_day()
-#                         self.parse_configuration()
+#                         self.schedule_events()
 #                         self.todaySchema = self.sort_events(self.todaySchema)
 #                         
 #                     else:
@@ -149,6 +171,9 @@ class LightSchemaService(BaseService):
         return self.event.set
     
     def _calculate_time_until_midnight(self):   
+        '''
+        When all events are executed, calculate time until midnight
+        '''
         tomorrow = date.today() + timedelta(1)
         midnight = datetime.combine(tomorrow, time())
         now = datetime.now()
@@ -227,24 +252,22 @@ class LightSchemaService(BaseService):
             self.increment_errors()
     
     def invoke_event(self, event):
+        '''
+        Execute event
+        @param event event to be executed
+        '''
         self.logger.info("Invoking event:" + event.toString())
-        if event.onoff == "turnOn":
-            if event.dimmerValue != "-1":
-                url = helper.create_fibaro_url_set_device_value(
-                        self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
-                        event.deviceId, 
-                        event.dimmerValue)
-            else:
-                url = helper.create_fibaro_url_set_device_value(
-                        self.config['DEVICE_SET_VALUE_URL'], 
-                        event.deviceId, 
-                        event.onoff)
-                
-        else:
+        if event.dimmerValue != "-1": # Lightlevel configured
+            url = helper.create_fibaro_url_set_device_value(
+                    self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
+                    event.deviceId, 
+                    event.dimmerValue)
+        else: # Just on/off switch
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_URL'], 
                     event.deviceId, 
                     event.onoff)
+                
         self.logger.info("Url:" + url)
         result = urllib.urlopen(url)        
             
@@ -272,8 +295,8 @@ class LightSchemaService(BaseService):
         """
         Override and provide gui
         """
-        #if not self.is_enabled():
-        #    return BaseService.get_html_gui(self, column_id)
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
         
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

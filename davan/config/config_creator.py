@@ -259,16 +259,16 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
-        #Room | start | stop | Interval | lightlevel | deviceId | buttonId | random | virtualdevice  
-        'Kitchen,06:35,08:15,weekdays,10,65,2,15,-1',
-        'Kitchen,17:00,23:45,week,10,65,2,5,-1',
-        'Outdoor,17:12,23:35,week,-1,191,0,10,-1',
-        'Uterum,16:55,23:05,week,-1,192,0,10,-1',
+        #Room | start | stop | Interval | lightlevel | deviceId | buttonId | random | virtualdevice | Only when armed 
+        'Kitchen,06:35,08:15,weekdays,10,65,0,15,194',
+        'Kitchen,16:05,23:45,week,10,65,2,1,194',
+        'Outdoor,16:21,23:35,week,-1,191,0,10,-1',
+        'Uterum,16:15,23:05,week,-1,192,0,10,-1',
                            #'Wilma,23:45,23:50,weekdays,30,173,2,15,183',
                            #'Wilma,23:55,23:59,weekend,30,173,2,0,183',
                            #'Viggo,21:55,21:59,weekdays,30,173,2,0,183'
    ]
-
+    config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):
