@@ -40,7 +40,7 @@ def createFibaroUrl(baseurl, vd_id, labelId, value):
     baseurl = baseurl.replace('<DEVICEID>', vd_id)
     baseurl = baseurl.replace('<LABELID>', labelId)
     tempValue = quote(value, safe='') 
-    baseurl = baseurl.replace('<VALUE>','"' + tempValue+ '"')
+    baseurl = baseurl.replace('<VALUE>', tempValue)
     return baseurl
 
 def create_fibaro_url_set_device_value(baseurl, vd_id, value):
@@ -53,7 +53,7 @@ def create_fibaro_url_set_device_value(baseurl, vd_id, value):
     '''
     baseurl = baseurl.replace('<ID>', vd_id)
     tempValue = quote(value, safe='') 
-    baseurl = baseurl.replace('<VALUE>','"' + tempValue+ '"')
+    baseurl = baseurl.replace('<VALUE>', tempValue)
     return baseurl
 
 def send_telegram_message(config, msg):
@@ -61,7 +61,7 @@ def send_telegram_message(config, msg):
     Send telegram message to all configured receivers
     @param msg message to send
     '''
-    logger.info("Sending telegram msg[ " + msg + "]")
+    #logger.info("Sending telegram msg[ " + msg + "]")
     for chatid in config['CHATID']:
         url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(msg)
         urllib.urlopen(url)
