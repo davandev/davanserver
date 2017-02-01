@@ -74,18 +74,8 @@ class LightSchemaService(BaseService):
             stoptime = self.add_random_time(items[2],int(items[7]))
             self.todaySchema.append(TimeEvent(items[0],stoptime,items[4],items[5],items[6], items[8],"turnOff"))
             
-            self.update_virtual_device(items[4],items[6],starttime,stoptime)
+            self.update_virtual_device(items[8],items[6],str(starttime+ " => " + stoptime))
     
-    def update_virtual_device(self, virtualdevice, labelid, start, stop):
-        if virtualdevice != "-1":
-            self.logger.info("Update virtual device "+ virtualdevice)
-            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
-                                   virtualdevice, 
-                                   config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
-                                   str(start + "=>" + stop))
-            self.logger.info("url:"+url)
-        
-        
     def enabled_this_day(self, configured_interval):
         if (self.currentDay < 5 and configured_interval == "weekdays"):
             return True
@@ -257,7 +247,7 @@ class LightSchemaService(BaseService):
         @param event event to be executed
         '''
         self.logger.info("Invoking event:" + event.toString())
-        if event.dimmerValue != "-1": # Lightlevel configured
+        if event.dimmerValue != "-1" and event.onoff == "turnOn": # Lightlevel configured
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
                     event.deviceId, 
@@ -267,11 +257,21 @@ class LightSchemaService(BaseService):
                     self.config['DEVICE_SET_VALUE_URL'], 
                     event.deviceId, 
                     event.onoff)
-                
-        self.logger.info("Url:" + url)
+        message = "Light is turned on"
+        if event.onoff == "turnOff":
+            message = "Light is turned off"
+            
+        self.update_virtual_device(event.virtualDevice, "6", message)
         result = urllib.urlopen(url)        
             
-        self.logger.info("Result:" + result)
+    def update_virtual_device(self, virtualdevice, labelid, message):
+        if virtualdevice != "-1":
+            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                   virtualdevice, 
+                                   self.config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
+                                   message)
+            result = urllib.urlopen(url)                
+        
         
     def sync_time(self):
         '''
