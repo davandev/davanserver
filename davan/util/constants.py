@@ -8,6 +8,9 @@ RESPONSE_NOT_OK = 401
 RESPONSE_FILE_NOT_FOUND = "File not found"
 RESPONSE_EMPTY_MSG = ""
 
+TURN_ON = "turnOn"
+TURN_OFF ="turnOff"
+
 HUMIDITY_HIGH = "Fuktigt i badrummet, var god ventilera!"
 KEYPAD_NOT_ANSWERING = "Alarm Keypad har slutat svara"
 KEYPAD_ANSWERING = "Alarm Keypad har startats"
