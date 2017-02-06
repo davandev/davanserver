@@ -21,18 +21,20 @@ import json
 
 class TimeEvent():
     def __init__(self, room, time, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+
         self.room = room
         self.time = time
         self.light_level = light_level
         self.device_id = device_id
         self.label_id = label_id
         self.virtual_device_id = virtual_device_id
-        self.onoff = onoff,
-        if enabled_when_armed is True:
+        self.onoff = onoff
+        if enabled_when_armed == "1":
             self.enabled_when_armed = True
         else:
             self.enabled_when_armed = False
-            
+        
 
     def toString(self):
         return "Room[ "+self.room+" ] "\
@@ -40,8 +42,8 @@ class TimeEvent():
             "Action[ "+self.onoff+" ] "\
             "DeviceId[ "+self.device_id+" ] "\
             "DimmerValue[ "+self.light_level+" ] "\
-            "ButtonId[ "+self.label_id+" ]"\
-            "Only_when_armed[ "+self.label_id+" ]"
+            "ButtonId[ "+str(self.label_id)+" ] "\
+            "Enabled_when_armed[ "+str(self.enabled_when_armed)+" ]"
         
 class LightSchemaService(BaseService):
     '''
@@ -105,6 +107,8 @@ class LightSchemaService(BaseService):
             self.invoke_event(event)
                                 
         except:
+            self.logger.error(traceback.format_exc())
+            self.logger.info("Caught exception")
             self.increment_errors()
     
     def invoke_event(self, event):
@@ -112,7 +116,7 @@ class LightSchemaService(BaseService):
         Execute event
         @param event event to be executed
         '''
-        if event.enabled_when_armed and not alarm_is_armed():
+        if event.enabled_when_armed and not self.alarm_is_armed():
             self.logger.info("Event is only triggered when alarm is armed")
             return
             
@@ -235,7 +239,7 @@ class LightSchemaService(BaseService):
         sorted_events = sorted(future_events, key=lambda timeEvent: timeEvent.time)
         id = 0
         for event in sorted_events:
-            self.logger.info("Event["+str(id)+"]" + event.time + " " + event.room + " " + event.onoff)
+            self.logger.info("Event["+str(id)+"]" + str(event.time) + " " + str(event.room) + " " + str(event.onoff))
             id +=1
         return sorted_events
     
@@ -266,7 +270,7 @@ class LightSchemaService(BaseService):
         if randomValue == 0:
             return configured_time
         
-        random = (randint(0,randomValue))
+        random = (randint(-randomValue,randomValue))
 
         start_dt = datetime.strptime(configured_time, '%H:%M')
         sum = (start_dt + timedelta(minutes=random)) 
@@ -299,14 +303,20 @@ class LightSchemaService(BaseService):
         Check if alarm is armed
         @return True if alarm is armed, False otherwise
         '''
-        
-        result = urllib.urlopen(config['FIBARO_API_ADDRESS'] + "globalVariables")
+        result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "globalVariables")
         res = result.read()
-        self.logger.info("Res:" + str(res))
         data = json.loads(res)
-        alarmState = data["name"]["AlarmState"]
-        self.logger.info("alarmState:" + str(alarmState))
-        return True
+        
+        alarm = False 
+        armed = False
+        for items in data:
+            if items["name"] =="AlarmState" and items["value"] == "Armed":
+                armed = True
+            if items["name"] =="AlarmType" and items["value"] == "Alarm":
+                alarm = True
+        if alarm and armed:
+            return True 
+        return False
         
     def sync_time(self):
         '''
@@ -338,7 +348,7 @@ class LightSchemaService(BaseService):
         htmlresult = ""
         if len(self.todays_events) >0:
             for event in self.todays_events:
-                htmlresult += "<li>Room[" + str(event.room) + "] Time["+str(event.time)+"] Action["+event.onoff+"]</li>\n"
+                htmlresult += "<li>Room[" + str(event.room) + "] Time["+str(event.time)+"] Action["+str(event.onoff)+"]</li>\n"
         else:
                 htmlresult += "<li>No more scheduled events today</li>\n"            
         column = column.replace("<SERVICE_VALUE>", htmlresult)
@@ -351,7 +361,7 @@ if __name__ == '__main__':
     config = configuration.create()
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     service = LightSchemaService(config)
-    service.fetch_alarm_state()
     #service.start_service()
     #print service.get_html_gui("2")
+    service.alarm_is_armed()
     

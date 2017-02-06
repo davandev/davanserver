@@ -255,20 +255,17 @@ def create_config(secret_config, config):
 
     #---------------------------------------------------------------------------------------------
     # LightSchema Service configuration
-    # Slogan, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
+    # Room, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
     #---------------------------------------------------------------------------------------------
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
-        #Room   | start | stop | Interval | lightlevel | deviceId | buttonId | random | virtualdevice | Only when armed 
-        'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,False',
-        'Kitchen,16:05,23:45,week,10,65,2,1,194,False',
-        'Kitchen,00:35,00:38,week,10,65,3,1,194,False',
-
-        'Outdoor,16:21,23:35,week,-1,191,1,10,196,False',
-        'Uterum,16:15,23:05,week,-1,192,1,10,195,False',
-                           #'Wilma,23:45,23:50,weekdays,30,173,2,15,183,True',
-                           #'Wilma,23:55,23:59,weekend,30,173,2,0,183,True',
-                           #'Viggo,21:55,21:59,weekdays,30,173,2,0,183,True'
+        #Room   | start | stop | Interval | lightlevel | deviceId | labaelid | random | virtualdevice | Only when armed 
+        'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,0',
+        'Kitchen,16:05,23:45,week,10,65,2,1,194,0',
+        'Uterum,16:15,23:05,week,-1,192,1,10,195,0',
+        'Outdoor,16:10,23:30,week,-1,191,1,20,196,0',
+        'Wilma,17:15,19:50,week,20,173,1,20,183,1',
+        'Viggo,16:55,19:39,weekdays,10,173,1,15,183,1'
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 

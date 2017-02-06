@@ -67,7 +67,7 @@ class TelldusSensorService(BaseService):
             return 
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])
-            self.logger.debug("Sensor name: %s" %name )
+            #self.logger.debug("Sensor name: %s" %name )
             
             if self.config["SENSOR_MAP"].has_key(name):
                 sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
