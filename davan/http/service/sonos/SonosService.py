@@ -55,7 +55,7 @@ class SonosService(BaseService):
         # Pass in a URI to a media file to have it streamed through the Sonos speaker
         #sonos.play_uri('http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
         
-        return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
     def generate_mp3(self, msg, mp3_file):
         ''' 

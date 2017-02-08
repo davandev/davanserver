@@ -73,10 +73,12 @@ class ServiceInvoker(object):
         if self.services.has_key(result):
             self.logger.debug("Invoking service: ["+ result+"]")
             return self.services[result]
-        
+        elif service.endswith(constants.MP3_EXTENSION):
+            self.logger.debug("Invoking service: [mp3]")
+            return self.services[constants.MP3_SERVICE_NAME]
         elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
             self.logger.debug("Invoking service: [html]")
-            return self.services["HtmlService"]
+            return self.services[constants.HTML_SERVICE_NAME]
             
     def stop_services(self):
         """

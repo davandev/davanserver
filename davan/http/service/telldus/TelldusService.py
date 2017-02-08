@@ -51,7 +51,8 @@ class TelldusService(BaseService):
         
         self.logger.info("DeviceId[" +deviceId+ "] Action:[" + str(action)+"]")
         telldus.doMethod(deviceId, action)
-        return constants.RESPONSE_OK, constants.RESPONSE_EMPTY_MSG
+
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
     def get_toggled_device_state(self, wanted_deviceId):
         self.logger.info("Find state of device: " + wanted_deviceId)

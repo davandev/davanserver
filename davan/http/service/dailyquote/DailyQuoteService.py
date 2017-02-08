@@ -48,6 +48,9 @@ class DailyQuoteService(BaseService):
         self.generate_mp3(qoute)
         self.play_file()
         
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+
+        
     def add_prefix(self):
         """
         Add some extra spoken text to handle case when first couple of 
@@ -107,10 +110,10 @@ class DailyQuoteService(BaseService):
         '''
         self.logger.info("Fetching quote")
         quote = urllib2.urlopen("http://www.dagenscitat.nu/citat.js").read()
-        self.logger.info("Received quote:" + quote)
+        #self.logger.info("Received quote:" + quote)
         quote = quote.split("<")[1]
         result = quote.split(">")[1]
-        self.logger.info("Result:" + result)
+        #self.logger.info("Result:" + result)
         return result
         
 

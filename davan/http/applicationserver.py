@@ -67,24 +67,15 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
             global services
             service = services.get_service(self.path)
             if not service == None:
-                mimetype = 'text/html'
-                if self.path.endswith(".css"):
-                    mimetype ="text/css"
-                
-                result_code, result = service.handle_request(self.path)
-                
-                if result_code is not None:         
-                    self.send_response(result_code)
-                else:
-                    self.send_response(200)
-                    
-                self.send_header('Content-type',    mimetype)
+                result_code, mime_type, result = service.handle_request(self.path)
+                self.send_response(result_code)    
+                self.send_header('Content-type',    mime_type)
                 self.end_headers()
                 if result is not None:
                     self.wfile.write(result)
                 return
             
-# Another server is started, terminate this one.
+            # Another server is started, terminate this one.
             elif self.path.endswith("seppuku"):
                     if __builtin__.davan_services.is_running():
                         logger.info("Shutting down services")

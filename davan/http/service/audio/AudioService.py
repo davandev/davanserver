@@ -43,6 +43,7 @@ class AudioService(BaseService):
             self.turn_off_receiver()
         except:
             self.increment_errors()
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
             
     def turn_on_receiver(self):
         """

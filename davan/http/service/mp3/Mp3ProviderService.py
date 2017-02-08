@@ -40,7 +40,7 @@ class Mp3ProviderService(BaseService):
             self.logger.warning("Failed to open file: " + self.config['MP3_ROOT_FOLDER'] + res[1])
             return constants.RESPONSE_NOT_OK, constants.RESPONSE_FILE_NOT_FOUND
         
-        return constants.RESPONSE_OK, content
+        return constants.RESPONSE_OK, constants.MIME_TYPE_MP3, content
     
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

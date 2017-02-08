@@ -10,6 +10,7 @@ import time
 
 import davan.config.config_creator as configuration
 from davan.http.service.base_service import BaseService
+import davan.util.constants as constants
 
 class LogReceiverService(BaseService):
     '''
@@ -49,7 +50,8 @@ class LogReceiverService(BaseService):
         fd = open(logfile,writemode)
         fd.write(log_entry + "\n")
 
-        return 200,""
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+
         
             
 if __name__ == '__main__':

@@ -44,15 +44,15 @@ class AuthenticationService(BaseService):
         if action and not pin: # arm alarm
             if action == "armAlarm" or action == "armSkalskydd":
                 self.perform_security_action(action)
-                return constants.RESPONSE_OK, ""
+                return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, ""
         
         elif action and pin: # disarm alarm, requires pin code
             user = self.authenticate_user(pin)
             if user == None:
-                return constants.RESPONSE_NOT_OK, ""            
+                return constants.RESPONSE_NOT_OK, constants.MIME_TYPE_HTML,  ""            
             else:
                 self.perform_security_action(action)
-                return constants.RESPONSE_OK, "{user:" + user + "}"
+                return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, "{user:" + user + "}"
 
     def parse_request(self, msg):
         '''

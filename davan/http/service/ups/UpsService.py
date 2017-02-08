@@ -57,7 +57,7 @@ class UpsService(BaseService):
             if constants.UPS_STATUS_REQ in service:
                 result = self._handle_status_request()
             
-            return constants.RESPONSE_OK, result
+            return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result
   
         except:
             self.logger.info("Failed to carry out ups request")
@@ -122,7 +122,7 @@ class UpsService(BaseService):
             
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        _, result = self.handle_request("Status")
+        _, _, result = self.handle_request("Status")
         data = json.loads(result)
         htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
         htmlresult += "<li>Load: " + data["Load"] + " </li>\n"

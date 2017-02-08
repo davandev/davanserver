@@ -348,7 +348,7 @@ class LightSchemaService(BaseService):
         htmlresult = ""
         if len(self.todays_events) >0:
             for event in self.todays_events:
-                htmlresult += "<li>Room[" + str(event.room) + "] Time["+str(event.time)+"] Action["+str(event.onoff)+"]</li>\n"
+                htmlresult += "<li>" + str(event.room) + " "+str(event.time)+" "+str(event.onoff)+"</li>\n"
         else:
                 htmlresult += "<li>No more scheduled events today</li>\n"            
         column = column.replace("<SERVICE_VALUE>", htmlresult)
@@ -361,7 +361,5 @@ if __name__ == '__main__':
     config = configuration.create()
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     service = LightSchemaService(config)
-    #service.start_service()
-    #print service.get_html_gui("2")
     service.alarm_is_armed()
     

@@ -40,7 +40,11 @@ UPS_STATUS_REQ = "Status"
 
 HTML_EXTENSION = ".html"
 CSS_EXTENSION = ".css"
+MP3_EXTENSION = ".mp3"
 
+MIME_TYPE_HTML = 'text/html'
+MIME_TYPE_CSS = 'text/css'
+MIME_TYPE_MP3 = 'audio/mpeg'
 
 HTML_TABLE_END = "</table>"
 HTML_TABLE_START = """<style>

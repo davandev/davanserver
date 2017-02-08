@@ -8,6 +8,7 @@ import logging
 import os
 import time
 import re
+import traceback
 
 import davan.util.cmd_executor as cmd
 import davan.config.config_creator as configuration
@@ -60,6 +61,8 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
+            return constants.RESPONSE_OK, constants.MIME_TYPE_CSS, content
+
         elif (msg == "/logfiles.html"):
             content = self.get_logfiles()
         elif (msg == "/reboot.html"):
@@ -69,56 +72,41 @@ class HtmlService(BaseService):
         elif (msg == "/status.html"):
             content = self.get_status()
            
-        return constants.RESPONSE_OK, content
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, content
     
     def generate_service_fragment(self):
         '''
         Iterate all services, generate and return the services page 
         '''
-        column_id = 1
-        tot_result = ""
-        for name, service in __builtin__.davan_services.services.iteritems():
-#            if service.has_html_gui():
-            if column_id == 1:
-                tot_result += '<div id="columns">\n'
-                    
-            tot_result += service.get_html_gui(column_id)
-            column_id += 1
-            if column_id == 4:
-                tot_result += '<div style="clear: both;"> </div></div>\n' 
-                column_id = 1
-
-        tot_result += '<div style="clear: both;"> </div></div>\n' 
-        return tot_result 
-        
-#    def get_logfile(self):
-        """
-        Return the content of the current logfile
-        """
-#        logfile = log_config.get_logfile_name()
-#        self.logger.info("LogFile:" + logfile)   
-#        f = open(logfile)
-#        content = ""
-#        for line in f.readlines():
-#            content += line + "</br>"
-#        f.close()
-#        return content 
-
+        try:
+            column_id = 1
+            tot_result = ""
+            for name, service in __builtin__.davan_services.services.iteritems():
+    #            if service.has_html_gui():
+                if column_id == 1:
+                    tot_result += '<div id="columns">\n'
+                        
+                tot_result += service.get_html_gui(column_id)
+                column_id += 1
+                if column_id == 4:
+                    tot_result += '<div style="clear: both;"> </div></div>\n' 
+                    column_id = 1
+    
+            tot_result += '<div style="clear: both;"> </div></div>\n' 
+            return tot_result 
+        except :
+            self.logger.error(traceback.format_exc())        
     def get_logfiles(self):
         """
         Return the content of the current logfile
         """
- #       self.logger.info("LogFile:html/log_file_template.html" )   
         f = open(self.config['SERVICE_PATH'] + "html/log_file_template.html")
         content = f.read()
         f.close()
 
         options = ""
-#        self.logger.info("Search logfiles in :"+self.config["LOGFILE_PATH"])
         for logfile in os.listdir(self.config["LOGFILE_PATH"]):
-            self.logger.info("Found file:"+logfile) 
             if "applicationserver" in logfile:
-#                self.logger.info("Found logfile:" + logfile)
                 options +='<option value="http://192.168.2.50:8080/' + logfile + '.html">' + logfile + '</option>'
         content = content.replace("<OPTIONS_LOGFILES>", options)
         return content 

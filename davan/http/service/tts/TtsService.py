@@ -33,7 +33,8 @@ class TtsService(BaseService):
         @param msg, received request 
         '''
         self.start(msg.split('=')[1])
-        return 200, ""
+
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
     def start(self, msg):
         '''

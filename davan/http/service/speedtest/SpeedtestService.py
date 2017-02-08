@@ -42,7 +42,7 @@ class SpeedtestService(BaseService):
         f.close()
 #
         self.logger.debug("SpeedTest content: " + content)
-        return constants.RESPONSE_OK, content
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, content
     
     def start_service(self):
         '''
@@ -81,7 +81,7 @@ class SpeedtestService(BaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        ok, result = self.handle_request("")
+        ok, mime, result = self.handle_request("")
         data = json.loads(result)
         htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"
         htmlresult += "<li>Download: " + str(data["Download_Mbit"]) + " Mbit</li>\n"
