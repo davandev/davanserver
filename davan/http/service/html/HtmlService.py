@@ -159,7 +159,7 @@ class HtmlService(BaseService):
     
 if __name__ == '__main__':
     from davan.http.ServiceInvoker import ServiceInvoker
-    from davan.http.service.tts.TtsService import TtsService
+    from davan.http.service.tts.TtsService import RoxcoreService
     from davan.http.service.ups.UpsService import UpsService
     from davan.http.service.dailyquote.DailyQuoteService import DailyQuoteService
     from davan.http.service.speedtest.SpeedtestService import SpeedtestService
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     config = configuration.create()
     service = ServiceInvoker(config)
     service.services['A'] = AudioService(config)
-    service.services['B'] = TtsService(config)
+    service.services['B'] = RoxcoreService(config)
     service.services['C'] = UpsService(config)
     service.services['D'] = DailyQuoteService(config) 
     service.services['D'] = SpeedtestService(config)

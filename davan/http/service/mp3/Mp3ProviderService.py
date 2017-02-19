@@ -33,6 +33,7 @@ class Mp3ProviderService(BaseService):
             self.logger.debug("Received mp3 service request for file: " + msg)
             res = msg.split('=')
             f = open(self.config['MP3_ROOT_FOLDER'] + res[1])
+            #f = open(self.config['MP3_ROOT_FOLDER'] + "daily_quote.mp3")
             content = f.read()
             f.close()
         except:

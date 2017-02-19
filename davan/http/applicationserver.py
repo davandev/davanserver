@@ -66,6 +66,7 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
         try:
             global services
             service = services.get_service(self.path)
+            logger.info("Received request: "+self.path)
             if not service == None:
                 result_code, mime_type, result = service.handle_request(self.path)
                 self.send_response(result_code)    

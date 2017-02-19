@@ -256,7 +256,9 @@ class LightSchemaService(BaseService):
         diff = (end_dt - start_dt) 
         if diff.days < 0:
             self.logger.warning("End is before start, fix it")
-            diff = timedelta(days=0, seconds=diff.seconds)
+            #diff = timedelta(days=0, seconds=diff.seconds)
+            # Set timeout to occur in 30 seconds 
+            diff = 30 
         #self.logger.info("Next timeout in " + str(diff.seconds)+" seconds")
         return diff.seconds
     

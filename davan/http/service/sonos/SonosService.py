@@ -11,7 +11,7 @@ from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
 
-#from soco import SoCo
+from soco import SoCo
 
 class SonosService(BaseService):
     '''
@@ -51,9 +51,11 @@ class SonosService(BaseService):
             self.generate_mp3(tts_content, mp3_file)
         
         self.logger.info("Playing file: " + 'http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
-        #sonos = SoCo(self.config['SONOS_IP_ADRESS']) 
+#        sonos = SoCo(self.config['SONOS_IP_ADRESS']) 
+        sonos = SoCo('192.168.2.122:59152') 
+        sonos.play_uri('http://192.168.2.50:8080/test-mp3')
         # Pass in a URI to a media file to have it streamed through the Sonos speaker
-        #sonos.play_uri('http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
+#        sonos.play_uri('http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
         
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
@@ -77,4 +79,4 @@ if __name__ == '__main__':
     config = configuration.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     test = SonosService()
-    test.start("skalskyddet_aktiverat")
+    test.start("tts=skalskyddet_aktiverat")

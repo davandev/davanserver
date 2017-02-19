@@ -6,6 +6,7 @@ import logging
 import os
 import urllib
 import shutil
+import __builtin__
 
 import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd_executor
@@ -58,12 +59,16 @@ class TtsService(BaseService):
         else:   
             self.logger.debug("Generate mp3 for [" + msg+"]")
             self.generate_mp3(msg, mp3_file)
+
+        speaker = __builtin__.davan_services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+        speaker.handle_request(msg + ".mp3")
         
         shutil.copyfile(mp3_file, self.config['SPEAK_FILE'])
         cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
                                    self.config['SPEAK_FILE'] , 
                                    self.config['SPEAK_CMD'])
     
+        
     def generate_mp3(self, msg, mp3_file):
         ''' 
         Generate a mp3 file from the msg string.        

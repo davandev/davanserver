@@ -29,3 +29,5 @@ TELLDUS_PRIVATE_KEY = "my_telldus_key"
 
 ROUTER_USER = "my_router_user"
 ROUTER_PASSWORD = "my_router_password"
+
+RECEIVER_BOT_TOKEN = "my_token"

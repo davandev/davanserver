@@ -103,7 +103,7 @@ def create_config(secret_config, config):
     # Mp3 provider configuration
     #-----------------------------------------------------------------------------------------
     config["mp3Enabled"] = True
-    config['MP3_ROOT_FOLDER'] = config['TTS_DAILY_QUOTE_PATH']
+    config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_ALARM_MSG_PATH']
     
     #---------------------------------------------------------------------------------------
     # TTS Service configuration
@@ -259,15 +259,29 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
-        #Room   | start | stop | Interval | lightlevel | deviceId | labaelid | random | virtualdevice | Only when armed 
+        #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,0',
         'Kitchen,16:05,23:45,week,10,65,2,1,194,0',
         'Uterum,16:15,23:05,week,-1,192,1,10,195,0',
         'Outdoor,16:10,23:30,week,-1,191,1,20,196,0',
-        'Wilma,17:15,19:50,week,20,173,1,20,183,1',
-        'Viggo,16:55,19:39,weekdays,10,173,1,15,183,1'
+        'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
+        'Wilma,17:15,19:50,week,20,173,2,20,197,1',
+        'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
+        'Viggo,16:55,19:39,week,10,177,1,15,198,1',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
+
+    #---------------------------------------------------------------------------------------------
+    # ReceiverBot configuration
+    #---------------------------------------------------------------------------------------------
+    config["ReceiverBotServiceEnabled"] = False
+    config["RECEIVER_BOT_TOKEN"] = secret_config.RECEIVER_BOT_TOKEN
+
+    #---------------------------------------------------------------------------------------------
+    # Roxcore speaker configuration
+    #---------------------------------------------------------------------------------------------
+    config["RoxcoreServiceEnabled"] = True
+    config['ROXCORE_HOST_ADDRESS'] = "192.168.2.122:59152"
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):
