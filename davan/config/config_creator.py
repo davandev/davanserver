@@ -16,6 +16,8 @@ def create_config(secret_config, config):
     config["ROOT"] = '/home/pi/share/'
     # Log directory path
     config['LOGFILE_PATH'] = config["ROOT"] + "logs"
+    # Temp directory path
+    config['TEMP_PATH'] = config["ROOT"] + "temp"
     # Service directory path
     config['SERVICE_PATH'] = config["ROOT"] + "davan/http/service/"
     # Server port
@@ -68,6 +70,11 @@ def create_config(secret_config, config):
     # Application used to play mp3 file on raspberry pi
     config['SPEAK_CMD'] = '/usr/bin/mpg123'
     # Url with key where to translate message to mp3
+    config['TTS_GENERATOR_IP_ADDRESS'] = "192.168.2.100:8080"
+    # Url to fetch created mp3 file on android phone
+    config['TTS_GENERATOR_FETCH_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/ttsFetch"
+    # Url to generate mp3 file on android phone
+    config['TTS_GENERATOR_CREATE_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/tts"
 
     #-----------------------------------------------------------------------------------------
     # DailyQuote configuration
@@ -103,7 +110,7 @@ def create_config(secret_config, config):
     # Mp3 provider configuration
     #-----------------------------------------------------------------------------------------
     config["mp3Enabled"] = True
-    config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_ALARM_MSG_PATH']
+    config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_MSG_PATH']
     
     #---------------------------------------------------------------------------------------
     # TTS Service configuration

@@ -14,9 +14,6 @@ import davan.http.service.roxcore.RoxcoreSpeakerCommands as commands
 
 class RoxcoreService(BaseService):
     '''
-    classdocs
-    sys.setdefaultencoding('latin-1')
-
     '''
 
     def __init__(self, config):
@@ -26,6 +23,7 @@ class RoxcoreService(BaseService):
         BaseService.__init__(self, constants.ROXCORE_SPEAKER_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.host_address = "http://" + config['ROXCORE_HOST_ADDRESS']
+
 
     def handle_request(self, msg):
         '''
@@ -45,6 +43,26 @@ class RoxcoreService(BaseService):
         '''
         '''
         self.logger.info("Start roxcore service")
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, column_id):
+        """
+        Override and provide gui
+        """
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
+
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        res = "Speakers:" + self.config['ROXCORE_HOST_ADDRESS']
+        column  = column.replace("<SERVICE_VALUE>", res)
+
+        return column
         
 if __name__ == '__main__':
 
