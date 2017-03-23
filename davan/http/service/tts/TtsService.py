@@ -13,8 +13,8 @@ import davan.util.cmd_executor as cmd_executor
 from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
-from davan.http.service.tts.Tts_factory_voicerss import TtsVoiceRssFactory 
-from davan.http.service.tts.Tts_factory_android import TtsEngineAndroid
+from davan.http.service.tts.tts_engine_voicerss import TtsVoiceRssFactory 
+from davan.http.service.tts.tts_engine_android import TtsEngineAndroid
 
 class TtsService(BaseService):
     '''
@@ -90,9 +90,13 @@ class TtsService(BaseService):
         Received completed callback from TTS service  
         """
         self.logger.info("handle_ttsCompleted_callback") 
+        if self.async_filename == None:
+            return
+
         mp3_file = self.tts_engine.fetch_mp3(self.async_filename)
         self.play_file(mp3_file)
-        
+        self.async_filename = None        
+
     def calculate_file_name(self, msg):
         """
         Create the file name based on a md5 hash of the message

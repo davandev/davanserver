@@ -145,7 +145,7 @@ class AsusRouterPresenceService(BaseService):
                 device.first_active = str(datetime.datetime.now())
 
     def timeout(self):
-#        self.logger.info("Check presence of monitored devices")
+        self.logger.info("Check presence of monitored devices")
         active_devices = self.fetch_active_devices()
         self.update_presence(self.monitored_devices, active_devices)
         

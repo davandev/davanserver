@@ -30,9 +30,9 @@ class TtsEngineAndroid():
         return True
     
     def fetch_mp3(self, filename):
-        self.logger.info("fetch_mp3") 
+        self.logger.info("fetch_mp3:"+filename) 
         result = urllib2.urlopen(self.config["TTS_GENERATOR_FETCH_URL"]).read()
-        wav_file = self.config['TEMP_PATH'] + "tmp.wav"
+        wav_file = self.config['TEMP_PATH'] + "/tmp.wav"
 
         if (not os.path.exists(self.config['TEMP_PATH'])):
             os.mkdir(self.config['TEMP_PATH'])
@@ -43,8 +43,9 @@ class TtsEngineAndroid():
         fd = open(wav_file, 'w')
         fd.write(result)
         fd.close()
-        command = "lame --preset insane " + wav_file
-        executor.execute_block(command, "lame", True)
+        command = "lame -f " + wav_file
+        executor.execute_block(command, "lame", False)
         mp3_file = wav_file.replace('wav','mp3')
-        shutil.move(wav_file, self.config['MP3_ROOT_FOLDER'] + filename)
+        self.logger.info("Moving file:" + mp3_file)
+        shutil.move(mp3_file, self.config['MP3_ROOT_FOLDER'] + filename)
         return filename
