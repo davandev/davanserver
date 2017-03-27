@@ -288,6 +288,12 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["RoxcoreServiceEnabled"] = True
     config['ROXCORE_HOST_ADDRESS'] = "192.168.2.122:59152"
+   
+    #---------------------------------------------------------------------------------------------
+    # Announcement service
+    #---------------------------------------------------------------------------------------------
+    config["AnnouncementsServiceEnabled"] = False
+
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

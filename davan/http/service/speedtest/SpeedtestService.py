@@ -6,6 +6,8 @@
 import logging
 import os
 import json
+import re
+import time
 from threading import Thread,Event
 
 import davan.config.config_creator as configuration
@@ -26,6 +28,17 @@ class SpeedtestService(BaseService):
         BaseService.__init__(self, constants.SPEEDTEST_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.event = Event()
+        self.command = "/usr/local/bin/speedtest-cli --simple"
+        
+        self.ping_exp = re.compile(r'Ping:(.+?)ms')
+        self.download_exp = re.compile(r'Download:(.+?)Mbit/s')
+        self.upload_exp = re.compile(r'Upload:(.+?)Mbit/s')
+        self.measure_time = ""
+        
+        self.encoded_string =""
+        self.ping = 0
+        self.download = 0
+        self.upload = 0
         
     def stop_service(self):
         self.logger.info("Stopping service")
@@ -36,13 +49,8 @@ class SpeedtestService(BaseService):
         Received request for the latest speedtest measurements.
         '''
         self.increment_invoked()
-        self.logger.debug("Recevied speedtest service request")
-        f = open(self.config['SPEED_TEST_RESULT'])
-        content = f.read()
-        f.close()
-#
-        self.logger.debug("SpeedTest content: " + content)
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, content
+        self.logger.debug("SpeedTest content: " + self.encoded_string)
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
     
     def start_service(self):
         '''
@@ -52,19 +60,12 @@ class SpeedtestService(BaseService):
         '''
         self.logger.info("Starting re-occuring event")
         def loop():
-            while not self.event.wait(900): # the first call is in `interval` secs
+            while not self.event.wait(90): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
 
         Thread(target=loop).start()    
         return self.event.set
-
-    def timeout(self):
-        '''
-        Timeout received, start measure internet speed.
-        '''
-        self.logger.info("Got a timeout, fetch internet speed")
-        cmd.execute(self.config['SPEED_TEST_FILE'], "Speedtest")
 
     def has_html_gui(self):
         """
@@ -81,16 +82,41 @@ class SpeedtestService(BaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        ok, mime, result = self.handle_request("")
-        data = json.loads(result)
-        htmlresult = "<li>Ping: " + str(data["Ping_ms"]) + " ms</li>\n"
-        htmlresult += "<li>Download: " + str(data["Download_Mbit"]) + " Mbit</li>\n"
-        htmlresult += "<li>Upload: " + str(data["Upload_Mbit"]) + " Mbit</li>\n"
-        htmlresult += "<li>Date: " + data["Date"] + " </li>\n"
+        #ok, mime, result = self.handle_request("")
+        #data = json.loads(result)
+        htmlresult = "<li>Ping: " + self.ping + " ms</li>\n"
+        htmlresult += "<li>Download: " + self.download + " Mbit</li>\n"
+        htmlresult += "<li>Upload: " + self.upload + " Mbit</li>\n"
+        htmlresult += "<li>Date: " + self.measure_time + " </li>\n"
         
         column = column.replace("<SERVICE_VALUE>", htmlresult)
         
         return column
+
+    def timeout(self):
+        self.logger.info("Got a timeout, fetch internet speed")
+        self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+        self.ping = "0"
+        self.download = "0"
+        self.upload = "0"
+        
+        try:
+            result = cmd.execute_block(self.command, "speedtest", True)
+            match = self.ping_exp.search(result)
+            if match:
+                self.ping = match.group(1).strip()
+            match = self.download_exp.search(result)
+            if match:
+                self.download = match.group(1).strip()
+            match = self.upload_exp.search(result)
+            if match:
+                self.upload = match.group(1).strip()
+        except:
+            self.logger.warning("Caught exception when fetching internet speed")
+                    
+        self.encoded_string = json.JSONEncoder().encode({"Upload_Mbit":self.upload,"Download_Mbit":self.download,"Ping_ms": self.ping,"Date":str(self.measure_time)})
+        self.logger.info("Encoded String:" + self.encoded_string)
+
 
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
@@ -100,5 +126,3 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = SpeedtestService(config)
-    time.sleep(30)
-    test.stop_service()

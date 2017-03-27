@@ -35,6 +35,7 @@ LIGHTSCHEMA_SERVICE = "LightSchemaService"
 KEYPAD_SERVICE_NAME = "KeypadAliveService"
 RECEIVER_BOT_SERVICE_NAME = "ReceiverBotService"
 ROXCORE_SPEAKER_SERVICE_NAME = "RoxcoreService"
+ANNOUNCEMENT_SERVICE_NAME = "AnnouncementsService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"

@@ -42,6 +42,9 @@ class ServiceInvoker(object):
                     not service_file.endswith("base_service.pyc")):
                         module_name = service_file.replace(".pyc","")
                         mod = imp.load_compiled(module_name,os.path.join(root, service_file))
+
+#                        self.logger.debug("ModuleName:"+module_name)
+
                         try:    
                             attributes = getattr(mod, module_name)
                             service = attributes(self.config)
