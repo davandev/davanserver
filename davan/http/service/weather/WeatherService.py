@@ -8,9 +8,15 @@ import logging
 import os
 import json
 import urllib2
+import urllib
+from threading import Thread, Event
+import traceback
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+import davan.util.helper_functions as helper
 from davan.http.service.base_service import BaseService
+
 
 class WeatherService(BaseService):
     '''
@@ -22,12 +28,76 @@ class WeatherService(BaseService):
         '''
         BaseService.__init__(self, constants.WEATHER_SERVICE, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
+        self.event = Event()
+        self.weather_data = None
+        self.is_raining = False
+
+    def stop_service(self):
+        self.logger.info("Stopping service")
+        self.event.set()
+    
+    def start_service(self):
+        '''
+        Start a timer that will pop repeatedly.
+        @interval time in seconds between timeouts
+        @func callback function at timeout.
+        '''
+        self.logger.info("Starting re-occuring event")
+
+        def loop():
+            while not self.event.wait(240): # the first call is in `interval` secs
+                self.increment_invoked()
+                self.timeout()
+
+        Thread(target=loop).start()    
+        return self.event.set
             
     def handle_request(self, msg):
         '''
         '''
         pass
+    
+    def timeout(self):
+        '''
+        Timeout received, iterate all active scenes to check that they are running on fibaro 
+        system, otherwise start them
+        '''
+        self.logger.info("Got a timeout, fetch weather")
+        try:
+            result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
+            self.weather_data = json.loads(result)
+            self.check_rain()
+            self.update_virtual_device()
+        except Exception:
+            self.logger.error(traceback.format_exc())
 
+            self.increment_errors()
+            self.logger.info("Caught exception") 
+            pass
+    
+    def update_virtual_device(self):
+        '''
+        Update weather virtual device on HC2 
+        '''
+        self.logger.info("Update virtual device")
+        
+    def check_rain(self):
+        '''
+        Check if it is raining, then notify on telegram
+        '''
+        self.logger.info("Check if it is raining")
+        
+        if (self.weather_data["current_observation"]["precip_today_metric"] > 0):
+            if not self.is_raining:
+                self.logger.info("It has started to rain")
+                helper.send_telegram_message(self.config, constants.RAIN_STARTED)
+
+        else:
+            if self.is_raining:
+                self.logger.info("It has stopped to rain")
+                helper.send_telegram_message(self.config, constants.RAIN_STOPPED)
+            
+                 
     def has_html_gui(self):
         """
         Override if service has gui
@@ -43,18 +113,18 @@ class WeatherService(BaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
-        data = json.loads(result)
-        htmlresult = "<li>Temp: " + str(data["current_observation"]["temp_c"]) + "</li>\n"
-        htmlresult += "<li>Humidity: " + str(data["current_observation"]["relative_humidity"]) + " </li>\n"
-        htmlresult += "<li>Pressure: " + str(data["current_observation"]["pressure_mb"]) + " bar </li>\n"
-        htmlresult += "<li>Feels like: " + str(data["current_observation"]["feelslike_c"]) + " </li>\n"
-        htmlresult += "<li>Rain: " + str(data["current_observation"]["precip_today_metric"]) + " mm</li>\n"
-        htmlresult += "<li>Wind dir: " + str(data["current_observation"]["wind_dir"]) + " </li>\n"
-        htmlresult += "<li>Wind degree: " + str(data["current_observation"]["wind_degrees"]) + " </li>\n"
-        htmlresult += "<li>Time: " + str(data["current_observation"]["observation_time_rfc822"]) + " </li>\n"
-        column = column.replace("<SERVICE_VALUE>", htmlresult)
-
+        if self.weather_data == None:
+            return column
+        else:
+            htmlresult = "<li>Temp: " + str(self.weather_data["current_observation"]["temp_c"]) + "</li>\n"
+            htmlresult += "<li>Humidity: " + str(self.weather_data["current_observation"]["relative_humidity"]) + " </li>\n"
+            htmlresult += "<li>Pressure: " + str(self.weather_data["current_observation"]["pressure_mb"]) + " bar </li>\n"
+            htmlresult += "<li>Feels like: " + str(self.weather_data["current_observation"]["feelslike_c"]) + " </li>\n"
+            htmlresult += "<li>Rain: " + str(self.weather_data["current_observation"]["precip_today_metric"]) + " mm</li>\n"
+            htmlresult += "<li>Wind dir: " + str(self.weather_data["current_observation"]["wind_dir"]) + " </li>\n"
+            htmlresult += "<li>Wind degree: " + str(self.weather_data["current_observation"]["wind_degrees"]) + " </li>\n"
+            htmlresult += "<li>Time: " + str(self.weather_data["current_observation"]["observation_time_rfc822"]) + " </li>\n"
+            column = column.replace("<SERVICE_VALUE>", htmlresult)
         return column
             
 if __name__ == '__main__':
