@@ -62,7 +62,7 @@ def start_logging(log_file_path, loglevel=4, log_file_name=""):
     if not log_file_name:
         log_file_name = get_caller_name()
 
-    logfile = log_file_path + '/' + log_file_name + '_' + time.strftime("%Y-%m-%d_%H%M%S", time.gmtime()) + '.log'
+    logfile = log_file_path + '/' + log_file_name + '_' + time.strftime("%Y-%m-%d_%H%M%S", time.localtime()) + '.log'
     logging.basicConfig(level=levels[loglevel][1],
                     format='%(asctime)s %(name)-35s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',

@@ -31,6 +31,7 @@ class WeatherService(BaseService):
         self.event = Event()
         self.weather_data = None
         self.is_raining = False
+        self.latest_result = ""
 
     def stop_service(self):
         self.logger.info("Stopping service")
@@ -55,7 +56,8 @@ class WeatherService(BaseService):
     def handle_request(self, msg):
         '''
         '''
-        pass
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML,self.latest_result 
+
     
     def timeout(self):
         '''
@@ -64,8 +66,8 @@ class WeatherService(BaseService):
         '''
         self.logger.info("Got a timeout, fetch weather")
         try:
-            result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
-            self.weather_data = json.loads(result)
+            self.latest_result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
+            self.weather_data = json.loads(self.latest_result)
             self.check_rain()
             self.update_virtual_device()
         except Exception:
@@ -80,6 +82,13 @@ class WeatherService(BaseService):
         Update weather virtual device on HC2 
         '''
         self.logger.info("Update virtual device")
+        # Build URL to Fibaro virtual device
+        pressButton_url = self.config["VD_PRESS_BUTTON_URL"].replace("<ID>", self.config['WEATHER_VD_ID'])
+        pressButton_url = pressButton_url.replace("<BUTTONID>", self.config["WEATHER_BUTTON_ID"])
+
+        # Send HTTP request to notify status change
+        urllib.urlopen(pressButton_url)
+
         
     def check_rain(self):
         '''
@@ -87,16 +96,17 @@ class WeatherService(BaseService):
         '''
         self.logger.info("Check if it is raining")
         
-        if (self.weather_data["current_observation"]["precip_today_metric"] > 0):
+        if (self.weather_data["current_observation"]["precip_1hr_metric"] > 0):
             if not self.is_raining:
                 self.logger.info("It has started to rain")
                 helper.send_telegram_message(self.config, constants.RAIN_STARTED)
+                self.is_raining = True
 
         else:
             if self.is_raining:
                 self.logger.info("It has stopped to rain")
                 helper.send_telegram_message(self.config, constants.RAIN_STOPPED)
-            
+                self.is_raining = False
                  
     def has_html_gui(self):
         """

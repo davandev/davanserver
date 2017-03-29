@@ -60,7 +60,7 @@ class SpeedtestService(BaseService):
         '''
         self.logger.info("Starting re-occuring event")
         def loop():
-            while not self.event.wait(90): # the first call is in `interval` secs
+            while not self.event.wait(900): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
 
@@ -95,7 +95,7 @@ class SpeedtestService(BaseService):
 
     def timeout(self):
         self.logger.info("Got a timeout, fetch internet speed")
-        self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+        self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.ping = "0"
         self.download = "0"
         self.upload = "0"

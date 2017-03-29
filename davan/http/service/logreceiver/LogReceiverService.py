@@ -40,7 +40,7 @@ class LogReceiverService(BaseService):
         if not os.path.exists(self.config['HC2LOG_PATH']):
             os.mkdir(self.config['HC2LOG_PATH'])
         
-        logfile = self.config['HC2LOG_PATH'] + '/' + time.strftime("%Y-%m-%d", time.gmtime()) + '.log'
+        logfile = self.config['HC2LOG_PATH'] + '/' + time.strftime("%Y-%m-%d", time.localtime()) + '.log'
 
 #        self.logger.info("Received LogEntry ["+ msg + "] write to " + logfile)
         writemode = "w"

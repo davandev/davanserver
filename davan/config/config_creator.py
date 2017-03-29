@@ -258,6 +258,11 @@ def create_config(secret_config, config):
     config["WEATHER_TOKEN"] = secret_config.WEATHER_TOKEN
     config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
     config["WUNDERGROUND_PATH"] = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
+    # Weather virtual id on fibaro system
+    config["WEATHER_VD_ID"] = "79"
+    # Weather button to push
+    config["WEATHER_BUTTON_ID"] = "7"
+
 
     #---------------------------------------------------------------------------------------------
     # LightSchema Service configuration

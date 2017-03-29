@@ -29,7 +29,7 @@ class HtmlService(BaseService):
         BaseService.__init__(self, constants.HTML_SERVICE_NAME, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         
-        self.start_date = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+        self.start_date = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.expression = re.compile('<(.*?)object')
    
     def handle_request(self, msg):
