@@ -1,5 +1,6 @@
 """
 Creates the config data used by services.
+
 @author: davandev
 """
 
@@ -272,13 +273,13 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,0',
-        'Kitchen,16:05,23:45,week,10,65,2,1,194,0',
-        'Uterum,16:15,23:05,week,-1,192,1,10,195,0',
-        'Outdoor,16:10,23:30,week,-1,191,1,20,196,0',
+        'Kitchen,18:15,23:45,week,10,65,2,1,194,0',
+        'Uterum,19:15,23:05,week,-1,192,1,10,195,0',
+        'Outdoor,19:10,23:30,week,-1,191,1,20,196,0',
         'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
-        'Wilma,17:15,19:50,week,20,173,2,20,197,1',
+        'Wilma,18:15,19:50,week,20,173,2,20,197,1',
         'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
-        'Viggo,16:55,19:39,week,10,177,1,15,198,1',
+        'Viggo,18:55,19:39,week,10,177,1,15,198,1',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 

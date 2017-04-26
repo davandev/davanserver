@@ -46,7 +46,7 @@ class WeatherService(BaseService):
         self.logger.info("Starting re-occuring event")
 
         def loop():
-            while not self.event.wait(240): # the first call is in `interval` secs
+            while not self.event.wait(180): # the first call is in `interval` secs
                 self.increment_invoked()
                 self.timeout()
 
@@ -94,9 +94,10 @@ class WeatherService(BaseService):
         '''
         Check if it is raining, then notify on telegram
         '''
-        self.logger.info("Check if it is raining")
+        current_rain = self.weather_data["current_observation"]["precip_1hr_metric"]
+        self.logger.info("Check if it is raining["+str(current_rain)+"]")
         
-        if (self.weather_data["current_observation"]["precip_1hr_metric"] > 0):
+        if (not self.weather_data["current_observation"]["precip_1hr_metric"] == "0.0"):
             if not self.is_raining:
                 self.logger.info("It has started to rain")
                 helper.send_telegram_message(self.config, constants.RAIN_STARTED)
