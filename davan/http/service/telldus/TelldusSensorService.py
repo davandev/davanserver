@@ -13,47 +13,28 @@ import davan.http.service.telldus.tdtool as telldus
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 
-class TelldusSensorService(BaseService):
+class TelldusSensorService(ReoccuringBaseService):
     '''
     Starts a re-occuring service that fetches sensor values from Telldus Live and 
     pushes the results(temperature, humidity and date) of each sensor to a 
     virtual device on the Fibaro system. 
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.TELLDUS_SENSOR_SERVICE, config)
+        ReoccuringBaseService.__init__(self, constants.TELLDUS_SENSOR_SERVICE, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.event = Event()
+        self.time_to_next_timeout = 900
 
-    def stop_service(self):
-        '''
-        Stops the service
-        '''
-        self.logger.info("Stopping service")
-        self.event.set()
-
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        self.logger.info("Starting re-occuring event")
-
-        def loop():
-            while not self.event.wait(900): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
-        Thread(target=loop).start()    
-        return self.event.set
+    def get_next_timeout(self):
+        return self.time_to_next_timeout    
                                          
-    def timeout(self):
+    def handle_timeout(self):
         '''
         Timeout received, fetch sensor values from Telldus Live
         Push sensor data to Fibaro virtual device  

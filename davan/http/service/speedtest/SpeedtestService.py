@@ -13,21 +13,20 @@ from threading import Thread,Event
 import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd
 import davan.util.constants as constants
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
-class SpeedtestService(BaseService):
+class SpeedtestService(ReoccuringBaseService):
     '''
     Starts a re-occuring service that will measure internet speed (Download/Upload/ping)
     Requires speedtest-cli : installed with "sudo pip install speedtest-cli"
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.SPEEDTEST_SERVICE_NAME, config)
+        ReoccuringBaseService.__init__(self, constants.SPEEDTEST_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.event = Event()
         self.command = "/usr/local/bin/speedtest-cli --simple"
         
         self.ping_exp = re.compile(r'Ping:(.+?)ms')
@@ -36,14 +35,11 @@ class SpeedtestService(BaseService):
         self.measure_time = ""
         
         self.encoded_string =""
-        self.ping = 0
-        self.download = 0
-        self.upload = 0
+        self.ping = "-"
+        self.download = "-"
+        self.upload = "-"
+        self.time_to_next_timeout = 900
         
-    def stop_service(self):
-        self.logger.info("Stopping service")
-        self.event.set()
-                
     def handle_request(self, msg):
         '''
         Received request for the latest speedtest measurements.
@@ -51,49 +47,8 @@ class SpeedtestService(BaseService):
         self.increment_invoked()
         self.logger.debug("SpeedTest content: " + self.encoded_string)
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
-    
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        self.logger.info("Starting re-occuring event")
-        def loop():
-            while not self.event.wait(900): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
 
-        Thread(target=loop).start()    
-        return self.event.set
-
-    def has_html_gui(self):
-        """
-        Override if service has gui
-        """
-        return True
-    
-    def get_html_gui(self, column_id):
-        """
-        Override and provide gui
-        """
-        if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
-
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
-        column = column.replace("<SERVICE_NAME>", self.service_name)
-        #ok, mime, result = self.handle_request("")
-        #data = json.loads(result)
-        htmlresult = "<li>Ping: " + self.ping + " ms</li>\n"
-        htmlresult += "<li>Download: " + self.download + " Mbit</li>\n"
-        htmlresult += "<li>Upload: " + self.upload + " Mbit</li>\n"
-        htmlresult += "<li>Date: " + self.measure_time + " </li>\n"
-        
-        column = column.replace("<SERVICE_VALUE>", htmlresult)
-        
-        return column
-
-    def timeout(self):
+    def handle_timeout(self):
         self.logger.info("Got a timeout, fetch internet speed")
         self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.ping = "0"
@@ -116,6 +71,36 @@ class SpeedtestService(BaseService):
                     
         self.encoded_string = json.JSONEncoder().encode({"Upload_Mbit":self.upload,"Download_Mbit":self.download,"Ping_ms": self.ping,"Date":str(self.measure_time)})
         self.logger.info("Encoded String:" + self.encoded_string)
+
+    
+    def get_next_timeout(self):
+        return self.time_to_next_timeout
+        
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, column_id):
+        """
+        Override and provide gui
+        """
+        if not self.is_enabled():
+            return ReoccuringBaseService.get_html_gui(self, column_id)
+
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        #ok, mime, result = self.handle_request("")
+        #data = json.loads(result)
+        htmlresult = "<li>Ping: " + self.ping + " ms</li>\n"
+        htmlresult += "<li>Download: " + self.download + " Mbit</li>\n"
+        htmlresult += "<li>Upload: " + self.upload + " Mbit</li>\n"
+        htmlresult += "<li>Date: " + self.measure_time + " </li>\n"
+        
+        column = column.replace("<SERVICE_VALUE>", htmlresult)
+        
+        return column
 
 
 if __name__ == '__main__':

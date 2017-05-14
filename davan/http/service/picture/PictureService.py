@@ -20,11 +20,11 @@ class PictureService(BaseService):
     all Telegram receivers
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "TakePicture", config)
+        BaseService.__init__(self, "TakePicture", service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
     
     def handle_request(self, msg):
@@ -40,12 +40,13 @@ class PictureService(BaseService):
             self.take_picture(camera)
             self.send_picture(camera)
             self.delete_picture()
-            return 200, ""
+
         except:
             self.increment_errors()
             self.logger.info("Failed to carry out takepicture request")
             traceback.print_exc(sys.exc_info())
-            pass
+            return constants.RESPONSE_NOT_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_FAILED_TO_TAKE_PICTURE
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
 
     def parse_request(self, msg):
         '''

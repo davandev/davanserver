@@ -5,56 +5,37 @@
 import logging
 import os
 import urllib
-from threading import Thread,Event
 from datetime import datetime
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
-class KeypadAliveService(BaseService):
+class KeypadAliveService(ReoccuringBaseService):
     '''
     Check if keypad is still running by sending a http request towards the keypad
     if there is no response from the keypad then a telegram message is sent.
     Re-occuring event every 5th minute 
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.KEYPAD_SERVICE_NAME, config)
+        ReoccuringBaseService.__init__(self, constants.KEYPAD_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.event = Event()    
         self.connected = False
         self.connected_at =""
         self.disconnected_at = ""
+        self.time_to_next_timeout = 300
         
-    def stop_service(self):
+    def get_next_timeout(self):
         '''
-        Stop the service
+        Return time to next timeout
         '''
-        self.logger.info("Stopping service")
-        self.event.set()
-
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        
-        self.logger.info("Starting re-occuring event")
-
-        def loop():
-            while not self.event.wait(300): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
-
-        Thread(target=loop).start()    
-        return self.event.set
-                                         
-    def timeout(self):
+        return self.time_to_next_timeout
+    
+    def handle_timeout(self):
         '''
         Timeout received, send a "ping" to key pad, send telegram message if failure.
         '''
@@ -99,7 +80,7 @@ class KeypadAliveService(BaseService):
         Override and provide gui
         """
         if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+            return ReoccuringBaseService.get_html_gui(self, column_id)
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

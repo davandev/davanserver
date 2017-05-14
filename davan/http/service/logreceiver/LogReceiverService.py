@@ -17,11 +17,11 @@ class LogReceiverService(BaseService):
     Service receiving log messages from HC2 and writes to a log file
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self,"LogEntry", config)
+        BaseService.__init__(self,"LogEntry", service_provider, config)
 
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.ok_rsp = 200

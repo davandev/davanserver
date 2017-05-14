@@ -19,11 +19,11 @@ class AudioService(BaseService):
     sys.setdefaultencoding('latin-1')
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.AUDIO_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.AUDIO_SERVICE_NAME,service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     # Implementation of BasePlugin abstract methods        

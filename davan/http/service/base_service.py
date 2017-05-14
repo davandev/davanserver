@@ -9,11 +9,14 @@ class BaseService(ServiceIf):
     '''
     Default implementations of a few service methods  
     '''
-    def __init__(self, service_name, config):
+    def __init__(self, service_name, service_provider, config):
+        # Counter 
         self.invoked = 0
         self.error = 0
+        # 
         self.service_name = service_name
         self.config = config
+        self.services = service_provider
         
     def handle_request(self, input):
         """

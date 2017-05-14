@@ -15,11 +15,11 @@ class Mp3ProviderService(BaseService):
     '''
     classdocs
     '''
-    def __init__(self, config ):
+    def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.MP3_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.MP3_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
             
     def handle_request(self, msg):

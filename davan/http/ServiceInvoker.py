@@ -47,10 +47,10 @@ class ServiceInvoker(object):
 
                         try:    
                             attributes = getattr(mod, module_name)
-                            service = attributes(self.config)
+                            service = attributes(self, self.config)
+                            self.services[service.get_name()] = service
                         except :
                             continue
-                        self.services[service.get_name()] = service
                         self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
         return self.services
     
@@ -82,6 +82,9 @@ class ServiceInvoker(object):
         elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
             self.logger.debug("Invoking service: [html]")
             return self.services[constants.HTML_SERVICE_NAME]
+        
+        # No service found
+        return None
             
     def stop_services(self):
         """

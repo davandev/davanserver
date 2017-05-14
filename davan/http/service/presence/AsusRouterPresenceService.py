@@ -1,24 +1,23 @@
 '''
-Created on 8 feb. 2016
-
 @author: davandev
 '''
+
 import logging
 import os
 import urllib
 import datetime
-from threading import Thread,Event
 import telnetlib
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
+
 from davan.http.service.presence.AsusRouterDeviceStatus import AsusRouterDeviceStatus
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 '''
 '''
-class AsusRouterPresenceService(BaseService):
+class AsusRouterPresenceService(ReoccuringBaseService):
     '''
     This service is tested on an Asus router and relies on Telnet being enabled in the router.
     It is enabled in the router configuration.
@@ -33,25 +32,23 @@ class AsusRouterPresenceService(BaseService):
     with the state change.
     '''
 
-    def __init__(self, config ):
+    def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.DEVICE_PRESENCE_SERVICE_NAME, config)
+        ReoccuringBaseService.__init__(self, constants.DEVICE_PRESENCE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         # Command to run on router to list available devices
         self.list_active_devices_cmd = "/usr/sbin/ip neigh"
-
+        self.time_to_next_timeout = 300
+        
         self.monitored_devices = {}
         for key, value in self.config['MONITORED_DEVICES'].items():
             self.monitored_devices[key]= AsusRouterDeviceStatus(key, value)
-
-        self.event = Event()
     
-    def stop_service(self):
-        self.logger.info("Stopping service")
-        self.event.set()
-            
+    def get_next_timeout(self):
+        return self.time_to_next_timeout
+    
     def notify_change(self, device):
         '''
         Update Virtual device on Fibaro system and send Telegram messages
@@ -71,20 +68,6 @@ class AsusRouterPresenceService(BaseService):
 
         helper.send_telegram_message(self.config, device.user + " [" + status + "]")
         
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        self.logger.info("Starting re-occuring event")
-        def loop():
-            while not self.event.wait(300): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
-        Thread(target=loop).start()    
-        return self.event.set
-     
     def fetch_active_devices(self):
         '''
         Fetch a list of all devices status from router. 
@@ -144,7 +127,7 @@ class AsusRouterPresenceService(BaseService):
             if device.active:
                 device.first_active = str(datetime.datetime.now())
 
-    def timeout(self):
+    def handle_timeout(self):
         self.logger.info("Check presence of monitored devices")
         active_devices = self.fetch_active_devices()
         self.update_presence(self.monitored_devices, active_devices)
@@ -153,7 +136,17 @@ class AsusRouterPresenceService(BaseService):
             if device.changed:
                 device.toString()
                 self.notify_change(device)
-                
+    
+    def get_announcement(self):
+        '''
+        Compile announcement to be read 
+        '''
+        announcement = ""
+        for _, device in self.monitored_devices.items():
+            announcement += device.user + " är " + device.active_toString()+", "
+        
+        return helper.encode_message(announcement)
+    
     def has_html_gui(self):
         """
         Override if service has gui
@@ -165,7 +158,7 @@ class AsusRouterPresenceService(BaseService):
         Override and provide gui
         """
         if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+            return ReoccuringBaseService.get_html_gui(self, column_id)
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

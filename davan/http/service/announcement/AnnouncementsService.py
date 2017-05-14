@@ -7,99 +7,192 @@
 import logging
 import os
 import traceback
-from threading import Thread,Event
-import __builtin__
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
-from davan.http.service.tts.TtsService import TtsService
 from davan.util import application_logger as log_manager
-from davan.http.service.base_service import BaseService
-import urllib2
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
+import davan.http.service.announcement.Announcements as announcements
+import datetime
+import davan.util.timer_functions as timer_functions
+import davan.util.fibaro_functions as fibaro_functions
+import davan.util.helper_functions as helper_functions
 
-class AnnouncementsService(BaseService):
+class AnnouncementEvent():
+    def __init__(self, slogan, time, announcement_id, speaker):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+
+        self.slogan = slogan
+        self.time = time
+        self.announcement_id = announcement_id
+        self.speaker = speaker
+        
+
+    def toString(self):
+        return "Slogan[ "+self.slogan+" ] "\
+            "AnnouncmentId[ "+self.announcement_id+" ] "\
+            "Speaker[ "+self.speaker+" ]"
+        
+
+class AnnouncementsService(ReoccuringBaseService):
     '''
-    Monitor active scenes on Fibaro system, in some cases
-    scenes that should always be running are stopped.
-    Check status of each active scene and start it if stopped. 
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self,constants.ANNOUNCEMENT_SERVICE_NAME, config)
+        ReoccuringBaseService.__init__(self,constants.ANNOUNCEMENT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.event = Event()
+#        self.event = Event()
         self.daily_ordsprak = "http://www.knep.se/dagens/ordsprak.xml"
         self.daily_gata = "http://www.knep.se/dagens/gata.xml"
+        # Sorted list of event to execute during the day
+        self.todays_events = []
+        # Current time  
+        self.current_time = ""
+        # Current weekday (0-6)
+        self.current_day = -1
+        # Current date
+        self.current_date = ""
+        
+        self.config = config 
+        # Number of seconds until next event occur
+        self.time_to_next_event = 0
 
-    def stop_service(self):
-        self.logger.info("Stopping service")
-        self.event.set()
-    
-    def start_service(self):
+    def handle_request(self, msg):
         '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
+        Received request to play announcement
+        @param msg, received request 
         '''
-        self.logger.info("Starting re-occuring event")
+        self.logger.info("Msg:"+msg)
+        announcement_id = (msg.split('=')[1])
+        event = AnnouncementEvent("ExternalCall", "", announcement_id, "1")
+        if self.invoke_event(event):
+            return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_OK
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_NOT_OK
+ 
+    def get_next_timeout(self):
+        '''
+        Calculate seconds until next timeout.
+        @return nr of seconds until timout.
+        '''
+        if len(self.todays_events) > 0:
+            self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
+            self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+        else:
+            self.detemine_todays_events()
 
-        def loop():
-            while not self.event.wait(60): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
+        return self.time_to_next_event        
 
-        Thread(target=loop).start()    
-        return self.event.set
-                                         
-    def timeout(self):
+    def handle_timeout(self):
         '''
-        Timeout received, iterate all active scenes to check that they are running on fibaro 
-        system, otherwise start them
+        Timeout received, fetch event and perform action.
         '''
-        self.logger.info("Got a timeout, play announcements")
+        self.logger.info("Got a timeout, trigger announcement event")
         try:
-            quote = "Dagens citat, " 
-            quote += self.fetch_quote()
-            quote = self.encode_quote(quote) 
-            tts = __builtin__.davan_services.get_service(constants.TTS_SERVICE_NAME)
-            tts.start(quote)
+            event = self.todays_events.pop(0)
+            self.invoke_event(event)
+                                
+        except:
+            self.logger.error(traceback.format_exc())
+            self.logger.info("Caught exception")
+            self.increment_errors()
             
+    def invoke_event(self, event):
+        '''
+        Timeout received, produce the announcement and play in configured speaker
+        '''
+        self.logger.info("Got a timeout, play announcement[" + event.slogan + "]")
+        if fibaro_functions.is_alarm_armed(self.config):
+            self.logger.info("Alarm is armed, skip announcement")
+            return True
+        try:
+            service = self.services.get_service(event.announcement_id)
+            if service != None:
+                result = service.get_announcement()
+            elif event.announcement_id == "morning" :
+                result = announcements.create_morning_announcement()
+                result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
+                result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
+                result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
+                
+#                result += announcements.create_quote_announcement()
+
+            elif event.announcement_id == "night":
+                result = announcements.create_night_announcement()
+            elif event.announcement_id == "status":
+                result = helper_functions.encode_message("Status uppdatering. ")
+                result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
+                result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
+                result += self.services.get_service(constants.DEVICE_PRESENCE_SERVICE_NAME).get_announcement()
+            else:
+                self.logger.info("Cant find announcement to play:" + event.announcement_id)
+                return False
+            self.logger.info("Announcement:" + result)
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(result,1)
+            return True
         except Exception:
             self.logger.error(traceback.format_exc())
 
             self.increment_errors()
             self.logger.info("Caught exception") 
-            pass
+            return False
 
-    def fetch_quote(self):
+    def detemine_todays_events(self):
         '''
-        Fetch quote from dagenscitat.nu 
-        @return the result
+        run at midnight, calculates all events that should occur this day. 
         '''
-        self.logger.info("Fetching quote")
-        quote = urllib2.urlopen("http://www.dagenscitat.nu/citat.js").read()
+        if(str(datetime.datetime.today().weekday()) != str(self.current_day)): # Check if new day
+            self.current_time, self.current_day, self.current_date = timer_functions.get_time_and_day_and_date()
+            self.schedule_events()
+            self.todays_events = self.sort_events(self.todays_events)
+            if (len(self.todays_events) > 0):
+                self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
+                self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+        else:
+            self.time_to_next_event = timer_functions.calculate_time_until_midnight()
+            self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.time_to_next_event) + " seconds")
 
-        quote = quote.split("<")[1]
-        result = quote.split(">")[1]
-
-        return result
-
-    def encode_quote(self, quote):
+    def sort_events(self, events):
         '''
-        Encode the quote
+        Sort all events based on when they expire. 
+        Remove events where expire time is already passed.
+        @param events list of all events
         '''
-        self.logger.debug("Encoding qoute")
-        quote = quote.replace(" ","%20") 
-        quote = quote.replace('&auml;','%C3%A4')        
-        quote = quote.replace('&aring;','%C3%A5')
-        quote = quote.replace('&ouml;','%C3%B6')       
-        self.logger.debug("Encoded quote:" + quote)
-        return quote
+        future_events = []
+        for event in self.todays_events:
+            if (event.time > self.current_time):
+                future_events.append(event)
+            else:
+                self.logger.debug("Time ["+event.time+"] is already passed")
+            
+        sorted_events = sorted(future_events, key=lambda timeEvent: timeEvent.time)
+        id = 0
+        for event in sorted_events:
+            self.logger.info("Event["+str(event.slogan)+"] Timeout[" + str(event.time)+"]")
+            id +=1
+        return sorted_events
+
+    def schedule_events(self):
+        '''
+        Parse all configured events
+        '''
+        configuration = self.config['ANNOUNCEMENTS_SCHEMA']
+        for event in configuration:
+            items = event.split(",")
+            if not timer_functions.enabled_this_day(self.current_day,
+                                                    self.current_date,
+                                                    items[2].strip()):
+                self.logger.info("Event Timer not configured this day")
+                continue
+            
+            self.todays_events.append(AnnouncementEvent(items[0].strip(),  # Slogan
+                                                items[1].strip(),  # time
+                                                items[3].strip(),  # announcment id
+                                                items[4].strip()))  # speaker
+                                                
     
-
 if __name__ == '__main__':
     config = configuration.create()
     log_manager.start_logging(config['LOGFILE_PATH'],loglevel=4)

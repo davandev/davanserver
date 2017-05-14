@@ -19,11 +19,11 @@ class AuthenticationService(BaseService):
     does not require request through this service
     '''
 
-    def __init__(self, config ):
+    def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.AUTH_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.AUTH_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.ok_rsp = 200
         self.nok_rsp = 401

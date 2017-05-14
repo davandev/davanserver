@@ -25,11 +25,11 @@ class PresenceMgrService(BaseService):
     classdocs
     '''
 
-    def __init__(self, config ):
+    def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.PRESENCE_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.PRESENCE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.hping_cmd = ['sudo','/usr/sbin/hping3', '-2', '-c', '10', '-p', '5353', '-i' ,'u1','','-q']
         self.devices_cmd =['sudo','/usr/sbin/arp', '-an']#, | awk '{print $4} '"]

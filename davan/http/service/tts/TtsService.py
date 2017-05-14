@@ -4,13 +4,9 @@
  
 import logging
 import os
-import urllib
 import shutil
-import __builtin__
 import hashlib
-import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd_executor
-from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
 from davan.http.service.tts.tts_engine_voicerss import TtsVoiceRssFactory 
@@ -23,14 +19,16 @@ class TtsService(BaseService):
 
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.TTS_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.TTS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.tts_engine = TtsEngineAndroid(config)
         self.async_filename = None
+        self.speakers=[0,1,2] #all, roxcore, rpi
+        self.play_in_speakers = 0
         
     def handle_request(self, msg):
         '''
@@ -41,17 +39,18 @@ class TtsService(BaseService):
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
         else:
-            self.start(msg.split('=')[1])
+            self.start(msg.split('=')[1],0)
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
-    def start(self, msg):
+    def start(self, msg, speakers):
         '''
         Recevied request from Fibaro system to speak message.
         Check if message if already available, otherwise contact
         VoiceRSS to translate and get the mp3 file.
         @param msg to translate and speak.
         '''
+        self.play_in_speakers = speakers
         self.increment_invoked()
 
         if os.path.exists(self.config['SPEAK_FILE']):
@@ -78,12 +77,13 @@ class TtsService(BaseService):
         Play the mp3 files in speakers
         """
         shutil.copyfile(self.config['MP3_ROOT_FOLDER'] + mp3_file, self.config['SPEAK_FILE'])
-        cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
-                                   self.config['SPEAK_FILE'] , 
-                                   self.config['SPEAK_CMD'])
-
-        speaker = __builtin__.davan_services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
-        speaker.handle_request(mp3_file)
+        if self.play_in_speakers == 0 or self.play_in_speakers == 2:
+            cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
+                                                self.config['SPEAK_FILE'] , 
+                                                self.config['SPEAK_CMD'])
+        if self.play_in_speakers == 0 or self.play_in_speakers == 1:
+            speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+            speaker.handle_request(mp3_file)
         
     def handle_ttsCompleted_callback(self):
         """

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 import os
 import logging
 import urllib
@@ -65,3 +67,22 @@ def send_telegram_message(config, msg):
     for chatid in config['CHATID']:
         url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(msg)
         urllib.urlopen(url)
+
+def encode_message(message):
+    '''
+    Encode the quote
+    '''
+    logger.debug("Encoding message")
+    message = message.replace(" ","%20") 
+    
+    message = message.replace('ä','%C3%A4') # Whitespace
+    message = message.replace('å','%C3%A5') # Whitespace
+    message = message.replace('ö','%C3%B6') # Whitespace
+
+    message = message.replace('&auml;','%C3%A4')        
+    message = message.replace('&aring;','%C3%A5')
+    message = message.replace('&ouml;','%C3%A6') # ö
+    #message = message.replace('&ouml;','%C3%B6')   
+        
+    logger.debug("Encoded quote:" + message)
+    return message

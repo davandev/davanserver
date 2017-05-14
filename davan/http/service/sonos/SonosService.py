@@ -18,12 +18,12 @@ class SonosService(BaseService):
     classdocs
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         /Sonos?msg=sdfsa_asdfdf_asdf
         '''
-        BaseService.__init__(self, constants.SONOS_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.SONOS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     def _parse_request(self, msg):

@@ -16,11 +16,11 @@ class RoxcoreService(BaseService):
     '''
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.ROXCORE_SPEAKER_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.ROXCORE_SPEAKER_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.host_address = "http://" + config['ROXCORE_HOST_ADDRESS']
 
@@ -39,11 +39,6 @@ class RoxcoreService(BaseService):
             self.increment_errors()
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
-    def start(self):
-        '''
-        '''
-        self.logger.info("Start roxcore service")
-
     def has_html_gui(self):
         """
         Override if service has gui

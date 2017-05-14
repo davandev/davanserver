@@ -13,45 +13,28 @@ import davan.config.config_creator as configuration
 import davan.util.constants as constants
 
 from davan.util import application_logger as log_manager
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 
-class ActiveScenesMonitorService(BaseService):
+class ActiveScenesMonitorService(ReoccuringBaseService):
     '''
     Monitor active scenes on Fibaro system, in some cases
     scenes that should always be running are stopped.
     Check status of each active scene and start it if stopped. 
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self,constants.ACTIVE_SCENES_SERVICE_NAME, config)
+        ReoccuringBaseService.__init__(self,constants.ACTIVE_SCENES_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.event = Event()
-
-    def stop_service(self):
-        self.logger.info("Stopping service")
-        self.event.set()
-    
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        self.logger.info("Starting re-occuring event")
-
-        def loop():
-            while not self.event.wait(900): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
-
-        Thread(target=loop).start()    
-        return self.event.set
-                                         
-    def timeout(self):
+        self.time_to_next_timeout = 900
+        
+    def get_next_timeout(self):
+        return self.time_to_next_timeout
+                                             
+    def handle_timeout(self):
         '''
         Timeout received, iterate all active scenes to check that they are running on fibaro 
         system, otherwise start them
@@ -92,7 +75,7 @@ class ActiveScenesMonitorService(BaseService):
         Override and provide gui
         """
         if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+            return ReoccuringBaseService.get_html_gui(self, column_id)
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

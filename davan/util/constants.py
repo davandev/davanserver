@@ -7,7 +7,7 @@ RESPONSE_OK = 200
 RESPONSE_NOT_OK = 401
 RESPONSE_FILE_NOT_FOUND = "File not found"
 RESPONSE_EMPTY_MSG = ""
-
+RESPONSE_FAILED_TO_TAKE_PICTURE = "Failed to take picture"
 TURN_ON = "turnOn"
 TURN_OFF ="turnOff"
 
@@ -37,6 +37,7 @@ KEYPAD_SERVICE_NAME = "KeypadAliveService"
 RECEIVER_BOT_SERVICE_NAME = "ReceiverBotService"
 ROXCORE_SPEAKER_SERVICE_NAME = "RoxcoreService"
 ANNOUNCEMENT_SERVICE_NAME = "AnnouncementsService"
+CALENDAR_SERVICE_NAME = "CalendarService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"

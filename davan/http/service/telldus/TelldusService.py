@@ -16,11 +16,11 @@ class TelldusService(BaseService):
     Forwards on/off triggering of lights from Fibaro system towards Telldus Live
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.TELLDUS_SERVICE_NAME, config)
+        BaseService.__init__(self, constants.TELLDUS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
 
     def parse_request(self, msg):

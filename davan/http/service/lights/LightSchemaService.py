@@ -5,19 +5,15 @@
 import logging
 import os
 import traceback
-import sys
-import time
-#import ntplib
 import urllib
-from random import randint
-from threading import Thread,Event
+import datetime
+
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper 
-from davan.http.service.base_service import BaseService
-from datetime import datetime, timedelta
-from datetime import *
-import json
+import davan.util.timer_functions as timer_functions
+import davan.util.fibaro_functions as fibaro_functions
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 class TimeEvent():
     def __init__(self, room, time, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
@@ -45,16 +41,16 @@ class TimeEvent():
             "ButtonId[ "+str(self.label_id)+" ] "\
             "Enabled_when_armed[ "+str(self.enabled_when_armed)+" ]"
         
-class LightSchemaService(BaseService):
+class LightSchemaService(ReoccuringBaseService):
     '''
     Notice requires ntplib
     '''
 
-    def __init__(self, config):
+    def __init__(self, service_provider, config):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.LIGHTSCHEMA_SERVICE, config)
+        ReoccuringBaseService.__init__(self, constants.LIGHTSCHEMA_SERVICE, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         # Sorted list of event to execute during the day
         self.todays_events = []
@@ -65,39 +61,20 @@ class LightSchemaService(BaseService):
         self.config = config
         # Number of seconds until next event occur
         self.time_to_next_event = 0
-        self.event = Event()    
   
-    def stop_service(self):
+    def get_next_timeout(self):
         '''
-        Stop the current service
+        Return time to next timeout
         '''
-        self.logger.info("Stopping service")
-        self.event.set()
-        
-    def start_service(self):
-        '''
-        Start a timer that will pop repeatedly.
-        @interval time in seconds between timeouts
-        @func callback function at timeout.
-        '''
-        self.logger.info("Starting re-occuring event")
-        self.detemine_todays_events()
-        
-        def loop():
-            while not self.event.wait(self.time_to_next_event): # the first call is in `interval` secs
-                self.increment_invoked()
-                self.timeout()
-                
-                if len(self.todays_events) > 0:
-                    self.time_to_next_event = self.calculate_next_timeout(self.todays_events[0].time)
-                    self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
-                else:
-                    self.detemine_todays_events()
-
-        Thread(target=loop).start()    
-        return self.event.set
-
-    def timeout(self):
+        if len(self.todays_events) > 0:
+            self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
+            self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+        else:
+            self.detemine_todays_events()
+    
+        return self.time_to_next_event
+    
+    def handle_timeout(self):
         '''
         Timeout received, fetch event and perform action.
         '''
@@ -116,7 +93,7 @@ class LightSchemaService(BaseService):
         Execute event
         @param event event to be executed
         '''
-        if event.enabled_when_armed and not self.alarm_is_armed():
+        if event.enabled_when_armed and not fibaro_functions.is_alarm_armed(self.config):
             self.logger.info("Event is only triggered when alarm is armed")
             return
             
@@ -138,7 +115,7 @@ class LightSchemaService(BaseService):
         
         # update status label of virtual device    
         self.update_virtual_device(event.virtual_device_id, "6", message)
-        result = urllib.urlopen(url)        
+        urllib.urlopen(url)        
             
     def schedule_events(self):
         '''
@@ -148,11 +125,13 @@ class LightSchemaService(BaseService):
         configuration = self.config['LIGHT_SCHEMA']
         for event in configuration:
             items = event.split(",")
-            if not self.enabled_this_day(items[3]):
+            if not timer_functions.enabled_this_day(self.current_day,
+                                                    self.current_time,
+                                                    items[3]):
                 self.logger.info("Event Timer not configured this day")
                 continue
+            starttime = timer_functions.add_random_time(items[1],int(items[7]))
             
-            starttime = self.add_random_time(items[1],int(items[7]))
             self.todays_events.append(TimeEvent(items[0],  # Room name
                                                 starttime, # Start time
                                                 items[4],  # Light level
@@ -162,7 +141,7 @@ class LightSchemaService(BaseService):
                                                 constants.TURN_ON,
                                                 items[9]))
             
-            stoptime = self.add_random_time(items[2],int(items[7]))
+            stoptime = timer_functions.add_random_time(items[2],int(items[7]))
             self.todays_events.append(TimeEvent(items[0],
                                                 stoptime,
                                                 items[4],
@@ -172,57 +151,29 @@ class LightSchemaService(BaseService):
                                                 constants.TURN_OFF,
                                                 items[9]))
             
-            self.update_virtual_device(items[8],items[6],str(starttime+ " => " + stoptime))
-    
-    def enabled_this_day(self, configured_interval):
-        '''
-        Check if this day is within the configured interval
-        @return true if day is within interval false otherwise
-        '''
-        if (self.current_day < 5 and configured_interval == "weekdays"):
-            return True
-        elif self.current_day >= 5 and self.current_day <=6 and configured_interval =="weekend":
-            return True
-        elif configured_interval == "week": 
-            return True
-        return False
+            self.update_virtual_device(items[8],
+                                       items[6],
+                                       str(starttime+ " => " + stoptime))
         
-    def update_current_time_and_day(self):
-        '''
-        Set current_day and current_time
-        '''
-        n = datetime.now()
-        self.current_time = format(n,"%H:%M:%S")
-        t = n.timetuple()
-        y, m, d, h, min, sec, wd, yd, i = t
-        self.current_day = wd
-        self.logger.info("Day["+str(wd)+"]" + " Time["+str(self.current_time)+"]")
-    
     def detemine_todays_events(self):
         '''
         run at midnight, calculates all events that should occur this day. 
         '''
-        if(str(datetime.today().weekday()) != str(self.current_day)): # Check if new day
-            self.update_current_time_and_day()
+        self.logger.info("weekday["+str(datetime.datetime.today().weekday())+"] current_day["+str(self.current_day)+"]")
+        if(str(datetime.datetime.today().weekday()) != str(self.current_day)): # Check if new day
+            self.current_time,self.current_day, _ = timer_functions.get_time_and_day_and_date()
             self.schedule_events()
             self.todays_events = self.sort_events(self.todays_events)
             if (len(self.todays_events) > 0):
-                self.time_to_next_event = self.calculate_next_timeout(self.todays_events[0].time)
+                self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
                 self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+            else:
+                self.logger.info("No events are configured, stop timer")
         else:
-            self._calculate_time_until_midnight()
+            self.time_to_next_event = timer_functions.calculate_time_until_midnight()
+            #self._calculate_time_until_midnight()
             self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.time_to_next_event) + " seconds")
   
-    def _calculate_time_until_midnight(self):   
-        '''
-        When all events are executed, calculate time until midnight
-        '''
-        tomorrow = date.today() + timedelta(1)
-        midnight = datetime.combine(tomorrow, time())
-        now = datetime.now()
-        self.time_to_next_event = (midnight - now).seconds + 60
-        self.logger.info("Sleep until midnight " + str(self.time_to_next_event) + " seconds")
-              
     def sort_events(self, events):
         '''
         Sort all events based on when they expire. 
@@ -237,54 +188,12 @@ class LightSchemaService(BaseService):
                 self.logger.info("Time ["+event.time+"] is already passed")
             
         sorted_events = sorted(future_events, key=lambda timeEvent: timeEvent.time)
-        id = 0
+        event_index = 0
         for event in sorted_events:
-            self.logger.info("Event["+str(id)+"]" + str(event.time) + " " + str(event.room) + " " + str(event.onoff))
-            id +=1
+            self.logger.info("Event["+str(event_index)+"] " + str(event.time) + " " + str(event.room) + " " + str(event.onoff))
+            event_index +=1
         return sorted_events
     
-    def calculate_next_timeout(self, event_time):
-        '''
-        Calculate the number of seconds until the time expires
-        @param event_time, expire time
-        '''
-        import datetime as dt
-        self.logger.info("Calculate next timeout")
-        self.update_current_time_and_day()
-        start_dt = dt.datetime.strptime(self.current_time, '%H:%M:%S')
-        end_dt = dt.datetime.strptime(event_time, '%H:%M')
-        diff = (end_dt - start_dt) 
-        if diff.days < 0:
-            self.logger.warning("End is before start, fix it")
-            #diff = timedelta(days=0, seconds=diff.seconds)
-            # Set timeout to occur in 30 seconds 
-            diff = 30 
-        #self.logger.info("Next timeout in " + str(diff.seconds)+" seconds")
-        return diff.seconds
-    
-    def add_random_time(self, configured_time, randomValue):
-        '''
-        Adds a random value to the configured time.
-        @param configured_time, configured expire time
-        @param randomValue, the configured random value
-        @return new expire time
-        '''
-        if randomValue == 0:
-            return configured_time
-        
-        random = (randint(-randomValue,randomValue))
-
-        start_dt = datetime.strptime(configured_time, '%H:%M')
-        sum = (start_dt + timedelta(minutes=random)) 
-        timeout = format(sum, '%H:%M')
-        if "00:" in str(timeout):
-            self.logger.info("Timer expires after midnight, use original value")
-            timeout = configured_time
-        self.logger.info("Configured["+str(configured_time)+"] random["+str(random)+"] NewValue["+ str(timeout)+"]")
-
-        return timeout
-    
-
     def update_virtual_device(self, virtualdevice, labelid, message):
         '''
         Update virtual device on fibaro system with todays schedule
@@ -298,40 +207,8 @@ class LightSchemaService(BaseService):
                                 virtualdevice, 
                                 self.config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
                                 message)
-            result = urllib.urlopen(url)                
-    
-    def alarm_is_armed(self):
-        '''
-        Check if alarm is armed
-        @return True if alarm is armed, False otherwise
-        '''
-        result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "globalVariables")
-        res = result.read()
-        data = json.loads(res)
-        
-        alarm = False 
-        armed = False
-        for items in data:
-            if items["name"] =="AlarmState" and items["value"] == "Armed":
-                armed = True
-            if items["name"] =="AlarmType" and items["value"] == "Alarm":
-                alarm = True
-        if alarm and armed:
-            return True 
-        return False
-        
-    def sync_time(self):
-        '''
-        Sync time once a day.
-        '''
-        try:
-            self.logger.info("Attempt to sync time with ntp server")
-#            client = ntplib.NTPClient()
-#            response = client.request('pool.ntp.org')
-#            os.system('date ' + time.strftime('%m%d%H%M%Y.%S',time.localtime(response.tx_time)))
-        except:
-            self.logger.warn('Could not sync with time server.')
-            
+            urllib.urlopen(url)                
+                    
     def has_html_gui(self):
         """
         Override if service has gui
@@ -343,7 +220,7 @@ class LightSchemaService(BaseService):
         Override and provide gui
         """
         if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+            return ReoccuringBaseService.get_html_gui(self, column_id)
         
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

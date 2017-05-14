@@ -274,8 +274,8 @@ def create_config(secret_config, config):
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,0',
         'Kitchen,18:15,23:45,week,10,65,2,1,194,0',
-        'Uterum,19:15,23:05,week,-1,192,1,10,195,0',
-        'Outdoor,19:10,23:30,week,-1,191,1,20,196,0',
+        'Uterum,20:00,23:05,week,-1,192,1,10,195,0',
+        'Outdoor,20:15,23:30,week,-1,191,1,20,196,0',
         'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
         'Wilma,18:15,19:50,week,20,173,2,20,197,1',
         'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
@@ -286,7 +286,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # ReceiverBot configuration
     #---------------------------------------------------------------------------------------------
-    config["ReceiverBotServiceEnabled"] = False
+    config["ReceiverBotServiceEnabled"] = True
     config["RECEIVER_BOT_TOKEN"] = secret_config.RECEIVER_BOT_TOKEN
 
     #---------------------------------------------------------------------------------------------
@@ -298,7 +298,22 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Announcement service
     #---------------------------------------------------------------------------------------------
-    config["AnnouncementsServiceEnabled"] = False
+    config["AnnouncementsServiceEnabled"] = True
+    config['ANNOUNCEMENTS_SCHEMA'] = [
+        #Slogan          | Time, | Interval | | announcementname | speaker | 
+        'SleepTime,        23:02,   weekdays,       night,           all',
+        'Morning,          07:15,   weekdays,       morning,         all',
+        'MorningWeekend,   09:00,   weekend,        morning,         all',
+        'WilmaBirthDay,    08:00,   02/06,          birthday,        all',
+        'test1,            23:01,   weekend,        morning,        all',
+        'test2,            23:02,   weekend,        morning,        all',
+   ]
+
+    #---------------------------------------------------------------------------------------------
+    # Calendar service
+    #---------------------------------------------------------------------------------------------
+    config['CalendarServiceEnabled'] = True
+    config['GOOGLE_CALENDAR_TOKEN'] = secret_config.GOOGLE_CALENDAR_TOKEN
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):

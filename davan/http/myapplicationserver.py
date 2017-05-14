@@ -5,6 +5,8 @@
 import logging
 import os
 import time
+import datetime
+import datetime.datetime.strptime
 from BaseHTTPServer import BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 import socket
@@ -16,6 +18,7 @@ import traceback
 import signal
 import sys
 import __builtin__
+
 
 import davan.util.application_logger as log_manager
 import davan.config.config_creator as config_factory
@@ -136,6 +139,8 @@ def start_server(configuration):
     @param port: The port that the server listens to
     """
     try:
+        time.strptime("01:00", '%H:%M')
+        _ = datetime.datetime.strptime("01:00", '%H:%M')
         global services
         services = ServiceInvoker(config)
         services.discover_services()
@@ -188,6 +193,8 @@ def handler(signum, frame):
     sys.exit(1)
 
 if __name__ == '__main__':
+    _ = datetime.datetime.strptime("01:00", '%H:%M')
+
     args = _parse_arguments() 
     config = config_factory.create(args.privateconfig)
     if args.debug: 
