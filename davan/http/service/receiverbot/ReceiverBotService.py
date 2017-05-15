@@ -14,7 +14,7 @@ from threading import Thread,Event
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper_functions
-
+import davan.util.converter_functions as converter
 from davan.util import application_logger as log_manager
 from davan.http.service.base_service import BaseService
 
@@ -25,6 +25,9 @@ class ReceiverBotService(BaseService):
     Monitor active scenes on Fibaro system, in some cases
     scenes that should always be running are stopped.
     Check status of each active scene and start it if stopped. 
+    
+    sudo apt-get install opus-tools
+    opusdec myaudio.ogg myaudio.wav
     '''
 
     def __init__(self, service_provider, config):
@@ -98,17 +101,48 @@ class ReceiverBotService(BaseService):
         try:
             logger.info("Handle : "+str(msg))
             chat_id = msg['chat']['id']
-            command = msg['text']
-         
+ 
+            if self.is_text_message(msg):
+                self.handle_text_message(msg)
+            else:
+                self.handle_voice_message(msg)
             self.increment_invoked()
-            logger.info( 'Got command: %s' % command )
-            encoded_message = helper_functions.encode_message(command.encode('utf-8'))
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(encoded_message,1)
-            url = 'http://192.168.2.173:80/web/message?text=%s&type=1&timeout=5' %encoded_message
-            result = urllib.urlopen(url)
-            res = result.read()
+            
             self.bot.sendMessage(chat_id, "Message handled")
+        except Exception:
+            logger.error(traceback.format_exc())
+            self.bot.sendMessage(chat_id, "Failed to handle message")
+            
+    def handle_voice_message(self, message):
+        ogg_file = self.config['TEMP_PATH'] + 'telegram_voice.ogg'
+        self.bot.download_file(message['voice']['file_id'], ogg_file)
+        wav_file = converter.ogg_to_wav(self.config, ogg_file)
+        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+        speaker.handle_request(wav_file)
+        
 
+    def handle_text_message(self,message):            
+        command = message['text']
+        logger.info( 'Got command: %s' % command )
+        encoded_message = helper_functions.encode_message(command.encode('utf-8'))
+        self.services.get_service(constants.TTS_SERVICE_NAME).start(encoded_message,1)
+
+        url = 'http://192.168.2.173:80/web/message?text=%s&type=1&timeout=5' %encoded_message
+        result = urllib.urlopen(url)
+        res = result.read()
+
+    def is_text_message(self, msg):
+        try:
+            msg['text']
+            return True
+        except:
+            return False
+        
+        #if "voice" in msg:
+        #    return True
+        #return False
+        
+        
 # local textinfo =fibaro:getGlobalValue("TvDisplayText")
 # msg2 = string.gsub(textinfo,'%s','%%20')
 # 
@@ -117,8 +151,6 @@ class ReceiverBotService(BaseService):
 # response ,status, errorCode = oFHttp:GET(message) 
 # fibaro:debug("Response:" .. response .. " Status: " ..status .. " ErrorCode: ".. errorCode)
                 
-        except Exception:
-            logger.error(traceback.format_exc())
         
 if __name__ == '__main__':
     config = configuration.create()

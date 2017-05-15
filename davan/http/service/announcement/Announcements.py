@@ -1,6 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 '''
-Created on 26 apr. 2017
-
 @author: davandev
 '''
 import os
@@ -18,28 +18,27 @@ global logger
 logger = logging.getLogger(os.path.basename(__file__))
 
 global weekdays
-weekdays=['måndag','tisdag','onsdag','torsdag','fredag','lördag','söndag',]
+weekdays=['mÃ¥ndag','tisdag','onsdag','torsdag','fredag','lÃ¶rdag','sÃ¶ndag',]
 months=['december','januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november']
-date= ['noll','första','andra','tredje','fjärde','femte','sjätte','sjunde','åttonde','nionde','tionde',
+date= ['noll','fÃ¶rsta','andra','tredje','fjÃ¤rde','femte','sjÃ¤tte','sjunde','Ã¥ttonde','nionde','tionde',
        'elfte','tolfte','trettonde','fjortonde','femtonde','sextonde','sjuttonde','artonde','nittonde','tjugonde',
-       'tjugoförsta','tjugoandra','tjugotredje','tjugofjärde','tjugofemte','tjugosjätte','tjugosjunde',
-       'tjugoåttonde','tjugonionde','trettionde','trettiförsta']
+       'tjugofÃ¶rsta','tjugoandra','tjugotredje','tjugofjÃ¤rde','tjugofemte','tjugosjÃ¤tte','tjugosjunde',
+       'tjugoÃ¥ttonde','tjugonionde','trettionde','trettifÃ¶rsta']
 
-def create_weather_announcement(services):
-    '''
-    
-    '''
-    logger.info("Create weather announcement")
-    weather = services.get_service(constants.WEATHER_SERVICE).get_announcement()
-    service_data = weather.get_cache_service_data()
-    if service_data == None:
-        logger.warning("Cached service data is none")
-        return None
-    announcement = "Just nu är det "
-    announcement += str(service_data["current_observation"]["temp_c"])
-    announcement += " grader ute och det känns som "
-    announcement += str(service_data["current_observation"]["feelslike_c"]) + " grader. "
-    return helper_functions.encode_message(announcement)
+# def create_weather_announcement(services):
+#     '''
+#     '''
+#     logger.info("Create weather announcement")
+#     weather = services.get_service(constants.WEATHER_SERVICE).get_announcement()
+#     service_data = weather.get_cache_service_data()
+#     if service_data == None:
+#         logger.warning("Cached service data is none")
+#         return None
+#     announcement = "Just nu Ã¤r det "
+#     announcement += str(service_data["current_observation"]["temp_c"])
+#     announcement += " grader ute och det kÃ¤nns som "
+#     announcement += str(service_data["current_observation"]["feelslike_c"]) + " grader. "
+#     return helper_functions.encode_message(announcement)
 
 def create_morning_announcement():
     n = datetime.now()
@@ -49,7 +48,7 @@ def create_morning_announcement():
     current_day = wd
     
     logger.info("Create morning announcement")
-    announcement = "God morgon familjen äntligen är det en ny dag. Idag är det "
+    announcement = "God morgon familjen Ã¤ntligen Ã¤r det en ny dag. Idag Ã¤r det "
     announcement += str(weekdays[current_day]) + ' den '
     announcement += date[d] + " " + str(months[m]) + '. '
     logger.info("Current month:" + str(months[m]) + " day:" + str(d) + '. ')
@@ -58,30 +57,30 @@ def create_morning_announcement():
 
 def create_night_announcement():
     logger.info("Create night announcement")
-    announcement = "Nu är det dags att gå och lägga sig Mia. God natt"
+    announcement = "Nu Ã¤r det dags att gÃ¥ och lÃ¤gga sig Mia. God natt"
     
     return helper_functions.encode_message(announcement)
 
-def create_calendar_announcement(services):
-    logger.info("Create calendar announcement")
-    announcement = services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
-    return helper_functions.encode_message(announcement)
+# def create_calendar_announcement(services):
+#     logger.info("Create calendar announcement")
+#     announcement = services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
+#     return helper_functions.encode_message(announcement)
 
-def create_quote_announcement():
-    '''
-    Fetch quote from dagenscitat.nu 
-    @return the result
-    '''
-    logger.info("Fetching quote")
-    quote = urllib2.urlopen("http://www.dagenscitat.nu/citat.js").read()
-
-    quote = quote.split("<")[1]
-    result = "Dagens citat "
-    result += quote.split(">")[1]
-    
-    return helper_functions.encode_message(result)
-
-    
+# def create_quote_announcement():
+#     '''
+#     Fetch quote from dagenscitat.nu 
+#     @return the result
+#     '''
+#     logger.info("Fetching quote")
+#     quote = urllib2.urlopen("http://www.dagenscitat.nu/citat.js").read()
+# 
+#     quote = quote.split("<")[1]
+#     result = "Dagens citat "
+#     result += quote.split(">")[1]
+#     
+#     return helper_functions.encode_message(result)
+# 
+#     
     
     
     
@@ -97,9 +96,9 @@ def encode_message(message):
     logger.debug("Encoding message")
     message = message.replace(" ","%20") 
     
-    message = message.replace('å','%C3%A5')
-    message = message.replace('ö','%C3%B6')
-    message = message.replace('ä','%C3%A4')
+    message = message.replace('ï¿½','%C3%A5')
+    message = message.replace('ï¿½','%C3%B6')
+    message = message.replace('ï¿½','%C3%A4')
 
     message = message.replace('&auml;','%C3%A4')        
     message = message.replace('&aring;','%C3%A5')

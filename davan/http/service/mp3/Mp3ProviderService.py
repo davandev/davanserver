@@ -30,19 +30,28 @@ class Mp3ProviderService(BaseService):
         '''
         try:
             self.increment_invoked()
-            self.logger.debug("Received mp3 service request for file: " + msg)
+            self.logger.debug("Received service request for file: " + msg)
             res = msg.split('=')
             f = open(self.config['MP3_ROOT_FOLDER'] + res[1])
-            #f = open(self.config['MP3_ROOT_FOLDER'] + "daily_quote.mp3")
             content = f.read()
             f.close()
+            return constants.RESPONSE_OK, self.get_content_type(res[1]), content
         except:
             self.increment_errors()
             self.logger.warning("Failed to open file: " + self.config['MP3_ROOT_FOLDER'] + res[1])
             return constants.RESPONSE_NOT_OK, constants.RESPONSE_FILE_NOT_FOUND
         
-        return constants.RESPONSE_OK, constants.MIME_TYPE_MP3, content
-    
+    def get_content_type(self, requested_file):
+        if (requested_file.endswith(constants.OGG_EXTENSION)):
+            self.logger.info("Received ogg request!")
+            return constants.MIME_TYPE_OGG
+
+        elif (requested_file.endswith(constants.WAV_EXTENSION)):
+            self.logger.info("Received wav request!")
+            return constants.MIME_TYPE_WAV
+        else: 
+            return constants.MIME_TYPE_MP3
+        
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
 

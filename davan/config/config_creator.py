@@ -305,8 +305,6 @@ def create_config(secret_config, config):
         'Morning,          07:15,   weekdays,       morning,         all',
         'MorningWeekend,   09:00,   weekend,        morning,         all',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        all',
-        'test1,            23:01,   weekend,        morning,        all',
-        'test2,            23:02,   weekend,        morning,        all',
    ]
 
     #---------------------------------------------------------------------------------------------

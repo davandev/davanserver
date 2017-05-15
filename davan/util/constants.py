@@ -47,10 +47,16 @@ HTML_EXTENSION = ".html"
 CSS_EXTENSION = ".css"
 MP3_EXTENSION = ".mp3"
 MP3_EXTENSION1 = "-mp3"
+OGG_EXTENSION = ".ogg"
+OGG_EXTENSION1 = "-ogg"
+WAV_EXTENSION = ".wav"
+WAV_EXTENSION1 = "-wav"
 
 MIME_TYPE_HTML = 'text/html'
 MIME_TYPE_CSS = 'text/css'
+MIME_TYPE_WAV = 'audio/wav'
 MIME_TYPE_MP3 = 'audio/mpeg'
+MIME_TYPE_OGG = 'audio/ogg'
 
 HTML_TABLE_END = "</table>"
 HTML_TABLE_START = """<style>

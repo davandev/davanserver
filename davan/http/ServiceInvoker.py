@@ -79,6 +79,9 @@ class ServiceInvoker(object):
         elif service.endswith(constants.MP3_EXTENSION) or service.endswith(constants.MP3_EXTENSION1):
             self.logger.debug("Invoking service: [mp3]")
             return self.services[constants.MP3_SERVICE_NAME]
+        elif service.endswith(constants.OGG_EXTENSION) or service.endswith(constants.OGG_EXTENSION1):
+            self.logger.debug("Invoking service: [ogg]")
+            return self.services[constants.MP3_SERVICE_NAME]
         elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
             self.logger.debug("Invoking service: [html]")
             return self.services[constants.HTML_SERVICE_NAME]

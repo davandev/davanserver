@@ -81,8 +81,8 @@ def encode_message(message):
 
     message = message.replace('&auml;','%C3%A4')        
     message = message.replace('&aring;','%C3%A5')
-    message = message.replace('&ouml;','%C3%A6') # ö
+    message = message.replace('&ouml;','%C3%B6') # ö
     #message = message.replace('&ouml;','%C3%B6')   
         
-    logger.debug("Encoded quote:" + message)
+    logger.debug("Encoded message:" + message)
     return message

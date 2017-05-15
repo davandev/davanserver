@@ -43,7 +43,7 @@ class TtsService(BaseService):
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
-    def start(self, msg, speakers):
+    def start(self, msg, speakers, cache=False):
         '''
         Recevied request from Fibaro system to speak message.
         Check if message if already available, otherwise contact
