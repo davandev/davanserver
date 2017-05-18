@@ -25,7 +25,7 @@ class AnnouncementEvent():
         self.slogan = slogan
         self.time = time
         self.announcement_id = announcement_id
-        self.speaker = speaker
+        self.speaker_id = speaker
         
 
     def toString(self):
@@ -67,7 +67,7 @@ class AnnouncementsService(ReoccuringBaseService):
         '''
         self.logger.info("Msg:"+msg)
         announcement_id = (msg.split('=')[1])
-        event = AnnouncementEvent("ExternalCall", "", announcement_id, "1")
+        event = AnnouncementEvent("ExternalCall", "", announcement_id, "0")
         if self.invoke_event(event):
             return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_OK
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_NOT_OK
@@ -113,6 +113,7 @@ class AnnouncementsService(ReoccuringBaseService):
                 result = service.get_announcement()
             elif event.announcement_id == "morning" :
                 result = announcements.create_morning_announcement()
+                result += announcements.create_name_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
@@ -130,7 +131,7 @@ class AnnouncementsService(ReoccuringBaseService):
                 self.logger.info("Cant find announcement to play:" + event.announcement_id)
                 return False
             self.logger.info("Announcement:" + result)
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(result,1)
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(result,event.speaker_id)
             return True
         except Exception:
             self.logger.error(traceback.format_exc())
@@ -190,7 +191,7 @@ class AnnouncementsService(ReoccuringBaseService):
             self.todays_events.append(AnnouncementEvent(items[0].strip(),  # Slogan
                                                 items[1].strip(),  # time
                                                 items[3].strip(),  # announcment id
-                                                items[4].strip()))  # speaker
+                                                items[4].strip()))  # speaker_id
                                                 
     
 if __name__ == '__main__':

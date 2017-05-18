@@ -68,12 +68,13 @@ def send_telegram_message(config, msg):
         url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(msg)
         urllib.urlopen(url)
 
-def encode_message(message):
+def encode_message(message,encode_whitespace=True):
     '''
     Encode the quote
     '''
     logger.debug("Encoding message")
-    message = message.replace(" ","%20") 
+    if encode_whitespace:
+        message = message.replace(" ","%20") 
     
     message = message.replace('ä','%C3%A4') # Whitespace
     message = message.replace('å','%C3%A5') # Whitespace

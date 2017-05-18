@@ -17,7 +17,6 @@ import davan.util.timer_functions as timer_functions
 
 import logging
 from threading import Thread, Event
-#from datetime import datetime, timedelta
 import datetime
 
 import davan.config.config_creator as configuration
@@ -105,11 +104,10 @@ class CalendarService(ReoccuringBaseService):
         return self.time_to_next_event
     
     def get_credentials(self):
-        """Gets valid user credentials from storage.
-    
+        """
+        Gets valid user credentials from storage.
         If nothing has been stored, or if the stored credentials are invalid,
         the OAuth2 flow is completed to obtain the new credentials.
-    
         Returns:
             Credentials, the obtained credential.
         """
@@ -134,13 +132,14 @@ class CalendarService(ReoccuringBaseService):
         '''
         if len(self.todays_events)== 0:
             self.logger.info("No event today")
-            return ""
+            announcement = "Dagens schema. Ingen planerad aktivitet idag."
+        else:
+            announcement = "Dagens schema. "
+            for calendar_event in self.todays_events:
+            # announcement += str(""+calendar_event.event)
+                source = calendar_event.event.encode("utf-8")
+                announcement += helper_functions.encode_message(source + ". ")
         
-        announcement = "Dagens schema. "
-        for calendar_event in self.todays_events:
-        # announcement += str(""+calendar_event.event)
-            source = calendar_event.event.encode("utf-8")
-            announcement += helper_functions.encode_message(source + ". ")
         return helper_functions.encode_message(announcement)
 
     def has_html_gui(self):
@@ -159,13 +158,13 @@ class CalendarService(ReoccuringBaseService):
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         htmlresult = ""
-        if len(self.todays_events) >0:
+        if self.todays_events != None and len(self.todays_events) >0:
             for event in self.todays_events:
                 htmlresult += "<li>" + event.calendar.encode("utf-8") + " " + event.event.encode("utf-8") + "</li>\n"
         else:
-                htmlresult += "<li>No more scheduled events today</li>\n"            
+            htmlresult += "<li>No more scheduled events today</li>\n"            
         
-        htmlresult = helper_functions.encode_message(htmlresult)
+        htmlresult = helper_functions.encode_message(htmlresult,False)
         column = column.replace("<SERVICE_VALUE>", htmlresult)
 
         return column        

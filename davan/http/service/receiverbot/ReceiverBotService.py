@@ -26,6 +26,10 @@ class ReceiverBotService(BaseService):
     scenes that should always be running are stopped.
     Check status of each active scene and start it if stopped. 
     
+    Requires telepot:
+    pip install telepot
+    
+    Requires opus-tools to convert
     sudo apt-get install opus-tools
     opusdec myaudio.ogg myaudio.wav
     '''
@@ -37,7 +41,7 @@ class ReceiverBotService(BaseService):
         BaseService.__init__(self,constants.RECEIVER_BOT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         logging.getLogger('urllib3').setLevel(logging.CRITICAL)
-
+        self.current_speaker = "0"
         self.event = Event()
         self.bot = None
 
@@ -85,9 +89,9 @@ class ReceiverBotService(BaseService):
         return True
     
     def get_html_gui(self, column_id):
-#         """
-#         Override and provide gui
-#         """
+        """
+        Override and provide gui
+        """
         if not self.is_enabled():
             return BaseService.get_html_gui(self, column_id)
         
@@ -98,59 +102,79 @@ class ReceiverBotService(BaseService):
 
 
     def handle(self,msg):
+        '''
+        Receive a message from telegram (telepot)
+        Determine if it is a voice or text message and
+        play in the configured speaker. 
+        '''
         try:
             logger.info("Handle : "+str(msg))
             chat_id = msg['chat']['id']
  
             if self.is_text_message(msg):
-                self.handle_text_message(msg)
+                result = self.handle_text_message(msg)
             else:
-                self.handle_voice_message(msg)
+                result = self.handle_voice_message(msg)
             self.increment_invoked()
             
-            self.bot.sendMessage(chat_id, "Message handled")
+            self.bot.sendMessage(chat_id, result)
         except Exception:
             logger.error(traceback.format_exc())
             self.bot.sendMessage(chat_id, "Failed to handle message")
             
     def handle_voice_message(self, message):
+        '''
+        A voice message is returned from Telegram, download it.
+        Convert the downloaded ogg file to wav, needed since the 
+        roxcore speakers cannot handle the ogg encoding.
+        @param message message to play in speaker.
+        '''
         ogg_file = self.config['TEMP_PATH'] + 'telegram_voice.ogg'
         self.bot.download_file(message['voice']['file_id'], ogg_file)
         wav_file = converter.ogg_to_wav(self.config, ogg_file)
         speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
-        speaker.handle_request(wav_file)
+        speaker.handle_request(wav_file,self.current_speaker)
+        return "Voice message played in speaker " + self.current_speaker
         
 
-    def handle_text_message(self,message):            
+    def handle_text_message(self,message):
+        '''
+        Received a text message, 
+        '''            
         command = message['text']
         logger.info( 'Got command: %s' % command )
-        encoded_message = helper_functions.encode_message(command.encode('utf-8'))
-        self.services.get_service(constants.TTS_SERVICE_NAME).start(encoded_message,1)
-
-        url = 'http://192.168.2.173:80/web/message?text=%s&type=1&timeout=5' %encoded_message
-        result = urllib.urlopen(url)
-        res = result.read()
+        
+        if command == "speakers":
+            speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+            result = "Available speakers: \n"
+            for key,value in speaker.speakers.items():
+                result += "Id[" + key + "]" + "Name[" +value.slogan+ "]\n"
+            result += "Current speaker is " + self.current_speaker
+            return result
+        elif command.startswith("set speaker "):
+            self.current_speaker = command.replace("set speaker ", "")
+            result = "Current speaker is : "+ self.current_speaker
+            return result
+        else:
+            encoded_message = helper_functions.encode_message(command.encode('utf-8'))
+            tts_service = self.services.get_service(constants.TTS_SERVICE_NAME)
+            tts_service.start(encoded_message,self.current_speaker)
+    
+            url = 'http://192.168.2.173:80/web/message?text=%s&type=1&timeout=5' %encoded_message
+            result = urllib.urlopen(url)
+            res = result.read()
+            return "Text message played in speaker "+ self.current_speaker 
 
     def is_text_message(self, msg):
+        '''
+        Determine if text message is a text or voice message
+        @return True if text message, False otherwise
+        '''
         try:
             msg['text']
             return True
         except:
             return False
-        
-        #if "voice" in msg:
-        #    return True
-        #return False
-        
-        
-# local textinfo =fibaro:getGlobalValue("TvDisplayText")
-# msg2 = string.gsub(textinfo,'%s','%%20')
-# 
-# local message = "/web/message?text=" .. msg2 .."&type=1&timeout=5"
-# fibaro:debug("Message:" .. message)
-# response ,status, errorCode = oFHttp:GET(message) 
-# fibaro:debug("Response:" .. response .. " Status: " ..status .. " ErrorCode: ".. errorCode)
-                
         
 if __name__ == '__main__':
     config = configuration.create()

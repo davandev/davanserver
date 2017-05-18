@@ -272,10 +272,10 @@ def create_config(secret_config, config):
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
-        'Kitchen,06:35,08:15,weekdays,10,65,1,15,194,0',
+        'Kitchen,06:15,07:30,weekdays,10,65,1,15,194,0',
         'Kitchen,18:15,23:45,week,10,65,2,1,194,0',
-        'Uterum,20:00,23:05,week,-1,192,1,10,195,0',
-        'Outdoor,20:15,23:30,week,-1,191,1,20,196,0',
+        'Uterum,20:30,23:45,week,-1,192,1,10,195,0',
+        'Outdoor,21:00,23:40,week,-1,191,1,20,196,0',
         'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
         'Wilma,18:15,19:50,week,20,173,2,20,197,1',
         'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
@@ -293,18 +293,23 @@ def create_config(secret_config, config):
     # Roxcore speaker configuration
     #---------------------------------------------------------------------------------------------
     config["RoxcoreServiceEnabled"] = True
-    config['ROXCORE_HOST_ADDRESS'] = "192.168.2.122:59152"
-   
+    config['ROXCORE_PORT_NR'] = "59152"
+    config['ROXCORE_SPEAKERS'] = [
+        #Id,    |  Slogan       | Address     |  Default                           
+        '0,        Kitchen,      192.168.2.51,  True',
+        '1,        Hallway,      192.168.2.122, False',
+        '2,         All,            ,           False',
+    ]
     #---------------------------------------------------------------------------------------------
     # Announcement service
     #---------------------------------------------------------------------------------------------
     config["AnnouncementsServiceEnabled"] = True
     config['ANNOUNCEMENTS_SCHEMA'] = [
-        #Slogan          | Time, | Interval | | announcementname | speaker | 
-        'SleepTime,        23:02,   weekdays,       night,           all',
-        'Morning,          07:15,   weekdays,       morning,         all',
-        'MorningWeekend,   09:00,   weekend,        morning,         all',
-        'WilmaBirthDay,    08:00,   02/06,          birthday,        all',
+        #Slogan          | Time, | Interval | | announcementname | speaker id | 
+        'SleepTime,        23:02,   weekdays,       night,           0',
+        'Morning,          07:15,   weekdays,       morning,         0',
+        'MorningWeekend,   09:00,   weekend,        morning,         0',
+        'WilmaBirthDay,    08:00,   02/06,          birthday,        0',
    ]
 
     #---------------------------------------------------------------------------------------------

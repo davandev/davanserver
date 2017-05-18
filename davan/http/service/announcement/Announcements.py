@@ -61,6 +61,25 @@ def create_night_announcement():
     
     return helper_functions.encode_message(announcement)
 
+
+def create_name_announcement():
+    logger.info("Create name announcement")
+    announcement = "Dagens namnsdag har "
+    
+    encoded_result = urllib2.urlopen("http://www.dagensnamn.nu/").read()
+    
+    start_index = encoded_result.index("text-vertical-center")
+    stop_index = encoded_result.index("....namnsdag")
+    nr_of_char = stop_index-start_index 
+    index_res = encoded_result[start_index:(start_index+nr_of_char)]
+
+    start_index = encoded_result.index("margin-bottom:20px;")
+    stop_index = encoded_result.index("</h1>")
+    nr_of_char = stop_index-start_index 
+    announcement += encoded_result[start_index+len('margin-bottom:20px;">'):(start_index+nr_of_char)]
+    
+    return helper_functions.encode_message(announcement+".")
+
 # def create_calendar_announcement(services):
 #     logger.info("Create calendar announcement")
 #     announcement = services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
@@ -112,5 +131,5 @@ def encode_message(message):
 if __name__ == '__main__':
     config = config_creator.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    result = create_morning_announcement()
+    result = create_name_announcement()
     logger.info("Quote: "+ result)

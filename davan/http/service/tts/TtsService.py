@@ -39,7 +39,7 @@ class TtsService(BaseService):
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
         else:
-            self.start(msg.split('=')[1],0)
+            self.start(msg.split('=')[1],"2")
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
@@ -50,7 +50,7 @@ class TtsService(BaseService):
         VoiceRSS to translate and get the mp3 file.
         @param msg to translate and speak.
         '''
-        self.play_in_speakers = speakers
+        self.selected_speaker = speakers
         self.increment_invoked()
 
         if os.path.exists(self.config['SPEAK_FILE']):
@@ -76,14 +76,14 @@ class TtsService(BaseService):
         """
         Play the mp3 files in speakers
         """
-        shutil.copyfile(self.config['MP3_ROOT_FOLDER'] + mp3_file, self.config['SPEAK_FILE'])
-        if self.play_in_speakers == 0 or self.play_in_speakers == 2:
-            cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
-                                                self.config['SPEAK_FILE'] , 
-                                                self.config['SPEAK_CMD'])
-        if self.play_in_speakers == 0 or self.play_in_speakers == 1:
-            speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
-            speaker.handle_request(mp3_file)
+#         shutil.copyfile(self.config['MP3_ROOT_FOLDER'] + mp3_file, self.config['SPEAK_FILE'])
+#         if self.play_in_speakers == 0 or self.play_in_speakers == 2:
+#             cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
+#                                                 self.config['SPEAK_FILE'] , 
+#                                                 self.config['SPEAK_CMD'])
+#         if self.play_in_speakers == 0 or self.play_in_speakers == 1:
+        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+        speaker.handle_request(mp3_file,self.selected_speaker)
         
     def handle_ttsCompleted_callback(self):
         """

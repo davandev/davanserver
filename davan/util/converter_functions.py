@@ -1,7 +1,5 @@
 '''
-Created on 15 maj 2017
-
-@author: Wilma
+@author: davandev
 '''
 import os
 import logging
