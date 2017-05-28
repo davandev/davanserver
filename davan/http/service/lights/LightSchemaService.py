@@ -207,6 +207,7 @@ class LightSchemaService(ReoccuringBaseService):
                                 virtualdevice, 
                                 self.config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
                                 message)
+            #self.logger.info("URL:"+url)
             urllib.urlopen(url)                
                     
     def has_html_gui(self):

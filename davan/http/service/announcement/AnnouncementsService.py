@@ -120,6 +120,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 
 #                result += announcements.create_quote_announcement()
 
+            elif event.announcement_id == "water":
+                result = announcements.create_water_announcement()
             elif event.announcement_id == "night":
                 result = announcements.create_night_announcement()
             elif event.announcement_id == "status":

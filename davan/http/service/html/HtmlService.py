@@ -96,6 +96,7 @@ class HtmlService(BaseService):
             return tot_result 
         except :
             self.logger.error(traceback.format_exc())        
+    
     def get_logfiles(self):
         """
         Return the content of the current logfile
@@ -127,7 +128,6 @@ class HtmlService(BaseService):
         stat += constants.HTML_TABLE_END
         content = content.replace("<SERVICES_STATISTICS_VALUE>", stat)
         return content
-    
     
     def get_server_info(self, content):
         '''

@@ -9,6 +9,7 @@ import random
 import datetime
 import telepot
 import urllib
+import re
 
 from threading import Thread,Event
 import davan.config.config_creator as configuration
@@ -42,6 +43,7 @@ class ReceiverBotService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         logging.getLogger('urllib3').setLevel(logging.CRITICAL)
         self.current_speaker = "0"
+        self.TAG_RE = re.compile(r'<[^>]+>')
         self.event = Event()
         self.bot = None
 
@@ -108,11 +110,11 @@ class ReceiverBotService(BaseService):
         play in the configured speaker. 
         '''
         try:
-            logger.info("Handle : "+str(msg))
+            #logger.info("Handle : "+str(msg))
             chat_id = msg['chat']['id']
  
-            if self.is_text_message(msg):
-                result = self.handle_text_message(msg)
+            if self.is_text_message(msg,):
+                result = self.handle_text_message(msg,chat_id)
             else:
                 result = self.handle_voice_message(msg)
             self.increment_invoked()
@@ -137,13 +139,25 @@ class ReceiverBotService(BaseService):
         return "Voice message played in speaker " + self.current_speaker
         
 
-    def handle_text_message(self,message):
+    def handle_text_message(self,message,chat_id):
         '''
         Received a text message, 
         '''            
         command = message['text']
         logger.info( 'Got command: %s' % command )
-        
+        if "show" in command:
+            command = command.replace("show ", "")
+            text = self.services.get_service(command).get_html_gui("")
+            return self.TAG_RE.sub('', text)
+        if command == "services":
+            result = "Services:\n"
+            for name, service in self.services.services.iteritems():
+                result += name + "\n"
+            return result
+        if command == "log":
+            file_name = log_manager.get_logfile_name()
+            self.bot.sendDocument(chat_id, open(file_name, 'r'))
+            return "Logfile sent"
         if command == "speakers":
             speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
             result = "Available speakers: \n"

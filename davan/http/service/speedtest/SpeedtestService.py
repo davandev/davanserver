@@ -8,7 +8,7 @@ import os
 import json
 import re
 import time
-from threading import Thread,Event
+import traceback
 
 import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd
@@ -49,7 +49,7 @@ class SpeedtestService(ReoccuringBaseService):
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
 
     def handle_timeout(self):
-        self.logger.info("Got a timeout, fetch internet speed")
+    #    self.logger.info("Got a timeout, fetch internet speed")
         self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.ping = "0"
         self.download = "0"
@@ -67,6 +67,7 @@ class SpeedtestService(ReoccuringBaseService):
             if match:
                 self.upload = match.group(1).strip()
         except:
+            self.logger.error(traceback.format_exc())
             self.logger.warning("Caught exception when fetching internet speed")
                     
         self.encoded_string = json.JSONEncoder().encode({"Upload_Mbit":self.upload,"Download_Mbit":self.download,"Ping_ms": self.ping,"Date":str(self.measure_time)})
@@ -74,6 +75,9 @@ class SpeedtestService(ReoccuringBaseService):
 
     
     def get_next_timeout(self):
+        '''
+        Return time to next speed measuring
+        '''
         return self.time_to_next_timeout
         
     def has_html_gui(self):
@@ -91,8 +95,6 @@ class SpeedtestService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        #ok, mime, result = self.handle_request("")
-        #data = json.loads(result)
         htmlresult = "<li>Ping: " + self.ping + " ms</li>\n"
         htmlresult += "<li>Download: " + self.download + " Mbit</li>\n"
         htmlresult += "<li>Upload: " + self.upload + " Mbit</li>\n"

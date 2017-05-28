@@ -1,6 +1,4 @@
 '''
-Created on 10 mars 2017
-
 @author: davandev
 '''
 
@@ -9,6 +7,8 @@ import os
 import urllib2
 import davan.util.cmd_executor as executor
 import shutil
+import traceback
+from davan.util import helper_functions, constants
 
 class TtsEngineAndroid():
     def __init__(self, config):
@@ -24,13 +24,24 @@ class TtsEngineAndroid():
         '''  
         encoded_msg = msg.replace("_", "%20")
         self.logger.debug("Encoded string [" + encoded_msg + "]")
+        try:
+            result = urllib2.urlopen(self.config["TTS_GENERATOR_CREATE_URL"] + "="+encoded_msg).read()
+        except:
+            self.logger.error(traceback.format_exc())
+            helper_functions.send_telegram_message(
+                                   self.config, 
+                                   constants.FAILED_TO_GENERATE_TTS)
+            self.increment_errors()
+            self.logger.info("Caught exception") 
 
-        result = urllib2.urlopen(self.config["TTS_GENERATOR_CREATE_URL"] + "="+encoded_msg).read()
-        
         return True
     
     def fetch_mp3(self, filename):
-        self.logger.info("fetch_mp3:"+filename) 
+        '''
+        Download the generated tts file, and convert to mp3.
+        @param filename name of the file to download should get
+        '''
+        self.logger.info("Downloading: "+filename) 
         result = urllib2.urlopen(self.config["TTS_GENERATOR_FETCH_URL"]).read()
         wav_file = self.config['TEMP_PATH'] + "/tmp.wav"
 
@@ -43,9 +54,9 @@ class TtsEngineAndroid():
         fd = open(wav_file, 'w')
         fd.write(result)
         fd.close()
+        
         command = "lame -f " + wav_file
         executor.execute_block(command, "lame", False)
         mp3_file = wav_file.replace('wav','mp3')
-        self.logger.info("Moving file:" + mp3_file)
         shutil.move(mp3_file, self.config['MP3_ROOT_FOLDER'] + filename)
         return filename

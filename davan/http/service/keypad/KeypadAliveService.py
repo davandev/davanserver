@@ -39,13 +39,13 @@ class KeypadAliveService(ReoccuringBaseService):
         '''
         Timeout received, send a "ping" to key pad, send telegram message if failure.
         '''
-        self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
+        #self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
         try:
             urllib.urlopen(self.config['KEYPAD_URL'])
             self.maybe_send_update(True)
         except:
             self.increment_errors()
-            self.logger.info("Failed to connect to keypad")
+            self.logger.warn("Failed to connect to keypad")
             self.maybe_send_update(False)
             
     def maybe_send_update(self, state):

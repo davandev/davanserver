@@ -39,7 +39,7 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
         Timeout received, iterate all active scenes to check that they are running on fibaro 
         system, otherwise start them
         '''
-        self.logger.info("Got a timeout, check state of monitored scenes " + str(self.config['MONITOR_SCENES']))
+        #self.logger.info("Got a timeout, check state of monitored scenes " + str(self.config['MONITOR_SCENES']))
         try:
             for scene in self.config['MONITOR_SCENES']:
                 scene_url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
@@ -49,8 +49,9 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
                 res = result.read()
 
                 data = json.loads(res)
-                if data["runningInstances"] ==1:
-                    self.logger.info("Scene already running")
+                if data["runningInstances"] == 1:
+                    #self.logger.info("Scene already running")
+                    pass
                 else:
                     self.logger.info("Scene not running")
                     self.logger.debug("Result:" + res)    

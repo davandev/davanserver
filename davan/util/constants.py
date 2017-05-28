@@ -11,6 +11,7 @@ RESPONSE_FAILED_TO_TAKE_PICTURE = "Failed to take picture"
 TURN_ON = "turnOn"
 TURN_OFF ="turnOff"
 
+FAILED_TO_GENERATE_TTS = "Misslyckades att generera text-till-tal."
 HUMIDITY_HIGH = "Fuktigt i badrummet, var god ventilera!"
 KEYPAD_NOT_ANSWERING = "Alarm Keypad har slutat svara"
 KEYPAD_ANSWERING = "Alarm Keypad har startats"

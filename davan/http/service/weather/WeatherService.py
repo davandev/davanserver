@@ -43,7 +43,7 @@ class WeatherService(ReoccuringBaseService):
         '''
         Timeout received, fetch weather data from wunderground
         '''
-        self.logger.info("Got a timeout, fetch weather")
+        #self.logger.info("Got a timeout, fetch weather")
         try:
             self.latest_result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
             self.weather_data = json.loads(self.latest_result)
@@ -53,7 +53,7 @@ class WeatherService(ReoccuringBaseService):
             self.logger.error(traceback.format_exc())
 
             self.increment_errors()
-            self.logger.info("Caught exception") 
+            self.logger.error("Caught exception") 
             pass
     
     def get_next_timeout(self):
@@ -78,7 +78,7 @@ class WeatherService(ReoccuringBaseService):
         Check if it is raining, then notify on telegram
         '''
         current_rain = str(self.weather_data["current_observation"]["precip_1hr_metric"]).strip()
-        self.logger.info("Check if it is raining["+current_rain+"]")
+        #self.logger.info("Check if it is raining["+current_rain+"]")
         if not (current_rain == "0.0" or current_rain == "0"):
             if not self.is_raining:
                 self.logger.info("It has started to rain")
