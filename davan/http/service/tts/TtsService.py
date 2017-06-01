@@ -39,7 +39,7 @@ class TtsService(BaseService):
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
         else:
-            self.start(msg.split('=')[1],"2")
+            self.start(msg.split('=')[1],"1")
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
@@ -82,6 +82,10 @@ class TtsService(BaseService):
 #                                                 self.config['SPEAK_FILE'] , 
 #                                                 self.config['SPEAK_CMD'])
 #         if self.play_in_speakers == 0 or self.play_in_speakers == 1:
+        # Play announcement
+#        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+#        speaker.handle_request("announcement.mp3",self.selected_speaker)
+
         speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
         speaker.handle_request(mp3_file,self.selected_speaker)
         

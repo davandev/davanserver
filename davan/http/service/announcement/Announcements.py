@@ -11,6 +11,7 @@ import davan.util.helper_functions as helper_functions
 import urllib2
 from datetime import datetime, timedelta
 from datetime import *
+from astral import Astral
 
 global logger
 logger = logging.getLogger(os.path.basename(__file__))
@@ -56,6 +57,34 @@ def create_water_announcement():
     
     return helper_functions.encode_message(announcement)
 
+def create_sunset_sunrise_announcement():
+    city_name = 'Stockholm'
+    a = Astral()
+    a.solar_depression = 'civil'
+    city = a[city_name]
+    sun = city.sun(date=datetime.now(), local=True)
+
+    announcement = "Solens upp och nedgång idag."
+
+    dawn = get_hour_and_minute(str(sun['dawn']))
+    announcement += "Gryning klockan " + dawn + "."
+    logger.info('Dawn: ' + dawn)
+    sunrise = get_hour_and_minute(str(sun['sunrise']))
+    announcement += "Soluppgång klockan " + sunrise + "."
+    logger.info('Sunrise ' + sunrise)
+    sunset = get_hour_and_minute(str(sun['sunset']))
+    announcement += "Solnedgång klockan " + sunset + "."
+    logger.info('Sunset ' + sunset)
+    dusk = get_hour_and_minute(str(sun['dusk']))
+    announcement += "Skymning klockan " + dusk + "."
+    logger.info('Dusk ' + dusk)
+    return helper_functions.encode_message(announcement)
+
+def get_hour_and_minute(dateitem):    
+    dateitem = dateitem.split(" ")[1]
+    dateitem= dateitem.split(":")
+    return dateitem[0] +":" + dateitem[1]
+    
 def create_name_announcement():
     logger.info("Create name announcement")
     announcement = "Dagens namnsdagsbarn "
@@ -77,5 +106,5 @@ def create_name_announcement():
 if __name__ == '__main__':
     config = config_creator.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    result = create_name_announcement()
+    result = create_sunset_sunrise_announcement()
     logger.info("Quote: "+ result)

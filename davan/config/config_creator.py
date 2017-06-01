@@ -295,11 +295,12 @@ def create_config(secret_config, config):
     config["RoxcoreServiceEnabled"] = True
     config['ROXCORE_PORT_NR'] = "59152"
     config['ROXCORE_SPEAKERS'] = [
-        #Id,    |  Slogan       | Address     |  Default                           
-        '0,        Kitchen,      192.168.2.51,  True',
-        '1,        Hallway,      192.168.2.122, False',
-        '2,         All,            ,           False',
+        #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
+        '0,        Kitchen,      192.168.2.51,  True,         True',
+        '1,        Hallway,      192.168.2.122, False,        False',
+        '2,         All,            ,           False,        True',
     ]
+    config['MESSAGE_ANNOUNCEMENT'] = "announcement.mp3"
     #---------------------------------------------------------------------------------------------
     # Announcement service
     #---------------------------------------------------------------------------------------------
@@ -319,6 +320,10 @@ def create_config(secret_config, config):
     config['CalendarServiceEnabled'] = True
     config['GOOGLE_CALENDAR_TOKEN'] = secret_config.GOOGLE_CALENDAR_TOKEN
 
+    #---------------------------------------------------------------------------------------------
+    # Sun service
+    #---------------------------------------------------------------------------------------------
+    config['SunServiceEnabled'] = True
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

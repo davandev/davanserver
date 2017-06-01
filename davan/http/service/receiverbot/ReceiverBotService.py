@@ -8,6 +8,7 @@ import traceback
 import random
 import datetime
 import telepot
+from telepot.loop import MessageLoop
 import urllib
 import re
 
@@ -72,7 +73,8 @@ class ReceiverBotService(BaseService):
         self.logger.info("Starting re-occuring event")
  
         self.bot = telepot.Bot(self.config["RECEIVER_BOT_TOKEN"])
-        self.bot.message_loop(self.handle)
+        MessageLoop(self.bot, self.handle).run_as_thread()
+        #self.bot.message_loop(self.handle)
  
         def loop():
             while not self.event.wait(10): # the first call is in `interval` secs

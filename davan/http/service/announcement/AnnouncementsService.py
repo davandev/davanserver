@@ -108,6 +108,7 @@ class AnnouncementsService(ReoccuringBaseService):
             self.logger.info("Alarm is armed, skip announcement")
             return True
         try:
+            
             service = self.services.get_service(event.announcement_id)
             if service != None:
                 result = service.get_announcement()
@@ -116,6 +117,7 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += announcements.create_name_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
+                result += announcements.create_sunset_sunrise_announcement()
                 result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
                 
 #                result += announcements.create_quote_announcement()
@@ -124,6 +126,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 result = announcements.create_water_announcement()
             elif event.announcement_id == "night":
                 result = announcements.create_night_announcement()
+            elif event.announcement_id == "sun":
+                result = announcements.create_sunset_sunrise_announcement()
             elif event.announcement_id == "status":
                 result = helper_functions.encode_message("Status uppdatering. ")
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
@@ -134,6 +138,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 return False
             self.logger.info("Announcement:" + result)
             self.services.get_service(constants.TTS_SERVICE_NAME).start(result,event.speaker_id)
+            
+            
             return True
         except Exception:
             self.logger.error(traceback.format_exc())
