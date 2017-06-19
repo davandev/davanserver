@@ -29,10 +29,14 @@ class DailyQuoteService(ReoccuringBaseService):
         ReoccuringBaseService.__init__(self, constants.QUOTE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.quote_url = "http://www.dagenscitat.nu/citat.js"
+        self.quote2_url = "http://www.knep.se/dagens/ordsprak.js"
+        self.quest_url = "http://www.knep.se/dagens/gata.js"
         # Number of seconds until next event occur
         self.time_to_next_event = 25
         # Todays calendar events
         self.today_quote = None
+        self.today_quest = None
+        self.today_answer = None
                             
     def handle_timeout(self):
         '''
@@ -42,7 +46,21 @@ class DailyQuoteService(ReoccuringBaseService):
         quote = urllib2.urlopen(self.quote_url).read()
         quote = quote.split("<")[1]
         self.today_quote = quote.split(">")[1]
+        self.get_quest()
 
+    def get_quest(self):
+        self.logger.info("Fetching quest")
+        quest = urllib2.urlopen(self.quest_url).read()
+        quest = quest.split(">\\")[1]
+        answer = quest.split("</div>")[1]
+        quest = quest.split("</div>")[0]
+        quest = quest.replace('"','')
+        self.today_quest = quest.replace('\\','')
+        
+        answer = answer.split('display:none')[1]
+        answer = answer.split(">")[1]
+        self.today_answer = answer.split("<")[0]        
+        
     def get_next_timeout(self):
         '''
         Return time until next timeout, only once per day.
@@ -69,7 +87,10 @@ class DailyQuoteService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        quote = self.today_quote
+        quote = self.today_quote + "\n"
+        quote += self.today_quest + "\n"
+        quote += self.today_answer + "\n"
+        
         column  = column.replace("<SERVICE_VALUE>", quote)
 
         return column
@@ -80,7 +101,17 @@ class DailyQuoteService(ReoccuringBaseService):
         @return html encoded result
         '''
         result = "Dagens citat. "
-        result += self.today_quote
+        result += self.today_quote +"."
+        
+        return helper_functions.encode_message(result)
+
+    def get_quest_announcement(self):
+        '''
+        Compile and return announcment.
+        @return html encoded result
+        '''
+        result = "Dagens gåta. "
+        result += self.today_quest
     
         return helper_functions.encode_message(result)
 
@@ -88,5 +119,5 @@ if __name__ == '__main__':
     config = configuration.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = DailyQuoteService()
-    test.start()
+    test = DailyQuoteService("",config)
+    test.get_quest()

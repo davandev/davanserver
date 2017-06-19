@@ -60,12 +60,16 @@ class LightSchemaService(ReoccuringBaseService):
         self.current_day = -1
         self.config = config
         # Number of seconds until next event occur
-        self.time_to_next_event = 0
+        self.time_to_next_event = -1
   
     def get_next_timeout(self):
         '''
         Return time to next timeout
         '''
+        if self.time_to_next_event == -1: # First time, wait 15 sec to get sunset
+            self.time_to_next_event = 0
+            return 15
+        
         if len(self.todays_events) > 0:
             self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
             self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
@@ -130,7 +134,11 @@ class LightSchemaService(ReoccuringBaseService):
                                                     items[3]):
                 self.logger.info("Event Timer not configured this day")
                 continue
-            starttime = timer_functions.add_random_time(items[1],int(items[7]))
+            starttime = items[1]
+            if starttime == "sunset":
+                starttime = self.services.get_service(constants.SUN_SERVICE_NAME).get_sunset()
+                self.logger.info("Sunset configured: " + starttime)
+            starttime = timer_functions.add_random_time(starttime,int(items[7]))
             
             self.todays_events.append(TimeEvent(items[0],  # Room name
                                                 starttime, # Start time

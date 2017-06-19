@@ -76,6 +76,11 @@ class TtsService(BaseService):
         """
         Play the mp3 files in speakers
         """
+        self.logger.info("Play file : "+ mp3_file + " Speaker: "+ str(self.selected_speaker))
+        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+        speaker.handle_request(mp3_file,self.selected_speaker)
+        self.logger.info("Play file : "+ mp3_file)
+
 #         shutil.copyfile(self.config['MP3_ROOT_FOLDER'] + mp3_file, self.config['SPEAK_FILE'])
 #         if self.play_in_speakers == 0 or self.play_in_speakers == 2:
 #             cmd_executor.execute_block_in_shell(self.config['SPEAK_CMD'] + ' ' + 
@@ -86,8 +91,6 @@ class TtsService(BaseService):
 #        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
 #        speaker.handle_request("announcement.mp3",self.selected_speaker)
 
-        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
-        speaker.handle_request(mp3_file,self.selected_speaker)
         
     def handle_ttsCompleted_callback(self):
         """

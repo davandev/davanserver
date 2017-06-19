@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 '''
 @author: davandev
 '''
@@ -93,6 +95,10 @@ class TelldusSensorService(ReoccuringBaseService):
                 if int(humidity_value) > sensor_limit :
                     self.logger.info("Humidity value higher exceeds limit, send notifications")
                     helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+humidity_value+"], var god och ventilera")
+                    msg = helper.encode_message("Luftfuktigheten i badrummet är hög, starta fläkten")
+                    self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+
+
         except :
             self.logger.error(traceback.format_exc())
             self.increment_errors()

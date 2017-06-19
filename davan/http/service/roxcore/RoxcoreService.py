@@ -71,9 +71,11 @@ class RoxcoreService(BaseService):
         @param play_announcement, determine if an announcement message should be played 
         before the actual message.
         '''
-        if play_announcement:
+        if play_announcement == "True":
             commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
-        commands.append_tracks_in_queue(speaker_address, msg)
+            commands.append_tracks_in_queue(speaker_address, msg)
+        else:
+            commands.replace_queue(speaker_address, msg)
         commands.send_play_with_index(speaker_address)
         commands.set_play_mode(speaker_address)
 

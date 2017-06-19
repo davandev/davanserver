@@ -6,29 +6,23 @@
 import logging
 import os
 from datetime import *
-from astral import Astral
 
 import davan.util.constants as constants
 import davan.util.timer_functions as timer_functions
 import davan.util.helper_functions as helper_functions
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
-class SunService(ReoccuringBaseService):
+class ScaleService(ReoccuringBaseService):
     '''
     classdocs
-    sys.setdefaultencoding('latin-1')
     '''
 
     def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        ReoccuringBaseService.__init__(self, constants.SUN_SERVICE_NAME, service_provider, config)
+        ReoccuringBaseService.__init__(self, constants.SCALE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.dawn =None
-        self.rise =None
-        self.dusk =None
-        self.set=None
         
         self.time_to_next_event = 0
         
@@ -36,26 +30,8 @@ class SunService(ReoccuringBaseService):
         '''
         Calculate sun movements 
         '''
-        self.logger.info("Calculating sun movements")
-        city_name = 'Stockholm'
-        a = Astral()
-        a.solar_depression = 'civil'
-        city = a[city_name]
-        sun = city.sun(date=datetime.now(), local=True)
-    
-        self.dawn = self.get_hour_and_minute(str(sun['dawn']))
-        self.rise = self.get_hour_and_minute(str(sun['sunrise']))
-        self.set = self.get_hour_and_minute(str(sun['sunset']))
-        self.dusk = self.get_hour_and_minute(str(sun['dusk']))
+        self.logger.info("starting tv service")
         
-    def get_sunset(self):
-        return self.set
-    
-    def get_hour_and_minute(self, dateitem):    
-        dateitem = dateitem.split(" ")[1]
-        dateitem= dateitem.split(":")
-        return dateitem[0] +":" + dateitem[1]
-
     def get_next_timeout(self):
         '''
         Return time until next timeout, only once per day.
@@ -82,12 +58,8 @@ class SunService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        quote = "Dawn:" + self.dawn +"</br>"
-        quote += "Rise:" + self.rise +"</br>"
-        quote += "Set:" + self.set +"</br>"
-        quote += "Dusk:" + self.dusk +"</br>"  
         
-        column  = column.replace("<SERVICE_VALUE>", quote)
+        column  = column.replace("<SERVICE_VALUE>", "")
 
         return column
 
@@ -96,11 +68,4 @@ class SunService(ReoccuringBaseService):
         Compile and return announcment.
         @return html encoded result
         '''
-        announcement = "Solens upp och nedgång idag."
-    
-        announcement += "Gryning klockan " + self.dawn + "."
-        announcement += "Soluppgång klockan " + self.rise + "."
-        announcement += "Solnedgång klockan " + self.set + "."
-        announcement += "Skymning klockan " + self.dusk + "."
-        return helper_functions.encode_message(announcement)
-    
+        return helper_functions.encode_message("")

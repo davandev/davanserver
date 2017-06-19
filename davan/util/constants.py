@@ -41,6 +41,9 @@ ROXCORE_SPEAKER_SERVICE_NAME = "RoxcoreService"
 ANNOUNCEMENT_SERVICE_NAME = "AnnouncementsService"
 CALENDAR_SERVICE_NAME = "CalendarService"
 SUN_SERVICE_NAME = "SunService"
+TV_SERVICE_NAME = "TvService"
+SCALE_SERVICE_NAME = "ScaleService"
+
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
@@ -60,6 +63,10 @@ MIME_TYPE_CSS = 'text/css'
 MIME_TYPE_WAV = 'audio/wav'
 MIME_TYPE_MP3 = 'audio/mpeg'
 MIME_TYPE_OGG = 'audio/ogg'
+
+SPEAKER_HALLWAY = 1
+SPEAKER_KITCHEN = 0
+SPEAKER_ALL = 2
 
 HTML_TABLE_END = "</table>"
 HTML_TABLE_START = """<style>

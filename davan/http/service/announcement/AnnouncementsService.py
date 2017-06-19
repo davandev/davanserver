@@ -119,9 +119,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += announcements.create_sunset_sunrise_announcement()
                 result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
+                result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_quest_announcement()
                 
-#                result += announcements.create_quote_announcement()
-
             elif event.announcement_id == "water":
                 result = announcements.create_water_announcement()
             elif event.announcement_id == "night":
