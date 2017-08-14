@@ -47,6 +47,7 @@ class TelldusSensorService(ReoccuringBaseService):
 
         if not 'sensor' in str(response):
             self.logger.error("No response received from telldus")
+            helper.send_telegram_message(self.config, "Telldus svarar inte") 
             return 
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])

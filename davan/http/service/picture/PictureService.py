@@ -77,7 +77,6 @@ class PictureService(BaseService):
                                  chatid +
                                  ' -F photo="@/var/tmp/snapshot.jpg" -F caption="Rörelse upptäckt från ' +
                                  camera +'"' )       
-            self.logger.debug(telegram_url)
             cmd_executor.execute_block(telegram_url,"curl")
         
     def take_picture(self, camera):
@@ -91,7 +90,10 @@ class PictureService(BaseService):
             cam_picture_url = self.config["CAMERAS"][camera]
             cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] +
                                  " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
-            cmd_executor.execute("sudo mv snapshot.cgi /var/tmp/snapshot.jpg")
+            pos = cam_picture_url.rfind('/')
+            file_name = cam_picture_url[pos+1:]
+            self.logger.info("File_name: "+ file_name)
+            cmd_executor.execute("sudo mv "+file_name+" /var/tmp/snapshot.jpg")
         else:
             raise Exception("No camera url for [" + camera + "] configured")   
 

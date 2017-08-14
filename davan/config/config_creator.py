@@ -99,8 +99,9 @@ def create_config(secret_config, config):
     # Outdoor camera configuration
     #---------------------------------------------------------------------------------------------
     config["TakePictureEnabled"] = True
-    config['CAMERAS'] = {'Farstukvist':'http://192.168.2.119:99/snapshot.cgi/snapshot.cgi',
-                         'Uterum':'http://192.168.2.76:99/snapshot.cgi/snapshot.cgi'}
+    config['CAMERAS'] = {'Balkong':'http://192.168.2.119:99/snapshot.cgi/snapshot.cgi',
+                         'Uterum':'http://192.168.2.76:99/snapshot.cgi/snapshot.cgi',
+                         'Farstukvist':'http://192.168.2.172/tmpfs/snap.jpg'}
     # Username used when accessing cameras
     config['CAMERA_USER'] = secret_config.CAMERA_USER
     # Password used when accessing cameras
@@ -276,9 +277,9 @@ def create_config(secret_config, config):
         'Kitchen,18:15,23:45,week,10,65,2,1,194,0',
         'Uterum,20:30,23:45,week,-1,192,1,10,195,0',
         'Outdoor,sunset,23:40,week,-1,191,1,20,196,0',
-        'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
+    #    'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
         'Wilma,18:15,19:50,week,20,173,2,20,197,1',
-        'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
+    #    'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
         'Viggo,18:55,19:39,week,10,177,1,15,198,1',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
@@ -326,7 +327,7 @@ def create_config(secret_config, config):
     config['SunServiceEnabled'] = True
     
     config['ScaleServiceEnabled'] = False
-
+    config['HARMONY_IP_ADRESS'] = '192.168.2.143'
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

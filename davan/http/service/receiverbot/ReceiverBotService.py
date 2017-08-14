@@ -324,5 +324,5 @@ class ReceiverBotService(BaseService):
 if __name__ == '__main__':
     config = configuration.create()
     log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
-    test = ReceiverBotService3(config)
+    test = ReceiverBotService(config)
     test.start_service()
