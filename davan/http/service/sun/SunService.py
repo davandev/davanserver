@@ -82,10 +82,10 @@ class SunService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        quote = "Dawn:" + self.dawn +"</br>"
-        quote += "Rise:" + self.rise +"</br>"
-        quote += "Set:" + self.set +"</br>"
-        quote += "Dusk:" + self.dusk +"</br>"  
+        quote = "Dawn: " + self.dawn +"</br>\n"
+        quote += "Rise: " + self.rise +"</br>\n"
+        quote += "Set: " + self.set +"</br>\n"
+        quote += "Dusk: " + self.dusk +"</br>\n"  
         
         column  = column.replace("<SERVICE_VALUE>", quote)
 

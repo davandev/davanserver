@@ -327,7 +327,9 @@ def create_config(secret_config, config):
     config['SunServiceEnabled'] = True
     
     config['ScaleServiceEnabled'] = False
+    config['TvServiceEnabled'] = True
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
+    config['ConnectivityServiceEnabled'] = True
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

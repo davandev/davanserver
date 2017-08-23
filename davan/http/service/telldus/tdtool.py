@@ -255,8 +255,9 @@ def main(argv):
 
 		elif opt in ("-s", "--list-sensors"):
 			listSensors()
-                elif opt in ("-x", "--list-sensorsvalue"):
-                        listSensorsAndValues()
+
+		elif opt in ("-x", "--list-sensorsvalue"):
+			listSensorsAndValues()
 
 		elif opt in ("-d", "--sensor-data"):
 			getSensorData(arg)
@@ -287,8 +288,6 @@ def main(argv):
 
 if __name__ == "__main__":
 	config = ConfigObj(os.environ['HOME'] + '/.config/Telldus/tdtool.conf')
-        configuration = config_creator.create()
- 
-        log_manager.start_logging(configuration["LOGFILE_PATH"],loglevel=4)
-	
-        main(sys.argv[1:])
+	configuration = config_creator.create()
+	log_manager.start_logging(configuration["LOGFILE_PATH"],loglevel=4)
+	main(sys.argv[1:])

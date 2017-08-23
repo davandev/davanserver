@@ -43,6 +43,7 @@ CALENDAR_SERVICE_NAME = "CalendarService"
 SUN_SERVICE_NAME = "SunService"
 TV_SERVICE_NAME = "TvService"
 SCALE_SERVICE_NAME = "ScaleService"
+CONNECTIVITY_SERVICE_NAME = "ConnectivityService"
 
 
 UPS_BATTERY_MODE = "BatteryMode"

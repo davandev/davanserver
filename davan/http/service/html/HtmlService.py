@@ -139,7 +139,7 @@ class HtmlService(BaseService):
         content = content.replace('<CPU_VALUE>', result[9])
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
         content = content.replace('<DISK_VALUE>', result[4] + " ( Free " + result[3] + " )")
-        
+        result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
         content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(__builtin__.davan_services.services.items()))) 
         return content
     
@@ -152,9 +152,12 @@ class HtmlService(BaseService):
         uptime = result[2] + " " + result[3]
         cpuload = result[9]
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
-        memory = result[4] + " ( Free " + result[3] + " )"
+        diskusage = result[4] + " ( Free " + result[3] + " )"
+        result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
+        memory_used = result[0]
+        memory_free = result[1]
         services = len(__builtin__.davan_services.services.keys())
-        json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+memory+'", "Services":"'+str(services)+'"}'
+        json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+diskusage+'", "Memory":"'+memory_used+'/'+memory_free+'",  "Services":"'+str(services)+'"}'
         return json_string
     
 if __name__ == '__main__':

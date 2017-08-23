@@ -49,6 +49,7 @@ class WeatherService(ReoccuringBaseService):
             self.weather_data = json.loads(self.latest_result)
             self.check_rain()
             self.update_virtual_device()
+            self.get_forecast()
         except Exception:
             self.logger.error(traceback.format_exc())
 
@@ -93,8 +94,17 @@ class WeatherService(ReoccuringBaseService):
                 self.services.get_service(constants.TTS_SERVICE_NAME).start(constants.RAIN_STOPPED,1)
                 self.is_raining = False
     
-    
-    
+    def get_forecast(self):
+        self.logger.info("get_forecast")
+        myweather_sum = self.weather_data['forecast']['txt_forecast']['forecastday']
+
+        for period in myweather_sum:
+            if period['period'] == 2:
+                myforday = period['title']
+                myfctxt = period['fcttext_metric']
+                self.logger.info('Forday:' + myforday + ' forecast:' + myfctxt)
+                
+                
     def has_html_gui(self):
         """
         Override if service has gui

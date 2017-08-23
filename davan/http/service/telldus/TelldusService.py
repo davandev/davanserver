@@ -4,11 +4,13 @@
 
 import logging
 import os
+import traceback
 
 import davan.config.config_creator as configuration
 import davan.http.service.telldus.tdtool as telldus
 import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
+import davan.util.helper_functions as helper
 
 class TelldusService(BaseService):
     '''
@@ -50,7 +52,13 @@ class TelldusService(BaseService):
             action = 4 
         
         self.logger.info("DeviceId[" +deviceId+ "] Action:[" + str(action)+"]")
-        telldus.doMethod(deviceId, action)
+        try:
+            telldus.doMethod(deviceId, action)
+        except:
+            self.logger.error("Failed to execute telldus command")
+            self.logger.error(traceback.format_exc())
+            self.increment_errors()
+            helper.send_telegram_message(self.config, "Telldus svarar inte") 
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     

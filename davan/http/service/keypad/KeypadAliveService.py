@@ -85,8 +85,8 @@ class KeypadAliveService(ReoccuringBaseService):
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         html = "<li>Connected: " + str(self.connected) + " </li>\n"
-        html += "<li>Ok at: " + str(self.connected_at) + " </li>\n"
-        html += "<li>Failed at: " + str(self.disconnected_at) + " </li>\n"
+        html += "<li>Connected at: " + str(self.connected_at) + " </li>\n"
+        html += "<li>Disconnected at: " + str(self.disconnected_at) + " </li>\n"
         column = column.replace("<SERVICE_VALUE>", html)
         return column
     

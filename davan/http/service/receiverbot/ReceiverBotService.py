@@ -5,6 +5,7 @@
 import logging
 import os
 import traceback
+import json
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler,
                           ConversationHandler)
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -84,6 +85,8 @@ class ReceiverBotService(BaseService):
         res = result.read()
         self.increment_invoked()
         update.message.reply_text("Text message displayed on tv")
+        #self.build_start_menu(bot, update)
+        #return COMMAND
         
     def log(self, bot, update):
         file_name = log_manager.get_logfile_name()
@@ -239,17 +242,29 @@ class ReceiverBotService(BaseService):
         for name, service in self.services.services.iteritems():
             if name == update.message.text:
                 self.logger.info("Name:" + name)
-                text = self.services.get_service(name).get_html_gui("")        
+                item = self.services.get_service(name)
+                text = item.get_html_gui("")   
+                success, error = item.get_counters()
+                result = text + "\n" + "Success: " + str(success) + "\nError:" + str(error)
                 self.increment_invoked()
 #                update.message.reply_text(self.TAG_RE.sub('', text),reply_markup=ReplyKeyboardRemove())
-                update.message.reply_text(self.TAG_RE.sub('', text))
-
-
+                update.message.reply_text(self.TAG_RE.sub('', result))
         return SERVICES    
+
     def handle_status(self, bot, update):
         logger.info("Selected %s:" % (update.message.text))
-        #service = self.services.get_service(constants.HTML_SERVICE_NAME)
-        #service.get_server_info()
+        service = self.services.get_service(constants.HTML_SERVICE_NAME)
+        result = json.loads(service.get_status())
+        res_string = "Uptime: " + result['Uptime'] +"\n"
+        res_string += "Server started: " + result['ServerStarted'] +"\n"
+        res_string += "Cpu load: " + result['CpuLoad'] +"\n"
+        res_string += "Disk usage : " + result['Disk'] +"\n"
+        res_string += "Memory usage (used/free): " + result['Memory'] +"\n"
+        
+        res_string += "Services: " + result['Services']
+        
+        update.message.reply_text(self.TAG_RE.sub('', res_string))
+        self.build_start_menu(bot, update)
         return COMMAND
 
     def handle_tts(self, bot, update):

@@ -5,33 +5,52 @@
 '''
 import logging
 import os
+import json
+import urllib
 
 import davan.util.cmd_executor as executor
 import davan.util.constants as constants
 import davan.util.helper_functions as helper_functions
-from davan.http.service.base_service import BaseService
+from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
-class TvService(BaseService):
+class TvService(ReoccuringBaseService):
     '''
     classdocs
     sys.setdefaultencoding('latin-1')
      harmony --harmony_ip 192.168.2.143 start_activity --activity 26681450
      harmony --harmony_ip 192.168.2.143 power_off
      harmony --harmony_ip 192.168.2.143 show_config
+     http://192.168.2.173/api/statusinfo
     '''
 
     def __init__(self, service_provider, config ):
         '''
         Constructor
         '''
-        BaseService.__init__(self, constants.TV_SERVICE_NAME, service_provider, config)
+        ReoccuringBaseService.__init__(self, constants.TV_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         
         self.base_cmd = "harmony --harmony_ip "
+        self.timeout = 300
         self.start_activity_cmd = 'start_activity --activity '
         self.stop_activity_cmd = 'power_off'
         self.current_activity_cmd = 'show_current_activity'
         self.watch_tv_activity = '26681450'
+        self.vu_status_cmd ='http://192.168.2.173/api/statusinfo'
+        self.status = "Off"
+
+    def handle_timeout(self):
+        '''
+        Calculate sun movements 
+        '''
+        self.check_tv_status()
+        self.get_current_service_info()
+
+    def get_next_timeout(self):
+        '''
+        Return time until next timeout, only once per day.
+        '''
+        return self.timeout
         
     def has_html_gui(self):
         """
@@ -44,16 +63,25 @@ class TvService(BaseService):
         Override and provide gui
         """
         if not self.is_enabled():
-            return BaseService.get_html_gui(self, column_id)
+            return ReoccuringBaseService.get_html_gui(self, column_id)
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
+        res = "<li>TV status:" +self.status + "</li>\n"
+        res += "<li>Vu standby:" +str(self.standby) + "</li>\n"
+        res += "<li>Channel:" +self.channel + "</li>\n"
+        res += "<li>Program:" +self.program+ "</li>\n"
+        res += "<li>" +self.program_begin+ "-" + self.program_end+"</li>\n"
+        res += "<li>" +self.program_desc+ "</li>\n"
         
-        column  = column.replace("<SERVICE_VALUE>", "")
+        column  = column.replace("<SERVICE_VALUE>", "<li>"+res+"</li>\n")
 
         return column
     
     def enable(self, enable):
+        '''
+        Enable or disable tv activity
+        '''
         cmd = self.base_cmd + self.config['HARMONY_IP_ADRESS']
         
         if enable == True:
@@ -66,16 +94,15 @@ class TvService(BaseService):
             executor.execute_block(cmd, 'Harmony')
             self.status = "Off"
             
-    def get_status(self):
+    def check_tv_status(self):
         '''
-        Get the current status
+        Check status of harmony tv activity.
         '''
         cmd = str(self.base_cmd)
         cmd += str(self.config['HARMONY_IP_ADRESS'] + " ")
         cmd += self.current_activity_cmd
-        self.logger.info(cmd)
         result = executor.execute_block(cmd, 'Harmony', True).strip()
-        self.logger.info("Res:" + result)
+
         if result == 'PowerOff':
             self.status = 'Off'
         elif result == 'Watch TV':
@@ -83,8 +110,22 @@ class TvService(BaseService):
         else:
             self.logger.warning("Unknown activity")
             self.status = 'Unknown state'
-        return self.status
-        
+    
+    def get_current_service_info(self):
+        '''
+        Check status of vu stb.
+        '''
+        result = urllib.urlopen(self.vu_status_cmd)
+        res = result.read()
+        jres = json.loads(res)
+        self.standby = jres['inStandby']
+        self.channel = jres['currservice_station']
+        self.program = jres['currservice_name']
+        self.program_begin = jres['currservice_begin']
+        self.program_end = jres['currservice_end']
+        self.program_desc = jres['currservice_description']
+        self.logger.info("Standby: "+ self.standby + " Channel:" + self.channel)
+
     def get_announcement(self):
         '''
         Compile and return announcment.
@@ -99,4 +140,5 @@ if __name__ == '__main__':
     config = configuration.create()
     log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
     test = TvService("", config)
-    test.get_status()
+ #   test.get_html_gui("0")
+ 

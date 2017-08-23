@@ -31,3 +31,5 @@ ROUTER_USER = "my_router_user"
 ROUTER_PASSWORD = "my_router_password"
 
 RECEIVER_BOT_TOKEN = "my_token"
+
+GOOGLE_CALENDAR_TOKEN = "my_google_token"
