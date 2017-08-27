@@ -74,7 +74,7 @@ class UpsService(BaseService):
         # Build URL to Fibaro virtual device
         pressButton_url = self.config["VD_PRESS_BUTTON_URL"].replace("<ID>", self.config['UPS_VD_ID'])
         pressButton_url = pressButton_url.replace("<BUTTONID>", self.config["UPS_BUTTON_ID"]) 
-        self.logger.debug(pressButton_url)
+        #self.logger.debug(pressButton_url)
         
         # Send HTTP request to notify status change
         urllib.urlopen(pressButton_url)

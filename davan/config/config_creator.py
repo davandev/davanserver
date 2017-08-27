@@ -153,7 +153,7 @@ def create_config(secret_config, config):
                                  'Viggo':'ui.Label4.value'}
 
     # Ipadresses of devices where its wifi presence should be monitored
-    config['MONITORED_DEVICES'] = {'192.168.2.11':"Wilma", 
+    config['MONITORED_DEVICES'] = {'192.168.2.65':"Wilma", 
                                    '192.168.2.88':"David",
                                    '192.168.2.86':"Mia",
                                    '192.168.2.233':"Viggo" }
