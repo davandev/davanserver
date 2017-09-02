@@ -45,7 +45,7 @@ class SpeedtestService(ReoccuringBaseService):
         Received request for the latest speedtest measurements.
         '''
         self.increment_invoked()
-        self.logger.debug("SpeedTest content: " + self.encoded_string)
+        #self.logger.debug("SpeedTest content: " + self.encoded_string)
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
 
     def handle_timeout(self):
@@ -71,7 +71,7 @@ class SpeedtestService(ReoccuringBaseService):
             self.logger.warning("Caught exception when fetching internet speed")
                     
         self.encoded_string = json.JSONEncoder().encode({"Upload_Mbit":self.upload,"Download_Mbit":self.download,"Ping_ms": self.ping,"Date":str(self.measure_time)})
-        self.logger.info("Encoded String:" + self.encoded_string)
+        #self.logger.info("Encoded String:" + self.encoded_string)
 
     
     def get_next_timeout(self):
@@ -95,10 +95,10 @@ class SpeedtestService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        htmlresult = "<li>Ping: " + self.ping + " ms</li>\n"
-        htmlresult += "<li>Download: " + self.download + " Mbit</li>\n"
-        htmlresult += "<li>Upload: " + self.upload + " Mbit</li>\n"
-        htmlresult += "<li>Date: " + self.measure_time + " </li>\n"
+        htmlresult = "Ping: " + self.ping + " ms</br>\n"
+        htmlresult += "Download: " + self.download + " Mbit</br>\n"
+        htmlresult += "Upload: " + self.upload + " Mbit</br>\n"
+        htmlresult += "Date: " + self.measure_time + " </br>\n"
         
         column = column.replace("<SERVICE_VALUE>", htmlresult)
         

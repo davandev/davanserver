@@ -104,7 +104,7 @@ class UpsService(BaseService):
                 time = line.split(":")
                 jsonResult += '"Time":"'+time[1].lstrip()+'"'
         jsonResult += "}"
-        self.logger.info("Result: "+ jsonResult)
+        #self.logger.info("Result: "+ jsonResult)
         return jsonResult
     
     def has_html_gui(self):

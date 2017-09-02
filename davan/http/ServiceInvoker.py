@@ -74,7 +74,7 @@ class ServiceInvoker(object):
         result = self.expression.findall(service)[0]
         
         if self.services.has_key(result):
-            #self.logger.debug("Invoking service: ["+ result+"]")
+            self.logger.debug("Invoking service: ["+ result+"]")
             return self.services[result]
         elif service.endswith(constants.MP3_EXTENSION) or service.endswith(constants.MP3_EXTENSION1):
             self.logger.debug("Invoking service: [mp3]")

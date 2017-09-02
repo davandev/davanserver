@@ -76,9 +76,9 @@ def encode_message(message,encode_whitespace=True):
     if encode_whitespace:
         message = message.replace(" ","%20") 
     
-    message = message.replace('ä','%C3%A4') # Whitespace
-    message = message.replace('å','%C3%A5') # Whitespace
-    message = message.replace('ö','%C3%B6') # Whitespace
+    message = message.replace('ä','%C3%A4') 
+    message = message.replace('å','%C3%A5') 
+    message = message.replace('ö','%C3%B6') 
 
     message = message.replace('&auml;','%C3%A4')        
     message = message.replace('&aring;','%C3%A5')

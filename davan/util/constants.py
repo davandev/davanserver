@@ -44,7 +44,7 @@ SUN_SERVICE_NAME = "SunService"
 TV_SERVICE_NAME = "TvService"
 SCALE_SERVICE_NAME = "ScaleService"
 CONNECTIVITY_SERVICE_NAME = "ConnectivityService"
-
+FIBARO_SERVICE_NAME = "FibaroService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"

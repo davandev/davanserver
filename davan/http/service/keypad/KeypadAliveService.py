@@ -53,9 +53,10 @@ class KeypadAliveService(ReoccuringBaseService):
         Send telegram message if state has changed
         @param state, current state of keypad
         '''
+        #currentTime = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         n = datetime.now()
-        currentTime = format(n,"%H:%M")
-        
+        currentTime = format(n,"%Y-%m-%d %H:%M")
+
         if self.connected == True and state == False:
             self.logger.info("Keypad state changed: False") 
             self.connected = False

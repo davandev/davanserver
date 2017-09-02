@@ -42,14 +42,14 @@ class DailyQuoteService(ReoccuringBaseService):
         '''
         Fetch quote from dagenscitat.nu 
         '''
-        self.logger.info("Fetching quote")
+#        self.logger.info("Fetching quote")
         quote = urllib2.urlopen(self.quote_url).read()
         quote = quote.split("<")[1]
         self.today_quote = quote.split(">")[1]
         self.get_quest()
 
     def get_quest(self):
-        self.logger.info("Fetching quest")
+#        self.logger.info("Fetching quest")
         quest = urllib2.urlopen(self.quest_url).read()
         quest = quest.split(">\\")[1]
         answer = quest.split("</div>")[1]

@@ -153,10 +153,33 @@ def create_config(secret_config, config):
                                  'Viggo':'ui.Label4.value'}
 
     # Ipadresses of devices where its wifi presence should be monitored
-    config['MONITORED_DEVICES'] = {'192.168.2.65':"Wilma", 
-                                   '192.168.2.88':"David",
-                                   '192.168.2.86':"Mia",
-                                   '192.168.2.233':"Viggo" }
+    config['FAMILY_DEVICES'] = {'192.168.2.65' : "Wilma", 
+                                '192.168.2.88' : "David",
+                                '192.168.2.86' : "Mia",
+                                '192.168.2.233' : "Viggo" }
+    
+    config['GUEST_DEVICES'] = {'192.168.2.170' : "Alva", 
+                               '192.168.2.90' : "Elsa" }
+    config['HOUSE_DEVICES'] = {
+        '192.168.2.105' : 'Vit laptop',
+        '192.168.2.34' : 'Rpi pywws',
+        '192.168.2.50' : 'Rpi davanserver',
+        '192.168.2.5' : 'Tellstick',
+        '192.168.2.54' : 'Fibaro',
+        '192.168.2.60' : 'Kamera uppe',
+        '192.168.2.119' : 'Kamera framsida',
+        '192.168.2.172' : 'Kamera hall',
+        '192.168.2.71' : 'Viggos padda',
+        '192.168.2.49' : 'Keypad',
+        '192.168.2.77' : 'Openelec',
+        '192.168.2.101' : 'Mias job iphone',
+        '192.168.2.139' : 'Chromecast Entre',
+        '192.168.2.143' : 'HarmonyHub',
+        '192.168.2.164' : 'Chromecast Kallare',
+        '192.168.2.173' : 'Vu+',
+        '192.168.2.218' : 'Onkyo',
+        '192.168.2.227' : 'Kamera kok'
+                               }
 #---------------------------------------------------------------------------------------
     # Authentication configuration
     #---------------------------------------------------------------------------------------
@@ -330,6 +353,9 @@ def create_config(secret_config, config):
     config['TvServiceEnabled'] = True
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
     config['ConnectivityServiceEnabled'] = True
+    config['FibaroServiceEnabled'] = True
+    config['FibaroTimeout'] = 300
+    config['FibaroVirtualDeviceId'] = "69"
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

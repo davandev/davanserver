@@ -38,14 +38,23 @@ class TvService(ReoccuringBaseService):
         self.watch_tv_activity = '26681450'
         self.vu_status_cmd ='http://192.168.2.173/api/statusinfo'
         self.status = "Off"
-
+        self.standby = "-"
+        self.channel = "-"
+        self.program = "-"
+        self.program_begin = "-"
+        self.program_end = "-"
+        self.program_desc = "-"
+        
     def handle_timeout(self):
         '''
         Calculate sun movements 
         '''
         self.check_tv_status()
-        self.get_current_service_info()
-
+        if self.status == "On":
+            self.get_current_service_info()
+        else:
+            self.reset_service_info()
+            
     def get_next_timeout(self):
         '''
         Return time until next timeout, only once per day.
@@ -124,7 +133,14 @@ class TvService(ReoccuringBaseService):
         self.program_begin = jres['currservice_begin']
         self.program_end = jres['currservice_end']
         self.program_desc = jres['currservice_description']
-        self.logger.info("Standby: "+ self.standby + " Channel:" + self.channel)
+
+    def reset_service_info(self):
+        self.standby = "-"
+        self.channel = "-"
+        self.program = "-"
+        self.program_begin = "-"
+        self.program_end = "-"
+        self.program_desc = "-"
 
     def get_announcement(self):
         '''

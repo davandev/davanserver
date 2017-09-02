@@ -31,6 +31,7 @@ class WeatherService(ReoccuringBaseService):
         self.is_raining = False
         self.latest_result = ""
         self.time_to_next_timeout = 180
+        self.forecast  =""
             
     def handle_request(self, msg):
         '''
@@ -95,14 +96,12 @@ class WeatherService(ReoccuringBaseService):
                 self.is_raining = False
     
     def get_forecast(self):
-        self.logger.info("get_forecast")
         myweather_sum = self.weather_data['forecast']['txt_forecast']['forecastday']
 
         for period in myweather_sum:
             if period['period'] == 2:
                 myforday = period['title']
-                myfctxt = period['fcttext_metric']
-                self.logger.info('Forday:' + myforday + ' forecast:' + myfctxt)
+                self.forecast = period['fcttext_metric']
                 
                 
     def has_html_gui(self):
@@ -131,7 +130,6 @@ class WeatherService(ReoccuringBaseService):
             htmlresult += "<li>Wind dir: " + str(self.weather_data["current_observation"]["wind_dir"]) + " </li>\n"
             htmlresult += "<li>Wind degree: " + str(self.weather_data["current_observation"]["wind_degrees"]) + " </li>\n"
             htmlresult += "<li>Time: " + str(self.weather_data["current_observation"]["observation_time_rfc822"]) + " </li>\n"
-
         column = column.replace("<SERVICE_VALUE>", htmlresult)
         return column
 
@@ -152,6 +150,9 @@ class WeatherService(ReoccuringBaseService):
         temp = str(self.weather_data["current_observation"]["feelslike_c"])
         temp = temp.replace(".", ",")
         announcement += temp + " grader. "
+        #self.forecast = self.forecast.replace('°', '')
+        #self.logger.info("Dagens prognos: "+ self.forecast)
+        #announcement += "Dagens prognos." +self.forecast
         return helper.encode_message(announcement)
                 
 if __name__ == '__main__':
