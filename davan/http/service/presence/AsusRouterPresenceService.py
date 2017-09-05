@@ -44,7 +44,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         self.list_active_devices_cmd = "/usr/sbin/ip neigh"
         # Check status every 5th minute
         self.time_to_next_timeout = 300
-        
+        self.unknown_devices = []
         self.family_devices = {}
         for key, value in self.config['FAMILY_DEVICES'].items():
             self.family_devices[key]= AsusRouterDeviceStatus(key, value, FAMILY)
@@ -70,11 +70,27 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         self.check_device_group(self.guest_devices, active_devices)
         # check house devices
         self.check_device_group(self.house_devices, active_devices)
+        
+        self.check_unknown_devices(active_devices)
     
+    def check_unknown_devices(self, active_devices):
+        self.logger.info("Check unknown devices")
+        for line in active_devices:
+            if line.startswith("192."):
+                items = line.split()
+                if items[0] in self.family_devices.keys():
+                    continue
+                elif items[0] in self.guest_devices.keys():
+                    continue
+                elif items[0] in self.house_devices.keys():
+                    continue
+                else:
+                    if items[0] not in self.unknown_devices:
+                        self.logger.warning("Unknown: "+ items[0])
+                        self.unknown_devices.append(items[0])
+ 
     def check_device_group(self, monitored_devices, active_devices):
         # Reset changed state to false for all devices
-        self.logger.info(str(monitored_devices))
-        
         for ip, device in monitored_devices.iteritems():
             monitored_devices[ip].changed = False
         
@@ -82,7 +98,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         for _, device in monitored_devices.items():
             if device.changed:
-                device.toString()
+#                device.toString()
                 self.notify_change(device)
                 
     def notify_change(self, device):
@@ -91,11 +107,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         with the changed device and status
         @param device device that changed state
         '''
-        #self.logger.info("Notify status change")
-#         if device.active :
-#             status = "Hemma"
-#         else:
-#             status = "Borta"
         if device.type == FAMILY:
             url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                    self.config['FIBARO_VD_PRESENCE_ID'],
@@ -135,7 +146,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
             if line.startswith("192."):
                 items = line.split()
                 if items[0] in monitored_devices.keys():
-                    self.logger.info("Found a monitored device [" + items[0] +"]")
+#                    self.logger.info("Found a monitored device [" + items[0] +"]")
                     self.update_device_status(items, monitored_devices)
 
     def update_device_status(self, status, monitored_devices):
@@ -145,7 +156,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         @param monitored_devices list of configured monitored devices
         '''
         device = monitored_devices[status[0]]
-        device.toString()
+        #device.toString()
         previous_status = device.active
         
         if("REACHABLE" in status or "STALE" in status):
@@ -154,12 +165,12 @@ class AsusRouterPresenceService(ReoccuringBaseService):
             device.active = False
             
         if (previous_status == device.active): # No state changed
-            self.logger.info("No change of status for device[" + status[0] + "]")
+ #           self.logger.info("No change of status for device[" + status[0] + "]")
             device.changed = False
             if device.active:
                 device.last_active = str(datetime.datetime.now())
         else: # State is changed
-            self.logger.info("Change of status for device[" + status[0] + "]")
+#            self.logger.info("Change of status for device[" + status[0] + "]")
             device.changed = True
             if device.active:
                 device.first_active = str(datetime.datetime.now())
@@ -205,6 +216,9 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for _,device in self.house_devices.items():
             htmlresult.append(device.user  + "["+device.active_toString()+"]</br>\n")
 
+        htmlresult += "\nUnknown Devices</br>\n"
+        for device in self.unknown_devices:
+            htmlresult.append(str(device)+"</br>\n")
         column = column.replace("<SERVICE_VALUE>", ''.join(htmlresult))
         
         return column

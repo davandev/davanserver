@@ -48,16 +48,17 @@ class FibaroService(ReoccuringBaseService):
             #http://192.168.2.54/api/diagnostics
             #http://192.168.2.54/api/devices?id=69
             self.fetch_alarm_status()
-            self.print_status()
+            #self.print_status()
             #self.fetch_diagnostics()
             
         except Exception:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
-            self.logger.info("Caught exception") 
-            pass
     
     def fetch_diagnostics(self):
+        '''
+        Fetch and parse diagnostics from Fibaro system
+        '''
         result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics")
         res = result.read()
         data = json.loads(res)
@@ -68,6 +69,9 @@ class FibaroService(ReoccuringBaseService):
                     
             
     def fetch_alarm_status(self):
+        '''
+        Fetch and parse alarm status
+        '''
         result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['FibaroVirtualDeviceId'])
         res = result.read()
         data = json.loads(res)
@@ -97,9 +101,9 @@ class FibaroService(ReoccuringBaseService):
         if not self.is_enabled():
             return ReoccuringBaseService.get_html_gui(self, column_id)
 
-        result = "<li>Skalskydd: " + str(self.alarmStatus["Skalskydd"]) + " </li>\n"
-        result +="<li>Alarm: " + str(self.alarmStatus["Alarm"]) + " </li>\n" 
-        result +="<li>Garden: " + str(self.alarmStatus["Garden"]) + " </li>\n"
+        result = "Skalskydd: " + str(self.alarmStatus["Skalskydd"]) + "\n"
+        result +="Alarm: " + str(self.alarmStatus["Alarm"]) + "\n" 
+        result +="Garden: " + str(self.alarmStatus["Garden"]) + "\n"
          
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

@@ -25,7 +25,7 @@ from davan.http.service.base_service import BaseService
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-COMMAND, SPEAKER, TTS, SERVICES, TV = range(5)
+COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT = range(6)
 
 class ReceiverBotService(BaseService):
     '''
@@ -41,8 +41,7 @@ class ReceiverBotService(BaseService):
         BaseService.__init__(self,constants.RECEIVER_BOT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
-        logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)
- 
+        logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
         self.current_speaker = "0"
         self.TAG_RE = re.compile(r'<[^>]+>')
         self.event = Event()
@@ -85,8 +84,8 @@ class ReceiverBotService(BaseService):
         res = result.read()
         self.increment_invoked()
         update.message.reply_text("Text message displayed on tv")
-        #self.build_start_menu(bot, update)
-        #return COMMAND
+        self.build_start_menu(bot, update)
+        return COMMAND
         
     def log(self, bot, update):
         file_name = log_manager.get_logfile_name()
@@ -131,8 +130,9 @@ class ReceiverBotService(BaseService):
                 COMMAND: [RegexHandler('^(Services|Log|Speakers|TTS|Tv|Status)$', self.handle_command)],
                 SPEAKER: [RegexHandler('^(Hallway|Kitchen|All|Menu)$', self.handle_speaker)],
                 SERVICES: [RegexHandler('^(.*)$', self.handle_service)],
+                TV: [RegexHandler('^(On|Off|Text|Menu)$', self.handle_tv)],
                 TTS: [MessageHandler(Filters.text, self.tts)],
-                TV: [MessageHandler(Filters.text, self.tv)]
+                TVTEXT: [MessageHandler(Filters.text, self.tv)]
             },
      
             fallbacks=[CommandHandler('cancel', self.cancel)]
@@ -184,6 +184,15 @@ class ReceiverBotService(BaseService):
         update.message.reply_text('Select speaker:',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
 
+    def build_tv_menu(self,update):
+        '''
+        Generate the tv menu to display
+        '''
+        reply_keyboard = [['On', 'Off', 'Text'],['Menu']]
+        
+        update.message.reply_text('Select command:',
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
+
     def build_service_menu(self, update):
         '''
         Generate the service menu to display
@@ -224,7 +233,8 @@ class ReceiverBotService(BaseService):
             return TTS    
         
         if update.message.text == "Tv":
-            self.handle_tv(bot, update)
+            self.build_tv_menu(update)
+            #self.handle_tv(bot, update)
             return TV
         
         if update.message.text == "Services":
@@ -274,13 +284,40 @@ class ReceiverBotService(BaseService):
         update.message.reply_text("Write message to play in speaker ", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
-    def handle_tv(self, bot, update):
+    def handle_show_text(self, bot, update):
         '''
         Display the message on Tv
         '''
         logger.info("Selected message:%s:" % (update.message.text))
         update.message.reply_text("Write message on TV", reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
+        #return TVTEXT
+
+    def handle_tv(self, bot, update):
+        '''
+        A speaker has been selected
+        '''
+        logger.info("Selected tv-command %s:" % (update.message.text))
+        if update.message.text != 'Menu':
+            if update.message.text == 'On':
+                update.message.reply_text("Turning on TV")
+                tv = self.services.get_service("TvService")
+                tv.enable(True)
+                update.message.reply_text("Turned on TV ")
+                self.build_start_menu(bot, update)
+                return COMMAND    
+            if update.message.text == 'Off':
+                update.message.reply_text("Turning off TV")
+                tv = self.services.get_service("TvService")
+                tv.enable(False)
+                update.message.reply_text("Turned off TV")
+                self.build_start_menu(bot, update)
+                return COMMAND    
+            if update.message.text == 'Text':
+                self.handle_show_text(bot,update)
+                return TVTEXT 
+
+            self.increment_invoked()
+
 
     def handle_speaker(self, bot, update):
         '''

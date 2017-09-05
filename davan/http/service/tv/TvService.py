@@ -31,11 +31,10 @@ class TvService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         
         self.base_cmd = "harmony --harmony_ip "
-        self.timeout = 300
-        self.start_activity_cmd = 'start_activity --activity '
-        self.stop_activity_cmd = 'power_off'
-        self.current_activity_cmd = 'show_current_activity'
-        self.watch_tv_activity = '26681450'
+        self.start_activity_cmd = ' start_activity --activity '
+        self.stop_activity_cmd = ' power_off'
+        self.current_activity_cmd = ' show_current_activity'
+        #self.watch_tv_activity = '26681450'
         self.vu_status_cmd ='http://192.168.2.173/api/statusinfo'
         self.status = "Off"
         self.standby = "-"
@@ -59,7 +58,7 @@ class TvService(ReoccuringBaseService):
         '''
         Return time until next timeout, only once per day.
         '''
-        return self.timeout
+        return self.config['TvServiceTimeout']
         
     def has_html_gui(self):
         """
@@ -76,12 +75,12 @@ class TvService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        res = "<li>TV status:" +self.status + "</li>\n"
-        res += "<li>Vu standby:" +str(self.standby) + "</li>\n"
-        res += "<li>Channel:" +self.channel + "</li>\n"
-        res += "<li>Program:" +self.program+ "</li>\n"
-        res += "<li>" +self.program_begin+ "-" + self.program_end+"</li>\n"
-        res += "<li>" +self.program_desc+ "</li>\n"
+        res = "TV status:" +self.status + "\n"
+        res += "Vu standby:" +str(self.standby) + "\n"
+        res += "Channel:" +self.channel + "\n"
+        res += "Program:" +self.program+ "\n"
+        res += "" +self.program_begin+ "-" + self.program_end+"\n"
+        res += "" +self.program_desc+ "\n"
         
         column  = column.replace("<SERVICE_VALUE>", "<li>"+res+"</li>\n")
 
@@ -95,7 +94,8 @@ class TvService(ReoccuringBaseService):
         
         if enable == True:
             cmd += self.start_activity_cmd
-            cmd += self.watch_tv_activity
+            cmd += self.config['WATCH_TV_ACTIVITY']
+            self.logger.info("cmd:"+str(cmd))
             executor.execute_block(cmd, 'Harmony')
             self.status = "On"
         else:
@@ -135,6 +135,9 @@ class TvService(ReoccuringBaseService):
         self.program_desc = jres['currservice_description']
 
     def reset_service_info(self):
+        '''
+        Reset info from Vu when tv activity is off 
+        '''
         self.standby = "-"
         self.channel = "-"
         self.program = "-"

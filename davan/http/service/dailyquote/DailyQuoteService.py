@@ -87,9 +87,9 @@ class DailyQuoteService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        quote = self.today_quote + "\n"
-        quote += self.today_quest + "\n"
-        quote += self.today_answer + "\n"
+        quote = self.today_quote + "</br>\n"
+        quote += self.today_quest + "</br>\n"
+        quote += self.today_answer + "</br>\n"
         
         column  = column.replace("<SERVICE_VALUE>", quote)
 
