@@ -75,7 +75,9 @@ def create_config(secret_config, config):
     config['TTS_GENERATOR_FETCH_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/ttsFetch"
     # Url to generate mp3 file on android phone
     config['TTS_GENERATOR_CREATE_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/tts"
-
+    # Select the speakers for plauging TTS messages, currently supports 
+    # "RoxcoreService", "SonosService" or internal speaker
+    config['SPEAKER_SERVICE'] = "RoxcoreService"
     #-----------------------------------------------------------------------------------------
     # DailyQuote configuration
     #-----------------------------------------------------------------------------------------
@@ -165,37 +167,43 @@ def create_config(secret_config, config):
 
     config['HOUSE_DEVICES'] = {
         '192.168.1.1' : 'Modem',
-        '192.168.2.105' : 'Vit laptop',
-        '192.168.2.34' : 'Rpi pywws',
-        '192.168.2.50' : 'Rpi davanserver',
         '192.168.2.5' : 'Tellstick',
+        '192.168.2.17' : 'Skrivare samsung',
+        '192.168.2.34' : 'Rpi pywws',
+        '192.168.2.36' : 'Boxee box',
+        '192.168.2.37' : 'Mias ipad',
+        '192.168.2.49' : 'Keypad',
+        '192.168.2.50' : 'Rpi davanserver',
+        '192.168.2.51' : 'Roxcore kok Slave',
         '192.168.2.54' : 'Fibaro',
         '192.168.2.60' : 'Kamera uppe',
-        '192.168.2.119' : 'Kamera balkong',
-        '192.168.2.172' : 'Kamera farstukvist',
-        '192.168.2.185' : 'Kamera Kök',
-        '192.168.2.76' : 'Kamera uterum',
-        '192.168.2.227' : 'Kamera hall',
         '192.168.2.71' : 'Viggos padda',
-        '192.168.2.175' : 'Wilmas padda',
         '192.168.2.74' : 'Davids padda',
-        '192.168.2.49' : 'Keypad',
+        '192.168.2.76' : 'Kamera uterum',
         '192.168.2.77' : 'Openelec',
+        '192.168.2.100' : 'LG G4',
         '192.168.2.101' : 'Mias job iphone',
+        '192.168.2.102' : 'Mias job pc',
+        '192.168.2.105' : 'Vit laptop',
+        '192.168.2.119' : 'Kamera balkong',
+        '192.168.2.122' : 'Roxcore Hall',
         '192.168.2.139' : 'Chromecast Entre',
         '192.168.2.143' : 'HarmonyHub',
         '192.168.2.164' : 'Chromecast Kallare',
+        '192.168.2.172' : 'Kamera farstukvist',
         '192.168.2.173' : 'Vu+',
-        '192.168.2.218' : 'Onkyo',
-        '192.168.2.227' : 'Kamera kok',
-        '192.168.2.232' : 'Wilma skoldator',
+        '192.168.2.175' : 'Wilmas padda',
+        '192.168.2.175' : 'Viggos padda',
+        '192.168.2.183' : 'Roxcore kok Master',
         '192.168.2.184' : 'Wilma laptop',
-        '192.168.2.100' : 'LG G4',
-        '192.168.2.51' : 'Roxcore 1',
-        '192.168.2.122' : 'Roxcore 2',
-        '192.168.2.17' : 'Skrivare samsung',
-        '192.168.2.219' : 'PS3',
-        '192.168.2.190' : 'DIR-615'
+        '192.168.2.185' : 'Kamera Kok',
+        '192.168.2.190' : 'DIR-615',
+        '192.168.2.218' : 'Onkyo',
+        '192.168.2.227' : 'Kamera hall',
+        '192.168.2.232' : 'Wilma skoldator',
+        '192.168.2.242' : 'David job pc',
+        '192.168.2.219' : 'PS3'
+
                                }
 #---------------------------------------------------------------------------------------
     # Authentication configuration
@@ -221,12 +229,13 @@ def create_config(secret_config, config):
     config["TELLDUS_PRIVATE_KEY"] =  secret_config.TELLDUS_PRIVATE_KEY
     # Dict holding name of room and virtual device id
     config['SENSOR_MAP'] = {'Badrum':'147', # Room name : HC2 Virtualdevice ID
+                           'Tvattstuga':'220',
                            'Garage':'149',
                            'Gillestuga':'153',
                            'Farstukvist':'152',
                            'Sovrum':'151',
                            'Wilma':'150'}
-    config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 70}
+    config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 70, 'Tvattstuga': 60}
     config['SENSOR_TEMP_HIGH_LIMITS'] = {}
     config['SENSOR_TEMP_LOW_LIMITS'] = {}
     # Temperature virtual devices 
@@ -288,10 +297,15 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Sonos Service configuration
     #---------------------------------------------------------------------------------------------
-    config["SonosEnabled"] = False
+    config["SonosServiceEnabled"] = True
     # Adress to Sonos speaker
-    config['SONOS_IP_ADRESS'] = "'192.168.1.102'"
-
+    config['SONOS_SPEAKERS'] = [
+        #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
+        '0,        Livingroom,      192.168.2.108,  True,         False',
+        '1,        Hallway,         192.168.2.108,  False,        False',
+        '2,         All,            ,               False,        True',
+    
+    ]
     #---------------------------------------------------------------------------------------------
     # Weather Service configuration
     #---------------------------------------------------------------------------------------------
@@ -313,12 +327,12 @@ def create_config(secret_config, config):
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
-        'Kitchen,06:15,07:30,weekdays,10,65,1,15,194,0',
-        'Kitchen,18:15,23:45,week,10,65,2,1,194,0',
-        'Uterum,20:30,23:45,week,-1,192,1,10,195,0',
-        'Outdoor,sunset,23:40,week,-1,191,1,20,196,0',
-    #    'Wilma,07:00,07:15,weekdays,20,173,1,20,197,0',
-        'Wilma,18:15,19:50,week,20,173,2,20,197,1',
+        'Kitchen, 06:15,  07:30, weekdays,     10,        65,         1,        15,        194,            0',
+        'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
+        'Uterum,  20:30,  23:45, week,         -1,        192,        1,        10,        195,            0',
+        'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
+    #    'Wilma,   07:00,  07:15, weekdays,     20,        173,        1,        20,        197,            0',
+        'Wilma,   18:15,  19:50, week,        20,         173,        2,        20,        197,            1',
     #    'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
         'Viggo,18:55,19:39,week,10,177,1,15,198,1',
    ]

@@ -61,7 +61,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         return self.time_to_next_timeout
     
     def handle_timeout(self):
-        self.logger.info("Check presence of monitored devices")
+        #self.logger.info("Check presence of monitored devices")
 
         active_devices = self.fetch_active_devices()
         # Check family status
@@ -74,7 +74,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         self.check_unknown_devices(active_devices)
     
     def check_unknown_devices(self, active_devices):
-        self.logger.info("Check unknown devices")
+        #self.logger.info("Check unknown devices")
         for line in active_devices:
             if line.startswith("192."):
                 items = line.split()
@@ -199,7 +199,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         """
         if not self.is_enabled():
             return ReoccuringBaseService.get_html_gui(self, column_id)
-
+        self.logger.info("before")
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
          
@@ -220,6 +220,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for device in self.unknown_devices:
             htmlresult.append(str(device)+"</br>\n")
         column = column.replace("<SERVICE_VALUE>", ''.join(htmlresult))
+
+        self.logger.info("after")
         
         return column
                 

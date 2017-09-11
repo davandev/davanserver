@@ -5,13 +5,34 @@
 import logging
 import os
 import urllib
+import traceback
+
 
 import davan.config.config_creator as configuration
 from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
+import davan.http.service.roxcore.RoxcoreSpeakerCommands as commands
 
 from soco import SoCo
+
+class SonosSpeaker():
+    def __init__(self, id, slogan, address, default_speaker, play_announcement):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+
+        self.id = id 
+        self.slogan = slogan
+        self.address = address
+        self.default_speaker = default_speaker
+        self.play_announcement = play_announcement
+        self.logger.info(self.toString())
+
+    def toString(self):
+        return "Slogan[ "+self.slogan+" ] "\
+            "Id[ "+self.id+" ] "\
+            "Address[ "+self.address+" ] "\
+            "Speaker[ "+self.default_speaker+" ] "\
+            "Announcement[ "+self.play_announcement+" ]"
 
 class SonosService(BaseService):
     '''
@@ -25,54 +46,78 @@ class SonosService(BaseService):
         '''
         BaseService.__init__(self, constants.SONOS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-
+        self.speakers = {}
+        self.get_speakers_from_config()
+        
+        
     def _parse_request(self, msg):
         return self.start(msg.split('=')[1])
     
-    def handle_request(self, msg):
+    def handle_request(self, msg, speaker_id="0"):
         '''
-        Recevied request from Fibaro system to speak message via Sonos speakers.
-        Check if message if already available, otherwise contact
-        VoiceRSS to translate and get the mp3 file.
-        @param msg to translate and speak.
+        Play mp3 file on sonos speaker.
+        @param msg, file to play 
         '''
-        self.increment_invoked()
-        tts_content = self._parse_request(msg)
+        try:
+            self.logger.info('Fileid:' + msg)
+            if speaker_id == "2":
+                for _,speaker in self.speakers.items():
+                    self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"]")
+                    
+                    sonos = SoCo(self.speakers[speaker_id].address)
+                    sonos.play_uri(msg,"Speech")
+            else:
+                self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"] Address[" +self.speakers[speaker_id].address+"]" )
+                #speaker_address = "http://" + self.speakers[speaker_id].address + ":" + str(59152)#self.config['ROXCORE_PORT_NR']
+                #self._send_to_speaker(speaker_address, msg, self.speakers[speaker_id].play_announcement)
 
-        self.logger.info("Received request for new TTS message ["+ tts_content + "]")
-        
-        mp3_file = self.config['TTS_PRECOMPILED_ALARM_MSG_PATH'] + tts_content + ".mp3"
+                sonos = SoCo(self.speakers[speaker_id].address)
+                uri = 'http://' + self.config['SERVER_ADRESS'] +':' + str(self.config['SERVER_PORT']) + '/mp3=' + msg
+                self.logger.info("Send uri:" + uri)
+                #sonos.play_uri('http://192.168.2.89:8080/mp3=barking_dog.mp3',"Speech")
+                sonos.play_uri(uri,"Speech")
+                track = sonos.get_current_track_info()
+                self.logger.info(track['title'])
 
-        self.logger.debug("Search for cached file: "+ mp3_file)
-        if os.path.exists(mp3_file):
-            self.logger.debug("Using cached mp3 file")
-        else:   
-            self.logger.debug("Generate mp3 for [" + tts_content+"]")
-            self.generate_mp3(tts_content, mp3_file)
-        
-        self.logger.info("Playing file: " + 'http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
-#        sonos = SoCo(self.config['SONOS_IP_ADRESS']) 
-        sonos = SoCo('192.168.2.122:59152') 
-        sonos.play_uri('http://192.168.2.50:8080/test-mp3')
-        # Pass in a URI to a media file to have it streamed through the Sonos speaker
-#        sonos.play_uri('http://'+ self.config["SERVER_ADRESS"] + ":" + str(self.config["SERVER_PORT"]) + '/' + mp3_file)
-        
+                sonos.pause()
+                sonos.play()
+
+            self.increment_invoked()
+        except:
+            self.logger.error(traceback.format_exc())
+            self.increment_errors()
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     
-    def generate_mp3(self, msg, mp3_file):
-        ''' 
-        Generate a mp3 file from the msg string.        
-        Replace '_' with '%20' == whitespace
-        @param msg message to translate
-        @parm mp3_file output file where to store spoken msg.
-        '''  
-        encoded_msg = msg.replace("_", "%20")
-        self.logger.debug("Encoded string [" + encoded_msg + "]")
+    
+    def _send_to_speaker(self, speaker_address, msg, play_announcement):
+        '''
+        Send the message to a specific speaker
+        @param speaker_address address to speaker
+        @param msg, voice message 
+        @param play_announcement, determine if an announcement message should be played 
+        before the actual message.
+        '''
+        if play_announcement == "True":
+            commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
+            commands.append_tracks_in_queue(speaker_address, msg)
+        else:
+            commands.replace_queue(speaker_address, msg)
+        commands.send_play_with_index(speaker_address)
+        commands.set_play_mode(speaker_address)
         
-        url = self.config['VOICERSS_URL'].replace("REPLACE_WITH_MESSAGE", encoded_msg)
-        self.logger.debug("Url: ["+ url + "]")
-        
-        urllib.urlretrieve(url, mp3_file )
+    def get_speakers_from_config(self):
+        '''
+        Parse all configured speakers
+        '''
+        configuration = self.config['SONOS_SPEAKERS']
+        for speaker_item in configuration:
+            items = speaker_item.split(",")          
+            self.speakers[items[0].strip()] = \
+                SonosSpeaker(items[0].strip(), # Id,
+                               items[1].strip(), #Slogan
+                               items[2].strip(), # Address
+                               items[3].strip(), # default speaker
+                               items[4].strip() )# Play announcement
 
 if __name__ == '__main__':
 
