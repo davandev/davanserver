@@ -14,7 +14,6 @@ import davan.util.cmd_executor as cmd
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.http.service.base_service import BaseService
-from davan.http.service.audio.AudioService import AudioService
 from davan.util import application_logger as log_config
 
 class HtmlService(BaseService):
@@ -161,33 +160,3 @@ class HtmlService(BaseService):
         json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+diskusage+'", "Memory":"'+memory_used+'/'+memory_free+'",  "Services":"'+str(services)+'"}'
         return json_string
     
-if __name__ == '__main__':
-    from davan.http.ServiceInvoker import ServiceInvoker
-    from davan.http.service.tts.TtsService import RoxcoreService
-    from davan.http.service.ups.UpsService import UpsService
-    from davan.http.service.dailyquote.DailyQuoteService import DailyQuoteService
-    from davan.http.service.speedtest.SpeedtestService import SpeedtestService
-    from davan.http.service.keypad.KeypadAliveService import KeypadAliveService
-    from davan.http.service.monitor.ActiveScenesMonitorService import ActiveScenesMonitorService
-    from davan.http.service.picture.PictureService import PictureService
-    from davan.http.service.weather.WeatherService import WeatherService
-    
-    config = configuration.create()
-    service = ServiceInvoker(config)
-    service.services['A'] = AudioService(config)
-    service.services['B'] = RoxcoreService(config)
-    service.services['C'] = UpsService(config)
-    service.services['D'] = DailyQuoteService(config) 
-    service.services['D'] = SpeedtestService(config)
-    service.services['E'] = KeypadAliveService(config)
-    service.services['F'] = ActiveScenesMonitorService(config)
-    service.services['F'] = PictureService(config)
-    service.services['G'] = WeatherService(config)
-
-    __builtin__.davan_services = service
-
-    log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    
-    test = HtmlService(config)
-    test.generate_service_fragment()
-    #test.handle_request("/status.html")
