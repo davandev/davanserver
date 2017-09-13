@@ -12,7 +12,7 @@ import davan.config.config_creator as configuration
 from davan.util import application_logger as app_logger
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
-import davan.http.service.roxcore.RoxcoreSpeakerCommands as commands
+import davan.http.service.sonos.SonosCommands as commands
 
 from soco import SoCo
 
@@ -59,7 +59,6 @@ class SonosService(BaseService):
         @param msg, file to play 
         '''
         try:
-            self.logger.info('Fileid:' + msg)
             if speaker_id == "2":
                 for _,speaker in self.speakers.items():
                     self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"]")
@@ -68,19 +67,14 @@ class SonosService(BaseService):
                     sonos.play_uri(msg,"Speech")
             else:
                 self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"] Address[" +self.speakers[speaker_id].address+"]" )
-                #speaker_address = "http://" + self.speakers[speaker_id].address + ":" + str(59152)#self.config['ROXCORE_PORT_NR']
-                #self._send_to_speaker(speaker_address, msg, self.speakers[speaker_id].play_announcement)
 
                 sonos = SoCo(self.speakers[speaker_id].address)
                 uri = 'http://' + self.config['SERVER_ADRESS'] +':' + str(self.config['SERVER_PORT']) + '/mp3=' + msg
-                self.logger.info("Send uri:" + uri)
-                #sonos.play_uri('http://192.168.2.89:8080/mp3=barking_dog.mp3',"Speech")
                 sonos.play_uri(uri,"Speech")
-                track = sonos.get_current_track_info()
-                self.logger.info(track['title'])
 
-                sonos.pause()
-                sonos.play()
+#                speaker_address = "http://" + self.speakers[speaker_id].address + ":" + self.config['ROXCORE_PORT_NR']
+#                speaker_address = "http://" + speaker.address + ":" + self.config['ROXCORE_PORT_NR']
+#                self._send_to_speaker(speaker_address, msg, False)
 
             self.increment_invoked()
         except:
@@ -97,13 +91,14 @@ class SonosService(BaseService):
         @param play_announcement, determine if an announcement message should be played 
         before the actual message.
         '''
-        if play_announcement == "True":
-            commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
-            commands.append_tracks_in_queue(speaker_address, msg)
-        else:
-            commands.replace_queue(speaker_address, msg)
-        commands.send_play_with_index(speaker_address)
-        commands.set_play_mode(speaker_address)
+ #       if play_announcement == "True":
+ #           commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
+ #           commands.append_tracks_in_queue(speaker_address, msg)
+ #       else:
+        commands.get_zone_group_state(speaker_address, msg)
+#            commands.replace_queue(speaker_address, msg)
+#        commands.send_play_with_index(speaker_address)
+#        commands.set_play_mode(speaker_address)
         
     def get_speakers_from_config(self):
         '''
