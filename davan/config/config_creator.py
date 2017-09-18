@@ -163,7 +163,9 @@ def create_config(secret_config, config):
     
     config['GUEST_DEVICES'] = {
         '192.168.2.170' : "Alva", 
-        '192.168.2.90' : "Elsa" }
+        '192.168.2.90' : "Elsa",
+        '192.168.2.197' : "Sonia",
+        '192.168.2.198' : "Maddis" }
 
     config['HOUSE_DEVICES'] = {
         '192.168.1.1' : 'Modem',
@@ -193,7 +195,7 @@ def create_config(secret_config, config):
         '192.168.2.172' : 'Kamera farstukvist',
         '192.168.2.173' : 'Vu+',
         '192.168.2.175' : 'Wilmas padda',
-        '192.168.2.175' : 'Viggos padda',
+        '192.168.2.179' : 'Viggos Ipad',
         '192.168.2.183' : 'Roxcore kok Master',
         '192.168.2.184' : 'Wilma laptop',
         '192.168.2.185' : 'Kamera Kok',
@@ -201,6 +203,7 @@ def create_config(secret_config, config):
         '192.168.2.218' : 'Onkyo',
         '192.168.2.227' : 'Kamera hall',
         '192.168.2.232' : 'Wilma skoldator',
+        '192.168.2.231' : 'Mias klocka',
         '192.168.2.242' : 'David job pc',
         '192.168.2.219' : 'PS3'
 
@@ -360,6 +363,7 @@ def create_config(secret_config, config):
     # Announcement service
     #---------------------------------------------------------------------------------------------
     config["AnnouncementsServiceEnabled"] = True
+    config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt'"
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | 
         'SleepTime,        23:02,   weekdays,       night,           0',

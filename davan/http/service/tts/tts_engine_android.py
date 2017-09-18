@@ -23,7 +23,7 @@ class TtsEngineAndroid():
         @parm mp3_file output file where to store spoken msg.
         '''  
         encoded_msg = msg.replace("_", "%20")
-        self.logger.debug("Encoded string [" + encoded_msg + "]")
+#        self.logger.debug("Encoded string [" + encoded_msg + "]")
         try:
             result = urllib2.urlopen(self.config["TTS_GENERATOR_CREATE_URL"] + "="+encoded_msg).read()
         except:

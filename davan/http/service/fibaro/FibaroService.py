@@ -10,7 +10,7 @@ import traceback
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
-
+import davan.util.helper_functions as helper
 from davan.util import application_logger as log_manager
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
@@ -43,15 +43,9 @@ class FibaroService(ReoccuringBaseService):
         system, otherwise start them
         '''
         try:
-            #Check alarmstate
-            #Check cpu/mem
-            #http://192.168.2.54/api/diagnostics
-            #http://192.168.2.54/api/devices?id=69
             self.fetch_alarm_status()
-            #self.print_status()
-            #self.fetch_diagnostics()
-            
         except Exception:
+            helper.send_telegram_message(self.config, "Ingen kontakt med HC2 Fibaro")
             self.logger.error(traceback.format_exc())
             self.increment_errors()
     
@@ -62,11 +56,6 @@ class FibaroService(ReoccuringBaseService):
         result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics")
         res = result.read()
         data = json.loads(res)
-#        for key, value in data.iteritems():
-#            self.logger.info("key:"+str(key)+" value:"+str(value))
-#            if key == "memory":
-#                for k, v in value.iteritems():
-                    
             
     def fetch_alarm_status(self):
         '''

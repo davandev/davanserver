@@ -26,7 +26,6 @@ date= ['noll','första','andra','tredje','fjärde','femte','sjätte','sjunde','�
 
 def create_morning_announcement():
     n = datetime.now()
-    #current_time = format(n,"%H:%M:%S")
     t = n.timetuple()
     y, m, d, h, min, sec, wd, yd, i = t
     current_day = wd
@@ -103,8 +102,36 @@ def create_name_announcement():
     
     return helper_functions.encode_message(announcement+".")
     
+def create_menu_announcement(config):
+    '''
+    Create menu announcement, a text file contains all daily menus
+    Determine current date and read date from menu file.
+    '''
+    logger.info("Create menu announcement")
+    n = datetime.now()
+    t = n.timetuple()
+    y, m, d, h, min, sec, wd, yd, i = t
+    
+    if wd >=5:
+        logger.info("Weekend no menu")
+        return ""
+
+    todays_date = str(d) + "/" + str(m)
+    logger.info("today:" + todays_date)
+    menu = ""
+    with open(config('ANNOUNCEMENT_MENU_PATH')) as f:
+        content = f.readlines()
+        for line in content:
+            if todays_date in line:
+                logger.info("Found todays menu: " + todays_date +": " + line)
+                menu = "Meny i Neptuniskolan. "
+                menu += line.replace(todays_date, "")
+                menu = menu.rstrip()
+                menu += "."
+    return helper_functions.encode_message(menu)
+                
 if __name__ == '__main__':
     config = config_creator.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    result = create_sunset_sunrise_announcement()
-    logger.info("Quote: "+ result)
+    result = create_menu_announcement()
+    logger.info("Menu: "+ result)
