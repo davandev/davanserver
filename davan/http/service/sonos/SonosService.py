@@ -25,7 +25,7 @@ class SonosSpeaker():
         self.address = address
         self.default_speaker = default_speaker
         self.play_announcement = play_announcement
-        self.logger.info(self.toString())
+#        self.logger.info(self.toString())
 
     def toString(self):
         return "Slogan[ "+self.slogan+" ] "\

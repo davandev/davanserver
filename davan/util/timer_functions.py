@@ -70,9 +70,9 @@ def add_random_time(configured_time, randomValue):
         sum = (start_dt + datetime.timedelta(minutes=random)) 
         timeout = format(sum, '%H:%M')
         if "00:" in str(timeout):
-            logger.debug("Timer expires after midnight, use original value")
+            logger.warning("Timer expires after midnight, use original value")
             timeout = configured_time
-        logger.debug("Configured["+str(configured_time)+"] random["+str(random)+"] NewValue["+ str(timeout)+"]")
+        #logger.debug("Configured["+str(configured_time)+"] random["+str(random)+"] NewValue["+ str(timeout)+"]")
     
         return timeout
     except Exception:
@@ -106,5 +106,5 @@ def get_time_and_day_and_date():
     t = n.timetuple()
     y, m, d, h, min, sec, wd, yd, i = t
     current_day = wd
-   # logger.debug("Day["+str(wd)+"]" + " Time["+str(current_time)+"] Date["+current_date+"]")
+    #logger.debug("Day["+str(wd)+"]" + " Time["+str(current_time)+"] Date["+current_date+"]")
     return current_time, current_day, current_date

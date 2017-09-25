@@ -76,7 +76,7 @@ class TtsService(BaseService):
         """
         Play the mp3 files in speakers
         """
-        self.logger.info("Play file : "+ mp3_file + " Speaker: "+ str(self.selected_speaker))
+        self.logger.info("Play file ["+ mp3_file + "] Speaker ["+ str(self.selected_speaker) + "]")
         
         speaker = self.services.get_service(self.config['SPEAKER_SERVICE'])
         speaker.handle_request(mp3_file,self.selected_speaker)
@@ -96,7 +96,7 @@ class TtsService(BaseService):
         """
         Received completed callback from TTS service  
         """
-        self.logger.info("handle_ttsCompleted_callback") 
+        self.logger.info("Received ttsCompleted callback") 
         if self.async_filename == None:
             return
 
@@ -112,5 +112,5 @@ class TtsService(BaseService):
         md5.update(msg)
         result = md5.hexdigest()
         mp3_file = result + ".mp3"
-        self.logger.info("Checksum of ["+msg+"] = " + result)        
+        self.logger.debug("Checksum of ["+msg+"] = " + result)        
         return mp3_file

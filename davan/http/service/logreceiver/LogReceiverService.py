@@ -28,7 +28,7 @@ class LogReceiverService(BaseService):
         
     
     def _parse_request(self,msg):
-        self.logger.info("Parse request:" + msg)
+        self.logger.debug("Parse request:" + msg)
         msg = msg.replace("/LogEntry?text=", "")
         return urllib.unquote(msg)
                 

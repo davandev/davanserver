@@ -41,7 +41,7 @@ class TelldusSensorService(ReoccuringBaseService):
         Timeout received, fetch sensor values from Telldus Live
         Push sensor data to Fibaro virtual device  
         '''
-        self.logger.info("Got a timeout, fetch sensor states")
+#            self.logger.info("Got a timeout, fetch sensor states")
 
         response=telldus.listSensorsAndValues()
 
@@ -51,7 +51,7 @@ class TelldusSensorService(ReoccuringBaseService):
             return 
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])
-            self.logger.debug("Sensor name: %s" %name )
+            #self.logger.debug("Sensor name: %s" %name )
             
             if self.config["SENSOR_MAP"].has_key(name):
                 sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
@@ -90,7 +90,7 @@ class TelldusSensorService(ReoccuringBaseService):
         '''
         try:
             if self.config["SENSOR_HUMIDITY_LIMITS"].has_key(sensor_name):
-                self.logger.info("Sensor "+ sensor_name +" has humidity limits configured. Current value["+humidity_value+"]")
+#                self.logger.info("Sensor "+ sensor_name +" has humidity limits configured. Current value["+humidity_value+"]")
                 
                 sensor_limit = self.config['SENSOR_HUMIDITY_LIMITS'][sensor_name]
                 if int(humidity_value) > sensor_limit :

@@ -116,7 +116,7 @@ class ReceiverBotService(BaseService):
         '''
         Start a telegram-bot and register command and message handlers.
         '''
-        self.logger.info("Starting telegram conversation bot")
+        self.logger.debug("Starting telegram conversation bot")
         self.bot = Updater(token=self.config["RECEIVER_BOT_TOKEN"])
         self.bot.dispatcher.add_handler(MessageHandler(Filters.voice, self.audio))
         # Get the dispatcher to register handlers

@@ -56,7 +56,7 @@ class CalendarService(ReoccuringBaseService):
         '''
         Fetch todays calendar events
         '''
-        self.logger.info("Got a timeout, fetch todays calendar events ")
+        self.logger.debug("Got a timeout, fetch todays calendar events ")
         self.todays_events = []
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
@@ -71,7 +71,7 @@ class CalendarService(ReoccuringBaseService):
         while True:
             calendar_list = service.calendarList().list(pageToken=page_token).execute()
             for calendar_list_entry in calendar_list['items']:
-                self.logger.info("Calendar:" + calendar_list_entry['summary'])
+                self.logger.debug("Calendar:" + calendar_list_entry['summary'])
 #                eventsResult = service.events().list(
 #                    calendarId=calendar_list_entry['id'], timeMin=now,maxResults=10, singleEvents=True,
 #                    orderBy='startTime').execute()
@@ -84,13 +84,13 @@ class CalendarService(ReoccuringBaseService):
                     start = today_event['start'].get('dateTime', today_event['start'].get('date'))
                     event = CalendarEvent(calendar_list_entry['summary'],today_event['summary'])
                     self.todays_events.append(event)
-                    self.logger.info(event.toString())
+                    #self.logger.info(event.toString())
             page_token = calendar_list.get('nextPageToken')
             if not page_token:
                 break
 
         if len(self.todays_events)== 0:
-            self.logger.info("No event today")
+            self.logger.debug("No event today")
 
     def get_next_timeout(self):
         '''
@@ -100,7 +100,7 @@ class CalendarService(ReoccuringBaseService):
             return self.time_to_next_event
         
         self.time_to_next_event = timer_functions.calculate_time_until_midnight()
-        self.logger.info("Next timeout in " + str(self.time_to_next_event) +  " seconds")
+        self.logger.debug("Next timeout in " + str(self.time_to_next_event) +  " seconds")
         return self.time_to_next_event
     
     def get_credentials(self):

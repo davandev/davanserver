@@ -11,7 +11,7 @@ levels = [('CRITICAL' , logging.CRITICAL),
           ('INFO' , logging.INFO),
           ('DEBUG' , logging.DEBUG)]
 
-def start_file_logging(log_file_path, log_file_name =""):
+def start_file_logging(log_file_path, loglevel=4,log_file_name =""):
     """
     Starts logging to file. Rotate file at midnight, keep 30 logfiles 
     """
@@ -23,7 +23,7 @@ def start_file_logging(log_file_path, log_file_name =""):
 
     logfile = log_file_path + '/' + log_file_name +'.log'
     masterLog = logging.getLogger('')
-    masterLog.setLevel(logging.DEBUG)
+    masterLog.setLevel(levels[loglevel][1])
     masterHandler = TimedRotatingFileHandler(logfile, 'MIDNIGHT', backupCount=30)
     formatter = logging.Formatter('%(asctime)s %(name)-35s %(levelname)-8s %(message)s',"%H:%M:%S")
     masterHandler.setFormatter(formatter)

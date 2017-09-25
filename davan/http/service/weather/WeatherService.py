@@ -53,9 +53,7 @@ class WeatherService(ReoccuringBaseService):
             self.get_forecast()
         except Exception:
             self.logger.error(traceback.format_exc())
-
             self.increment_errors()
-            self.logger.error("Caught exception") 
             pass
     
     def get_next_timeout(self):

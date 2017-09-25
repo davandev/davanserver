@@ -13,6 +13,8 @@ def create_config(secret_config, config):
     #------------------------------------------------------------------------------------------------
     # General server configuration
     #------------------------------------------------------------------------------------------------
+    # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
+    config["LOGLEVEL"] = 3
     # Root path of server
     config["ROOT"] = '/home/pi/share/'
     # Log directory path
@@ -332,7 +334,7 @@ def create_config(secret_config, config):
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen, 06:15,  07:30, weekdays,     10,        65,         1,        15,        194,            0',
         'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
-        'Uterum,  20:30,  23:45, week,         -1,        192,        1,        10,        195,            0',
+        'Uterum,  19:05,  23:45, week,         -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
     #    'Wilma,   07:00,  07:15, weekdays,     20,        173,        1,        20,        197,            0',
         'Wilma,   18:15,  19:50, week,        20,         173,        2,        20,        197,            1',
@@ -363,14 +365,17 @@ def create_config(secret_config, config):
     # Announcement service
     #---------------------------------------------------------------------------------------------
     config["AnnouncementsServiceEnabled"] = True
-    config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt'"
+    config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt"
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | 
         'SleepTime,        23:02,   weekdays,       night,           0',
         'Morning,          07:15,   weekdays,       morning,         0',
         'MorningWeekend,   09:00,   weekend,        morning,         0',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        0',
-        'EveningWater,     22:00,   week,           water,           0',
+        'ViggoBirthDay,    08:00,   20/06,          birthday,        0',
+        'MiaBirthDay,      08:00,   30/06,          birthday,        0',
+        'DavidBirthDay,    08:00,   08/07,          birthday,        0',
+#        'EveningWater,     22:00,   week,           water,           0',
    ]
 
     #---------------------------------------------------------------------------------------------

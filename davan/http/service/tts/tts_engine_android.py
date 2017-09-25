@@ -32,7 +32,6 @@ class TtsEngineAndroid():
                                    self.config, 
                                    constants.FAILED_TO_GENERATE_TTS)
             self.increment_errors()
-            self.logger.info("Caught exception") 
 
         return True
     
@@ -41,7 +40,7 @@ class TtsEngineAndroid():
         Download the generated tts file, and convert to mp3.
         @param filename name of the file to download should get
         '''
-        self.logger.info("Downloading: "+filename) 
+        self.logger.info("Downloading tts file ["+filename+"]") 
         result = urllib2.urlopen(self.config["TTS_GENERATOR_FETCH_URL"]).read()
         wav_file = self.config['TEMP_PATH'] + "/tmp.wav"
 

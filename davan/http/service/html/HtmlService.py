@@ -81,8 +81,6 @@ class HtmlService(BaseService):
             column_id = 1
             tot_result = ""
             for name, service in __builtin__.davan_services.services.iteritems():
-    #            if service.has_html_gui():
-                self.logger.info("Service: " + str(name))
                 if column_id == 1:
                     tot_result += '<div id="columns">\n'
                         

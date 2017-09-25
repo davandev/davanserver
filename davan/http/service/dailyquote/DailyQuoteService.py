@@ -69,7 +69,7 @@ class DailyQuoteService(ReoccuringBaseService):
             return self.time_to_next_event
         
         self.time_to_next_event = timer_functions.calculate_time_until_midnight()
-        self.logger.info("Next timeout in " + str(self.time_to_next_event) +  " seconds")
+        self.logger.debug("Next timeout in " + str(self.time_to_next_event) +  " seconds")
         return self.time_to_next_event
         
     def has_html_gui(self):

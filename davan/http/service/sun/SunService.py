@@ -36,7 +36,7 @@ class SunService(ReoccuringBaseService):
         '''
         Calculate sun movements 
         '''
-        self.logger.info("Calculating sun movements")
+        self.logger.debug("Calculating sun movements")
         city_name = 'Stockholm'
         a = Astral()
         a.solar_depression = 'civil'
@@ -64,7 +64,7 @@ class SunService(ReoccuringBaseService):
             return self.time_to_next_event
         
         self.time_to_next_event = timer_functions.calculate_time_until_midnight()
-        self.logger.info("Next timeout in " + str(self.time_to_next_event) +  " seconds")
+        self.logger.debug("Next timeout in " + str(self.time_to_next_event) +  " seconds")
         return self.time_to_next_event
         
     def has_html_gui(self):

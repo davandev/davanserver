@@ -199,7 +199,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         """
         if not self.is_enabled():
             return ReoccuringBaseService.get_html_gui(self, column_id)
-        self.logger.info("before")
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
          
@@ -220,8 +219,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for device in self.unknown_devices:
             htmlresult.append(str(device)+"</br>\n")
         column = column.replace("<SERVICE_VALUE>", ''.join(htmlresult))
-
-        self.logger.info("after")
         
         return column
                 

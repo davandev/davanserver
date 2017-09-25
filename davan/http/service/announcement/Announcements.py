@@ -34,7 +34,7 @@ def create_morning_announcement():
     announcement = "God morgon familjen äntligen är det en ny dag. Idag är det "
     announcement += str(weekdays[current_day]) + ' den '
     announcement += date[d] + " " + str(months[m]) + '. '
-    logger.info("Current month:" + str(months[m]) + " day:" + str(d) + '. ')
+    logger.debug("Current month [" + str(months[m]) + "] Day [" + str(d) + ']')
     
     return helper_functions.encode_message(announcement)
 
@@ -67,16 +67,16 @@ def create_sunset_sunrise_announcement():
 
     dawn = get_hour_and_minute(str(sun['dawn']))
     announcement += "Gryning klockan " + dawn + "."
-    logger.info('Dawn: ' + dawn)
+
     sunrise = get_hour_and_minute(str(sun['sunrise']))
     announcement += "Soluppgång klockan " + sunrise + "."
-    logger.info('Sunrise ' + sunrise)
+    
     sunset = get_hour_and_minute(str(sun['sunset']))
     announcement += "Solnedgång klockan " + sunset + "."
-    logger.info('Sunset ' + sunset)
+    
     dusk = get_hour_and_minute(str(sun['dusk']))
     announcement += "Skymning klockan " + dusk + "."
-    logger.info('Dusk ' + dusk)
+    
     return helper_functions.encode_message(announcement)
 
 def get_hour_and_minute(dateitem):    
@@ -117,9 +117,9 @@ def create_menu_announcement(config):
         return ""
 
     todays_date = str(d) + "/" + str(m)
-    logger.info("today:" + todays_date)
+    logger.debug("today:" + todays_date)
     menu = ""
-    with open(config('ANNOUNCEMENT_MENU_PATH')) as f:
+    with open(config['ANNOUNCEMENT_MENU_PATH']) as f:
         content = f.readlines()
         for line in content:
             if todays_date in line:

@@ -6,7 +6,6 @@ import logging
 import os
 import traceback
 import urllib
-import datetime
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -14,18 +13,19 @@ import davan.util.helper_functions as helper
 import davan.util.timer_functions as timer_functions
 import davan.util.fibaro_functions as fibaro_functions
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
+import datetime
 
 class TimeEvent():
     def __init__(self, room, time, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
         self.logger = logging.getLogger(os.path.basename(__file__))
 
-        self.room = room
-        self.time = time
-        self.light_level = light_level
-        self.device_id = device_id
-        self.label_id = label_id
-        self.virtual_device_id = virtual_device_id
-        self.onoff = onoff
+        self.room = room.strip()
+        self.time = time.strip()
+        self.light_level = light_level.strip()
+        self.device_id = device_id.strip()
+        self.label_id = label_id.strip()
+        self.virtual_device_id = virtual_device_id.strip()
+        self.onoff = onoff.strip()
         if enabled_when_armed == "1":
             self.enabled_when_armed = True
         else:
@@ -89,7 +89,6 @@ class LightSchemaService(ReoccuringBaseService):
                                 
         except:
             self.logger.error(traceback.format_exc())
-            self.logger.info("Caught exception")
             self.increment_errors()
     
     def invoke_event(self, event):
@@ -131,50 +130,50 @@ class LightSchemaService(ReoccuringBaseService):
             items = event.split(",")
             if not timer_functions.enabled_this_day(self.current_day,
                                                     self.current_time,
-                                                    items[3]):
-                self.logger.info("Event Timer not configured this day")
+                                                    items[3].strip()):
+                self.logger.debug("Event Timer ["+items[0].strip()+"] not configured this day")
                 continue
-            starttime = items[1]
+            starttime = items[1].strip()
             if starttime == "sunset":
                 starttime = self.services.get_service(constants.SUN_SERVICE_NAME).get_sunset()
-                self.logger.info("Sunset configured: " + starttime)
-            starttime = timer_functions.add_random_time(starttime,int(items[7]))
+                self.logger.debug("Sunset configured: " + starttime)
+            starttime = timer_functions.add_random_time(starttime,int(items[7].strip()))
             
-            self.todays_events.append(TimeEvent(items[0],  # Room name
+            self.todays_events.append(TimeEvent(items[0].strip(),  # Room name
                                                 starttime, # Start time
-                                                items[4],  # Light level
-                                                items[5],  # Device id
-                                                items[6],  # labelid
-                                                items[8],  # virtualdevice id
+                                                items[4].strip(),  # Light level
+                                                items[5].strip(),  # Device id
+                                                items[6].strip(),  # labelid
+                                                items[8].strip(),  # virtualdevice id
                                                 constants.TURN_ON,
-                                                items[9]))
+                                                items[9].strip()))
             
-            stoptime = timer_functions.add_random_time(items[2],int(items[7]))
-            self.todays_events.append(TimeEvent(items[0],
+            stoptime = timer_functions.add_random_time(items[2].strip(),int(items[7].strip()))
+            self.todays_events.append(TimeEvent(items[0].strip(),
                                                 stoptime,
-                                                items[4],
-                                                items[5],
-                                                items[6], 
-                                                items[8],
+                                                items[4].strip(),
+                                                items[5].strip(),
+                                                items[6].strip(), 
+                                                items[8].strip(),
                                                 constants.TURN_OFF,
-                                                items[9]))
+                                                items[9].strip()))
             
-            self.update_virtual_device(items[8],
-                                       items[6],
+            self.update_virtual_device(items[8].strip(),
+                                       items[6].strip(),
                                        str(starttime+ " => " + stoptime))
         
     def detemine_todays_events(self):
         '''
         run at midnight, calculates all events that should occur this day. 
         '''
-        self.logger.info("weekday["+str(datetime.datetime.today().weekday())+"] current_day["+str(self.current_day)+"]")
+        self.logger.debug("Weekday["+str(datetime.datetime.today().weekday())+"] current_day["+str(self.current_day)+"]")
         if(str(datetime.datetime.today().weekday()) != str(self.current_day)): # Check if new day
             self.current_time,self.current_day, _ = timer_functions.get_time_and_day_and_date()
             self.schedule_events()
             self.todays_events = self.sort_events(self.todays_events)
             if (len(self.todays_events) > 0):
                 self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-                self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+                self.logger.info("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
             else:
                 self.logger.info("No events are configured, stop timer")
         else:

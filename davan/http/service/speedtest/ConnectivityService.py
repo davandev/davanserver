@@ -73,26 +73,6 @@ class ConnectivityService(ReoccuringBaseService):
         Return time to next speed measuring
         '''
         return self.time_to_next_timeout
-        
-    def has_html_gui(self):
-        """
-        Override if service has gui
-        """
-        return True
-    
-    def get_html_gui(self, column_id):
-        """
-        Override and provide gui
-        """
-        if not self.is_enabled():
-            return ReoccuringBaseService.get_html_gui(self, column_id)
-
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
-        column = column.replace("<SERVICE_NAME>", self.service_name)
-        column = column.replace("<SERVICE_VALUE>", "")
-        
-        return column
-
 
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

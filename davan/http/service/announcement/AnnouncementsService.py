@@ -65,7 +65,7 @@ class AnnouncementsService(ReoccuringBaseService):
         Received request to play announcement
         @param msg, received request 
         '''
-        self.logger.info("Msg:"+msg)
+        self.logger.debug("Msg:"+msg)
         announcement_id = (msg.split('=')[1])
         event = AnnouncementEvent("ExternalCall", "", announcement_id, "0")
         if self.invoke_event(event):
@@ -79,7 +79,7 @@ class AnnouncementsService(ReoccuringBaseService):
         '''
         if len(self.todays_events) > 0:
             self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-            self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+            self.logger.debug("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
         else:
             self.detemine_todays_events()
 
@@ -89,21 +89,20 @@ class AnnouncementsService(ReoccuringBaseService):
         '''
         Timeout received, fetch event and perform action.
         '''
-        self.logger.info("Got a timeout, trigger announcement event")
+        self.logger.debug("Got a timeout, trigger announcement event")
         try:
             event = self.todays_events.pop(0)
             self.invoke_event(event)
                                 
         except:
             self.logger.error(traceback.format_exc())
-            self.logger.info("Caught exception")
             self.increment_errors()
             
     def invoke_event(self, event):
         '''
         Timeout received, produce the announcement and play in configured speaker
         '''
-        self.logger.info("Got a timeout, play announcement[" + event.slogan + "]")
+        self.logger.debug("Got a timeout, play announcement[" + event.slogan + "]")
         if fibaro_functions.is_alarm_armed(self.config):
             self.logger.info("Alarm is armed, skip announcement")
             return True
@@ -114,7 +113,7 @@ class AnnouncementsService(ReoccuringBaseService):
                 result = service.get_announcement()
             elif event.announcement_id == "morning" :
                 result = announcements.create_morning_announcement()
-                result += announcements.create_name_announcement()
+#                result += announcements.create_name_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += announcements.create_menu_announcement(self.config)
@@ -143,9 +142,7 @@ class AnnouncementsService(ReoccuringBaseService):
             return True
         except Exception:
             self.logger.error(traceback.format_exc())
-
             self.increment_errors()
-            self.logger.info("Caught exception") 
             return False
 
     def detemine_todays_events(self):
@@ -158,7 +155,7 @@ class AnnouncementsService(ReoccuringBaseService):
             self.todays_events = self.sort_events(self.todays_events)
             if (len(self.todays_events) > 0):
                 self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-                self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+                self.logger.info("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
         else:
             self.time_to_next_event = timer_functions.calculate_time_until_midnight()
             self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.time_to_next_event) + " seconds")
@@ -193,7 +190,7 @@ class AnnouncementsService(ReoccuringBaseService):
             if not timer_functions.enabled_this_day(self.current_day,
                                                     self.current_date,
                                                     items[2].strip()):
-                self.logger.info("Event Timer not configured this day")
+                self.logger.info("Event Timer["+items[0].strip()+"] not configured this day")
                 continue
             
             self.todays_events.append(AnnouncementEvent(items[0].strip(),  # Slogan

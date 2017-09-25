@@ -15,7 +15,7 @@ class ReoccuringBaseService(BaseService):
         self.event = Event()
             
     def stop_service(self):
-        self.logger.info("Stopping service")
+        self.logger.debug("Stopping service")
         self.event.set()
 
     def start_service(self):
@@ -32,7 +32,7 @@ class ReoccuringBaseService(BaseService):
         _ = datetime.datetime.strptime("01:00", '%H:%M')
         # End of workaround
 
-        self.logger.info("Starting re-occuring service ")
+        #self.logger.info("Starting re-occuring service ")
         def loop():
             while not self.event.wait(self.get_next_timeout()):
                 self.increment_invoked()

@@ -65,6 +65,7 @@ class ServiceInvoker(object):
             else:
                 self.logger.debug("Service " + name + " is disabled")
         self.running = True 
+        self.logger.info("All configured services started")
             
     def get_service(self, service):
         """
@@ -74,16 +75,16 @@ class ServiceInvoker(object):
         result = self.expression.findall(service)[0]
         
         if self.services.has_key(result):
-            self.logger.debug("Invoking service: ["+ result+"]")
+#            self.logger.debug("Invoking service: ["+ result+"]")
             return self.services[result]
         elif service.endswith(constants.MP3_EXTENSION) or service.endswith(constants.MP3_EXTENSION1):
-            self.logger.debug("Invoking service: [mp3]")
+#            self.logger.debug("Invoking service: [mp3]")
             return self.services[constants.MP3_SERVICE_NAME]
         elif service.endswith(constants.OGG_EXTENSION) or service.endswith(constants.OGG_EXTENSION1):
-            self.logger.debug("Invoking service: [ogg]")
+#            self.logger.debug("Invoking service: [ogg]")
             return self.services[constants.MP3_SERVICE_NAME]
         elif service.endswith(constants.HTML_EXTENSION) or service.endswith(constants.CSS_EXTENSION):
-            self.logger.debug("Invoking service: [html]")
+#            self.logger.debug("Invoking service: [html]")
             return self.services[constants.HTML_SERVICE_NAME]
         
         # No service found
@@ -96,10 +97,11 @@ class ServiceInvoker(object):
         self.logger.info("Stopping all services")
 
         for service in self.services.itervalues():
-            self.logger.debug("Stopping: " + str(service.get_name()))
+            #self.logger.debug("Stopping: " + str(service.get_name()))
             service.stop_service()
         self.running = False
-        
+        self.logger.info("All started services stopped")
+       
 if __name__ == '__main__':
     config = app_config.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)

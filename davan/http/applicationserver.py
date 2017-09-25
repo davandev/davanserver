@@ -206,10 +206,9 @@ if __name__ == '__main__':
         #log_manager.start_file_logging(config["LOGFILE_PATH"])
 
         helper.debug_formated(config)
-        
         log_manager.start_logging(config["LOGFILE_PATH"],loglevel=4)
     else:
-        log_manager.start_file_logging(config["LOGFILE_PATH"])
+        log_manager.start_file_logging(config["LOGFILE_PATH"], config["LOGLEVEL"])
 
     try:
         if args.stop:
