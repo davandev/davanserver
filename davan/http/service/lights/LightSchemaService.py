@@ -72,7 +72,7 @@ class LightSchemaService(ReoccuringBaseService):
         
         if len(self.todays_events) > 0:
             self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-            self.logger.info("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
+            self.logger.debug("Next timeout " + self.todays_events[0].time + " in " + str(self.time_to_next_event) +  " seconds")
         else:
             self.detemine_todays_events()
     
@@ -82,7 +82,7 @@ class LightSchemaService(ReoccuringBaseService):
         '''
         Timeout received, fetch event and perform action.
         '''
-        self.logger.info("Got a timeout, trigger light event")
+        self.logger.debug("Got a timeout, trigger light event")
         try:
             event = self.todays_events.pop(0)
             self.invoke_event(event)
@@ -173,9 +173,9 @@ class LightSchemaService(ReoccuringBaseService):
             self.todays_events = self.sort_events(self.todays_events)
             if (len(self.todays_events) > 0):
                 self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-                self.logger.info("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
+                self.logger.debug("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
             else:
-                self.logger.info("No events are configured, stop timer")
+                self.logger.debug("No events are configured, stop timer")
         else:
             self.time_to_next_event = timer_functions.calculate_time_until_midnight()
             #self._calculate_time_until_midnight()

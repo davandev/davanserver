@@ -53,7 +53,7 @@ class PresenceMgrService(BaseService):
         return 200, ""
     
     def stop_service(self):
-        self.logger.info("Stopping service")
+        self.logger.debug("Stopping service")
         self.event.set()
 
     def start_service(self):

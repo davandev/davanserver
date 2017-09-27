@@ -91,11 +91,12 @@ class TvService(ReoccuringBaseService):
         Enable or disable tv activity
         '''
         cmd = self.base_cmd + self.config['HARMONY_IP_ADRESS']
+        self.logger.info("Enable tv activity [" + str(enable) + "]")
         
         if enable == True:
             cmd += self.start_activity_cmd
             cmd += self.config['WATCH_TV_ACTIVITY']
-            self.logger.info("cmd:"+str(cmd))
+            self.logger.debug("cmd:"+str(cmd))
             executor.execute_block(cmd, 'Harmony')
             self.status = "On"
         else:

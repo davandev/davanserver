@@ -44,9 +44,9 @@ class TelldusSensorService(ReoccuringBaseService):
 #            self.logger.info("Got a timeout, fetch sensor states")
 
         response=telldus.listSensorsAndValues()
-
         if not 'sensor' in str(response):
             self.logger.error("No response received from telldus")
+            self.logger.debug("Received response [" + str(response) + "]")
             helper.send_telegram_message(self.config, "Telldus svarar inte") 
             return 
         for sensor in response['sensor']:

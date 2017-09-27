@@ -32,7 +32,8 @@ class FibaroService(ReoccuringBaseService):
         self.alarmStatus = {'Skalskydd':"-",'Alarm':'-','Garden':'-'}
         self.memory = {'Cache':"-",'Used':'-','Buffer':'-','Free':'-'}
         self.storage = {'System':"-",'Recovery':'-'}
-        
+        self.DISARMING = "Disarming"
+        self.faulty_state = ""
         
     def get_next_timeout(self):
         return self.config['FibaroTimeout']
@@ -44,6 +45,7 @@ class FibaroService(ReoccuringBaseService):
         '''
         try:
             self.fetch_alarm_status()
+#            self.check_status()
         except Exception:
             helper.send_telegram_message(self.config, "Ingen kontakt med HC2 Fibaro")
             self.logger.error(traceback.format_exc())
@@ -74,6 +76,13 @@ class FibaroService(ReoccuringBaseService):
                     elif k == "ui.Label5.value":
                         self.alarmStatus["Garden"] = str(v)
 
+    def check_status(self):
+        for alarmType, alarmStatus in self.alarmStatus.iteritems():
+            if self.DISARMING in alarmStatus:
+                
+                helper.send_telegram_message(self.config, alarmType + " is in state " + alarmStatus)
+                self.faulty_state = alarmType
+                
     def print_status(self):
         self.logger.info(str(self.alarmStatus))
         
@@ -90,9 +99,9 @@ class FibaroService(ReoccuringBaseService):
         if not self.is_enabled():
             return ReoccuringBaseService.get_html_gui(self, column_id)
 
-        result = "Skalskydd: " + str(self.alarmStatus["Skalskydd"]) + "\n"
-        result +="Alarm: " + str(self.alarmStatus["Alarm"]) + "\n" 
-        result +="Garden: " + str(self.alarmStatus["Garden"]) + "\n"
+        result = "Skalskydd: " + str(self.alarmStatus["Skalskydd"]) + "</br>\n"
+        result +="Alarm: " + str(self.alarmStatus["Alarm"]) + "</br>\n" 
+        result +="Garden: " + str(self.alarmStatus["Garden"]) + "</br>\n"
          
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

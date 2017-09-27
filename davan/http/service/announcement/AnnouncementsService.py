@@ -133,7 +133,7 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.DEVICE_PRESENCE_SERVICE_NAME).get_announcement()
             else:
-                self.logger.info("Cant find announcement to play:" + event.announcement_id)
+                self.logger.warning("Cant find announcement to play:" + event.announcement_id)
                 return False
             self.logger.info("Announcement:" + result)
             self.services.get_service(constants.TTS_SERVICE_NAME).start(result,event.speaker_id)
@@ -155,10 +155,10 @@ class AnnouncementsService(ReoccuringBaseService):
             self.todays_events = self.sort_events(self.todays_events)
             if (len(self.todays_events) > 0):
                 self.time_to_next_event = timer_functions.calculate_next_timeout(self.todays_events[0].time)
-                self.logger.info("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
+                self.logger.debug("Next timeout [" + self.todays_events[0].time + "] in " + str(self.time_to_next_event) +  " seconds")
         else:
             self.time_to_next_event = timer_functions.calculate_time_until_midnight()
-            self.logger.info("No more timers scheduled, wait for next re-scheduling in "+ str(self.time_to_next_event) + " seconds")
+            self.logger.debug("No more timers scheduled, wait for next re-scheduling in "+ str(self.time_to_next_event) + " seconds")
 
     def sort_events(self, events):
         '''
@@ -176,7 +176,7 @@ class AnnouncementsService(ReoccuringBaseService):
         sorted_events = sorted(future_events, key=lambda timeEvent: timeEvent.time)
         id = 0
         for event in sorted_events:
-            self.logger.info("Event["+str(event.slogan)+"] Timeout[" + str(event.time)+"]")
+            self.logger.info("Event ["+str(event.slogan)+"] Timeout[" + str(event.time)+"]")
             id +=1
         return sorted_events
 
@@ -190,7 +190,7 @@ class AnnouncementsService(ReoccuringBaseService):
             if not timer_functions.enabled_this_day(self.current_day,
                                                     self.current_date,
                                                     items[2].strip()):
-                self.logger.info("Event Timer["+items[0].strip()+"] not configured this day")
+                self.logger.debug("Event Timer ["+items[0].strip()+"] not configured this day")
                 continue
             
             self.todays_events.append(AnnouncementEvent(items[0].strip(),  # Slogan

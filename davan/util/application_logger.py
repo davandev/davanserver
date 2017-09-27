@@ -92,3 +92,35 @@ def get_logfile_name():
     Return the current logfile name
     """
     return logging.getLoggerClass().root.handlers[0].baseFilename
+
+def change_loglevel(loglevel):
+    """
+    """
+    logging.getLogger().setLevel(levels[loglevel][1])
+    logger = logging.getLogger(os.path.basename(__file__))
+    logger.log(levels[loglevel][1],"Changing loglevel to " + levels[loglevel][0] )
+
+# def change_loglevel(loglevel):
+#     """
+#     Change the loglevel in console.
+#     Stop all console logging and then start it again with the new loglevel.
+#     Logging to file and via tcp is kept.
+#     """
+#     for handler in logging.root.handlers[:]:
+#         if isinstance(handler, logging.FileHandler ): # dont change filelogging
+#             continue
+#         elif isinstance(handler, logging.handlers.SocketHandler): # dont change streamlogging
+#             continue
+#         else: #
+#             logging.root.removeHandler(handler)
+# 
+#     console = logging.StreamHandler()
+#     console.setLevel(levels[loglevel][1])
+#     formatter = logging.Formatter('%(name)-35s: %(levelname)-8s %(message)s')
+#     # tell the handler to use this format
+#     console.setFormatter(formatter)
+#     # add the handler to the root logger
+#     logging.getLogger('').addHandler(console)
+#     logger = logging.getLogger(os.path.basename(__file__))
+#     logger.log( levels[loglevel][1],"Changing console loglevel to " + levels[loglevel][0] )
+

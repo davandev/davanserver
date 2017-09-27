@@ -53,6 +53,7 @@ class WeatherService(ReoccuringBaseService):
             self.get_forecast()
         except Exception:
             self.logger.error(traceback.format_exc())
+            self.logger.debug("Received result ["+ str(self.latest_result) +"]")
             self.increment_errors()
             pass
     

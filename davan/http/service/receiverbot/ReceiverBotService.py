@@ -25,7 +25,7 @@ from davan.http.service.base_service import BaseService
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT = range(6)
+COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT, LOG = range(7)
 
 class ReceiverBotService(BaseService):
     '''
@@ -84,14 +84,14 @@ class ReceiverBotService(BaseService):
         res = result.read()
         self.increment_invoked()
         update.message.reply_text("Text message displayed on tv")
-        self.build_start_menu(bot, update)
-        return COMMAND
+        self.build_tv_menu(update)
+        return TV
         
-    def log(self, bot, update):
-        file_name = log_manager.get_logfile_name()
-        self.increment_invoked()
-        bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
-        return "Logfile sent"
+#     def log(self, bot, update):
+#         file_name = log_manager.get_logfile_name()
+#         self.increment_invoked()
+#         bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
+#         return "Logfile sent"
 
     def audio(self, bot, update):
         '''
@@ -105,7 +105,7 @@ class ReceiverBotService(BaseService):
         '''
         Stop telegram-bot 
         '''
-        self.logger.info("Stopping service")
+        self.logger.debug("Stopping service")
         try:
             self.bot.stop()
             self.event.set()
@@ -132,6 +132,7 @@ class ReceiverBotService(BaseService):
                 SERVICES: [RegexHandler('^(.*)$', self.handle_service)],
                 TV: [RegexHandler('^(On|Off|Text|Menu)$', self.handle_tv)],
                 TTS: [MessageHandler(Filters.text, self.tts)],
+                LOG: [RegexHandler('^(INFO|DEBUG|Logfile|Menu)$', self.handle_log)],
                 TVTEXT: [MessageHandler(Filters.text, self.tv)]
             },
      
@@ -193,6 +194,15 @@ class ReceiverBotService(BaseService):
         update.message.reply_text('Select command:',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
 
+    def build_log_menu(self,update):
+        '''
+        Generate the log menu to display
+        '''
+        reply_keyboard = [['INFO', 'DEBUG', 'Logfile'],['Menu']]
+        
+        update.message.reply_text('Select command:',
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
+
     def build_service_menu(self, update):
         '''
         Generate the service menu to display
@@ -212,7 +222,7 @@ class ReceiverBotService(BaseService):
         '''
         Command has been selected, perform action
         '''
-        logger.info("Selected command %s" % (update.message.text))
+        logger.info("Selected command [%s]" % (update.message.text))
         
         if update.message.text == "Speakers":
             self.build_speaker_menu(update)
@@ -223,10 +233,8 @@ class ReceiverBotService(BaseService):
             return COMMAND
         
         if update.message.text == "Log":
-            file_name = log_manager.get_logfile_name()
-            self.increment_invoked()
-            bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
-            return COMMAND
+            self.build_log_menu(update)
+            return LOG
         
         if update.message.text == "TTS":
             self.handle_tts(bot, update)
@@ -244,14 +252,13 @@ class ReceiverBotService(BaseService):
         return ConversationHandler.END    
 
     def handle_service(self, bot, update):
-        logger.info("Selected service %s" % (update.message.text))
+        logger.info("Selected service [%s]" % (update.message.text))
         
         if update.message.text == "Menu":
             self.build_start_menu(bot, update)
             return COMMAND
         for name, service in self.services.services.iteritems():
             if name == update.message.text:
-                self.logger.info("Name:" + name)
                 item = self.services.get_service(name)
                 text = item.get_html_gui("")   
                 success, error = item.get_counters()
@@ -262,7 +269,7 @@ class ReceiverBotService(BaseService):
         return SERVICES    
 
     def handle_status(self, bot, update):
-        logger.info("Selected %s:" % (update.message.text))
+        logger.info("Selected [%s]" % (update.message.text))
         service = self.services.get_service(constants.HTML_SERVICE_NAME)
         result = json.loads(service.get_status())
         res_string = "Uptime: " + result['Uptime'] +"\n"
@@ -280,43 +287,59 @@ class ReceiverBotService(BaseService):
     def handle_tts(self, bot, update):
         '''
         '''
-        logger.info("Selected tts %s:" % (update.message.text))
+        logger.info("Selected tts [%s]" % (update.message.text))
         update.message.reply_text("Write message to play in speaker ", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
-    def handle_show_text(self, bot, update):
+    def handle_log(self, bot, update):
         '''
-        Display the message on Tv
+        Handle the selected log command
         '''
-        logger.info("Selected message:%s:" % (update.message.text))
-        update.message.reply_text("Write message on TV", reply_markup=ReplyKeyboardRemove())
-        #return TVTEXT
+        logger.info("Selected log-command [%s]" % (update.message.text))
+        if update.message.text != 'Menu':
+            if update.message.text == 'INFO':
+                update.message.reply_text("Changing loglevel to INFO")
+                log_manager.change_loglevel(3)
+                return LOG 
+            if update.message.text == 'DEBUG':
+                update.message.reply_text("Changing loglevel to DEBUG")
+                log_manager.change_loglevel(4)
+                return LOG 
+            if update.message.text == 'Logfile':
+                file_name = log_manager.get_logfile_name()
+                bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
+                return LOG 
+
+            self.increment_invoked()
+        self.build_start_menu(bot, update)
+        return COMMAND
 
     def handle_tv(self, bot, update):
         '''
-        A speaker has been selected
+        Handle the selected tv command
         '''
-        logger.info("Selected tv-command %s:" % (update.message.text))
+        logger.info("Selected tv-command [%s]" % (update.message.text))
         if update.message.text != 'Menu':
             if update.message.text == 'On':
                 update.message.reply_text("Turning on TV")
                 tv = self.services.get_service("TvService")
                 tv.enable(True)
                 update.message.reply_text("Turned on TV ")
-                self.build_start_menu(bot, update)
-                return COMMAND    
+                return TV    
             if update.message.text == 'Off':
                 update.message.reply_text("Turning off TV")
                 tv = self.services.get_service("TvService")
                 tv.enable(False)
                 update.message.reply_text("Turned off TV")
-                self.build_start_menu(bot, update)
-                return COMMAND    
+                return TV
             if update.message.text == 'Text':
-                self.handle_show_text(bot,update)
+                update.message.reply_text("Write message on TV", reply_markup=ReplyKeyboardRemove())
+                #self.handle_show_text(bot,update)
                 return TVTEXT 
 
             self.increment_invoked()
+        self.build_start_menu(bot, update)
+        return COMMAND
 
 
     def handle_speaker(self, bot, update):
@@ -346,7 +369,6 @@ class ReceiverBotService(BaseService):
                    n_cols,
                    header_buttons=None,
                    footer_buttons=None):
-        self.logger.info("build menu")
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
         if header_buttons:
             menu.insert(0, header_buttons)

@@ -54,7 +54,7 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
         Currently not implemented
         """
         try:
-            logger.info("Received POST request from external host : " + self.address_string())
+            logger.warning("Received POST request from external host : " + self.address_string())
 
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             postvars = {}
@@ -85,20 +85,19 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
             
             # Another server is started, terminate this one.
             elif self.path.endswith("seppuku"):
-                    if __builtin__.davan_services.is_running():
-                        logger.info("Shutting down services")
-                        __builtin__.davan_services.stop_services()
-                        self.send_response(200)
-                        self.send_header('Content-type',    'text/html')
-                        self.end_headers()
-                        self.wfile.write("hai")
-                    else:
-                        logger.info("Shutting down server")
-                        self.send_response(200)
-                        self.send_header('Content-type',    'text/html')
-                        self.end_headers()
-                        self.wfile.write("hai")
-                        self.server.socket.close()
+                logger.critical("Received request to shut down server")
+                if __builtin__.davan_services.is_running():
+                    __builtin__.davan_services.stop_services()
+                    self.send_response(200)
+                    self.send_header('Content-type',    'text/html')
+                    self.end_headers()
+                    self.wfile.write("hai")
+                else:
+                    self.send_response(200)
+                    self.send_header('Content-type',    'text/html')
+                    self.end_headers()
+                    self.wfile.write("hai")
+                    self.server.socket.close()
             else:
                 self.send_error(404, 'File Not Found: %s' % self.path)
 
@@ -143,6 +142,7 @@ def start_server(configuration):
     @param port: The port that the server listens to
     """
     try:
+        helper.debug_big("Starting server")        
         time.strptime("01:00", '%H:%M')
         _ = datetime.datetime.strptime("01:00", '%H:%M')
         global services
@@ -152,17 +152,17 @@ def start_server(configuration):
         # ugly way to share services
         __builtin__.davan_services = services
         server = ApplicationServer(('', config["SERVER_PORT"]), CustomRequestHandler)
-        helper.debug_big("Server started on host port[" + str(config["SERVER_PORT"]) + "] ")        
+        helper.debug_big("Server started on [" + str(config["SERVER_ADRESS"]) + ":" + str(config["SERVER_PORT"]) + "] ")        
         while 1:
             server.handle_request()
             if not __builtin__.davan_services.is_running():
                 server.server_close()
-                logger.warning("Services has been stopped")
+                logger.critical("Stopping server")
                 sys.exit(1)
         
     except socket.error, (value, message):
         if value == 98:  # Address port already in use
-            logger.error("Failed to start server with message" +
+            helper.debug_big("Failed to start server with message" +
                          " [" + message + "]")
 
             raise RunningServerException("Port is already in use")
