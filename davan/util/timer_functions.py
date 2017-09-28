@@ -35,7 +35,7 @@ def calculate_next_timeout(event_time):
         if diff.days < 0:
             logger.warning("End is before start, fix it")
             # Set timeout to occur in 30 seconds 
-            diff = 30 
+            return 30 
     
         return diff.seconds
     except Exception:
