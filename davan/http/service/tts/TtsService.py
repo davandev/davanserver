@@ -35,7 +35,6 @@ class TtsService(BaseService):
         Received request to generate speech from msg
         @param msg, received request 
         '''
-        self.logger.info("Msg:"+msg)
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
         else:

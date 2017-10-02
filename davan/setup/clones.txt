@@ -1,0 +1,7 @@
+cd .. 
+git clone https://github.com/balloob/pychromecast.git
+cd pychromecast/
+sudo apt-get install python-dev
+sudo pip install -r requirements.txt
+python -m compileall .
+

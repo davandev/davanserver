@@ -122,8 +122,8 @@ def create_menu_announcement(config):
     with open(config['ANNOUNCEMENT_MENU_PATH']) as f:
         content = f.readlines()
         for line in content:
-            if todays_date in line:
-                logger.info("Found todays menu: " + todays_date +": " + line)
+            if line.startswith(todays_date):
+                logger.debug("Found todays menu: " + todays_date +": " + line)
                 menu = "Meny i Neptuniskolan. "
                 menu += line.replace(todays_date, "")
                 menu = menu.rstrip()

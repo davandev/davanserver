@@ -1,0 +1,6 @@
+# requirements.txt
+astral==1.4
+python-telegram-bot
+pychromecast
+soco==0.12
+google-api-python-client
