@@ -49,7 +49,7 @@ class SpeedtestService(ReoccuringBaseService):
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
 
     def handle_timeout(self):
-    #    self.logger.info("Got a timeout, fetch internet speed")
+        self.logger.debug("Measure internet speed")
         self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.ping = "0"
         self.download = "0"

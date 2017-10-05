@@ -121,6 +121,8 @@ class TvService(ReoccuringBaseService):
             self.logger.warning("Unknown activity")
             self.status = 'Unknown state'
     
+        self.logger.info("Tv state["+self.status+"]")
+    
     def get_current_service_info(self):
         '''
         Check status of vu stb.

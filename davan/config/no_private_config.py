@@ -33,3 +33,10 @@ ROUTER_PASSWORD = "my_router_password"
 RECEIVER_BOT_TOKEN = "my_token"
 
 GOOGLE_CALENDAR_TOKEN = "my_google_token"
+
+NOKIA_CONSUMER_KEY ="consumer_key"
+NOKIA_CONSUMER_SECRET = "consumer secret"
+NOKIA_OAUTH_VERIFIER = "oauth verifier"
+NOKIA_ACCESS_TOKEN = 'oauthtoken'
+NOKIA_ACCESS_TOKEN_SECRET = 'oauthtokensecret'
+NOKIA_USER_ID = 'user'

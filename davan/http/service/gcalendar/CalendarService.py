@@ -56,7 +56,7 @@ class CalendarService(ReoccuringBaseService):
         '''
         Fetch todays calendar events
         '''
-        self.logger.debug("Got a timeout, fetch todays calendar events ")
+        self.logger.debug("Fetch todays calendar events")
         self.todays_events = []
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
@@ -71,16 +71,13 @@ class CalendarService(ReoccuringBaseService):
         while True:
             calendar_list = service.calendarList().list(pageToken=page_token).execute()
             for calendar_list_entry in calendar_list['items']:
-                self.logger.debug("Calendar:" + calendar_list_entry['summary'])
-#                eventsResult = service.events().list(
-#                    calendarId=calendar_list_entry['id'], timeMin=now,maxResults=10, singleEvents=True,
-#                    orderBy='startTime').execute()
+                self.logger.debug("Calendar[" + calendar_list_entry['summary'] + "]")
                 eventsResult = service.events().list(
                     calendarId=calendar_list_entry['id'], timeMin=now,timeMax=tomorrow,maxResults=10, singleEvents=True,
                     orderBy='startTime').execute()
                 events = eventsResult.get('items', [])
                 for today_event in events:
-                    self.logger.info("Event:" + calendar_list_entry['summary'] + " " + today_event['summary'])
+                    self.logger.info("Calendar[" + calendar_list_entry['summary'] + "] Event[" + today_event['summary'] + "]")
                     start = today_event['start'].get('dateTime', today_event['start'].get('date'))
                     event = CalendarEvent(calendar_list_entry['summary'],today_event['summary'])
                     self.todays_events.append(event)

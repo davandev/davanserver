@@ -68,7 +68,7 @@ class PictureService(BaseService):
         Send picture to all configured telegram receivers
         @param camera: camera name 
         '''
-        self.logger.info("Sending picture to configured accounts")
+        self.logger.info("Sending picture to telegram accounts")
         for chatid in self.config['CHATID']:
             self.logger.debug("Sending picture to chatid[" + chatid + "]")
             

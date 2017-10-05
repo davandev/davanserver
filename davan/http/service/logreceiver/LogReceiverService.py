@@ -42,7 +42,7 @@ class LogReceiverService(BaseService):
         
         logfile = self.config['HC2LOG_PATH'] + '/' + time.strftime("%Y-%m-%d", time.localtime()) + '.log'
 
-#        self.logger.info("Received LogEntry ["+ msg + "] write to " + logfile)
+        self.logger.debug("Received LogEntry ["+ msg + "] write to " + logfile)
         writemode = "w"
         if os.path.exists(logfile):
             writemode = "a"

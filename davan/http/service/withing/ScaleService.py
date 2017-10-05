@@ -7,6 +7,8 @@ import logging
 import os
 from datetime import *
 
+from nokia import NokiaAuth, NokiaApi, NokiaCredentials
+
 import davan.util.constants as constants
 import davan.util.timer_functions as timer_functions
 import davan.util.helper_functions as helper_functions
@@ -23,21 +25,31 @@ class ScaleService(ReoccuringBaseService):
         '''
         ReoccuringBaseService.__init__(self, constants.SCALE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        
-        self.time_to_next_event = 0
+        self.creds = NokiaCredentials()
+        self.creds.access_token=self.config['ACCESS_TOKEN']
+        self.creds.access_token_secret=self.config['ACCESS_TOKEN_SECRET']
+        self.creds.consumer_key=self.config['CONSUMER_KEY']
+        self.creds.consumer_secret=self.config['CONSUMER_SECRET']
+        self.creds.user_id=self.config['NOKIA_USER_ID']
+        self.last_measure = None
+        self.time_to_next_event = 3600
         
     def handle_timeout(self):
         '''
         Calculate sun movements 
         '''
-        self.logger.info("starting tv service")
+        self.logger.info("Fetch scale update")
+        
+        client = NokiaApi(self.creds)
+        measures = client.get_measures(limit=1)
+        self.logger.info("Your last measured weight: %skg" % measures[0].weight)
+        #self.logger.info("Your nxt last measured weight: %skg" % measures[1].weight)
         
     def get_next_timeout(self):
         '''
         Return time until next timeout, only once per day.
         '''
-        if self.set == None: # First time timeout after 30 s.
-            return self.time_to_next_event
+        return self.time_to_next_event
         
         self.time_to_next_event = timer_functions.calculate_time_until_midnight()
         self.logger.info("Next timeout in " + str(self.time_to_next_event) +  " seconds")

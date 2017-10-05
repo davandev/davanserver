@@ -41,7 +41,7 @@ class TelldusSensorService(ReoccuringBaseService):
         Timeout received, fetch sensor values from Telldus Live
         Push sensor data to Fibaro virtual device  
         '''
-#            self.logger.info("Got a timeout, fetch sensor states")
+        self.logger.debug("Fetch telldus sensor values")
 
         response=telldus.listSensorsAndValues()
         if not 'sensor' in str(response):
@@ -51,7 +51,6 @@ class TelldusSensorService(ReoccuringBaseService):
             return 
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])
-            #self.logger.debug("Sensor name: %s" %name )
             
             if self.config["SENSOR_MAP"].has_key(name):
                 sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
@@ -98,8 +97,6 @@ class TelldusSensorService(ReoccuringBaseService):
                     helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+humidity_value+"], var god och ventilera")
                     msg = helper.encode_message("Luftfuktigheten i badrummet är hög, starta fläkten")
                     self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
-
-
         except :
             self.logger.error(traceback.format_exc())
             self.increment_errors()

@@ -44,7 +44,7 @@ class WeatherService(ReoccuringBaseService):
         '''
         Timeout received, fetch weather data from wunderground
         '''
-        #self.logger.info("Got a timeout, fetch weather")
+        self.logger.debug("Fetch weather")
         try:
             self.latest_result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
             self.weather_data = json.loads(self.latest_result)

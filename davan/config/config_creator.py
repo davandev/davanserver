@@ -16,7 +16,7 @@ def create_config(secret_config, config):
     # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
     config["LOGLEVEL"] = 3
     # Root path of server
-    config["ROOT"] = '/home/pi/share/'
+    config["ROOT"] = '/home/pi/share/davanserver/'
     # Log directory path
     config['LOGFILE_PATH'] = config["ROOT"] + "logs"
     config['TEMP_PATH'] = config["ROOT"] + "temp"
@@ -243,7 +243,7 @@ def create_config(secret_config, config):
                            'Farstukvist':'152',
                            'Sovrum':'151',
                            'Wilma':'150'}
-    config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 70, 'Tvattstuga': 60}
+    config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 60, 'Tvattstuga': 60}
     config['SENSOR_TEMP_HIGH_LIMITS'] = {}
     config['SENSOR_TEMP_LOW_LIMITS'] = {}
     # Temperature virtual devices 
@@ -396,7 +396,14 @@ def create_config(secret_config, config):
     # Scale service
     #---------------------------------------------------------------------------------------------
 
-    config['ScaleServiceEnabled'] = False
+    config['ScaleServiceEnabled'] = True
+    config['CONSUMER_KEY'] = secret_config.NOKIA_CONSUMER_KEY
+    config['CONSUMER_SECRET'] = secret_config.NOKIA_CONSUMER_SECRET
+    config['OAUTH_VERIFIER'] = secret_config.NOKIA_OAUTH_VERIFIER
+    config['ACCESS_TOKEN'] = secret_config.NOKIA_ACCESS_TOKEN
+    config['ACCESS_TOKEN_SECRET'] = secret_config.NOKIA_ACCESS_TOKEN_SECRET
+    config['NOKIA_USER_ID'] = secret_config.NOKIA_USER_ID
+    
 
     #---------------------------------------------------------------------------------------------
     # TV service

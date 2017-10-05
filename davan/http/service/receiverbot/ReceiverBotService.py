@@ -42,6 +42,7 @@ class ReceiverBotService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
         logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
+        logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
         self.current_speaker = "0"
         self.TAG_RE = re.compile(r'<[^>]+>')
         self.event = Event()

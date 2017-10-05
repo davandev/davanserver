@@ -84,7 +84,7 @@ class UpsService(BaseService):
         Fetch status from UPS, 
         @return result json formatted
         '''
-        self.logger.info("Ups status request")
+        self.logger.debug("Ups status request")
         response = cmd_executor.execute_block(self.command, self.command, True)
         parsedResponse = response.rstrip().split('\n')
         jsonResult = "{"

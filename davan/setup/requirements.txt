@@ -4,3 +4,5 @@ python-telegram-bot
 pychromecast
 soco==0.12
 google-api-python-client
+speedtest-cli
+pyharmony

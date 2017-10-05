@@ -6,6 +6,7 @@ Created on 17 feb. 2017
 
 import logging
 import os
+import traceback
 from davan.http.service.base_service import BaseService
 from davan.util import application_logger as app_logger
 import davan.util.constants as constants
@@ -60,6 +61,7 @@ class RoxcoreService(BaseService):
                 self._send_to_speaker(speaker_address, msg, self.speakers[speaker_id].play_announcement)
             self.increment_invoked()
         except:
+            self.logger.error(traceback.format_exc())
             self.increment_errors()
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
 

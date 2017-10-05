@@ -30,7 +30,7 @@ class Mp3ProviderService(BaseService):
         '''
         try:
             self.increment_invoked()
-            self.logger.debug("Received service request for file: " + msg)
+            self.logger.info("Received service request for file[" + msg + "]")
             res = msg.split('=')
             f = open(self.config['MP3_ROOT_FOLDER'] + res[1])
             content = f.read()
@@ -43,11 +43,11 @@ class Mp3ProviderService(BaseService):
         
     def get_content_type(self, requested_file):
         if (requested_file.endswith(constants.OGG_EXTENSION)):
-            self.logger.info("Received ogg request!")
+            self.logger.debug("Received ogg request")
             return constants.MIME_TYPE_OGG
 
         elif (requested_file.endswith(constants.WAV_EXTENSION)):
-            self.logger.info("Received wav request!")
+            self.logger.debug("Received wav request")
             return constants.MIME_TYPE_WAV
         else: 
             return constants.MIME_TYPE_MP3

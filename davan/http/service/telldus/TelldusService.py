@@ -42,24 +42,17 @@ class TelldusService(BaseService):
         Light on/off request received from Fibaro system,
         forward to Telldus Live.
         '''
-        deviceId, action = self.parse_request(msg)
-        self.increment_invoked()
-        
-        if action == "toggle":
-            action = self.get_toggled_device_state(deviceId)
-        else:
-            action = self.STATES[action]
-#         if action == "off":
-#             action = 2
-#         elif action == "on":
-#             action = 1
-#         elif action == "toggle":
-#             action = self.get_toggled_device_state(deviceId)
-#         else: # turn on Bell
-#             action = 4 
-        
-        self.logger.info("DeviceId[" +deviceId+ "] Action[" + str(action)+"]")
         try:
+
+            deviceId, action = self.parse_request(msg)
+            self.increment_invoked()
+            
+            if action == "toggle":
+                action = self.get_toggled_device_state(deviceId)
+            else:
+                action = self.STATES[action]
+            
+            self.logger.info("DeviceId[" +deviceId+ "] Action[" + str(action)+"]")
             telldus.doMethod(deviceId, action)
         except:
             self.logger.error(traceback.format_exc())

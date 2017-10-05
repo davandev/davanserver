@@ -1,0 +1,8 @@
+*.pyc
+logs/*
+pychromecast/*
+.project
+.pydevproject
+.settings/
+temp/
+davan/tts_mp3/telegram_voice.wav

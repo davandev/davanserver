@@ -5,6 +5,8 @@
 '''
 import logging
 import os
+import traceback
+
 from datetime import *
 from astral import Astral
 
@@ -36,18 +38,22 @@ class SunService(ReoccuringBaseService):
         '''
         Calculate sun movements 
         '''
-        self.logger.debug("Calculating sun movements")
-        city_name = 'Stockholm'
-        a = Astral()
-        a.solar_depression = 'civil'
-        city = a[city_name]
-        sun = city.sun(date=datetime.now(), local=True)
-    
-        self.dawn = self.get_hour_and_minute(str(sun['dawn']))
-        self.rise = self.get_hour_and_minute(str(sun['sunrise']))
-        self.set = self.get_hour_and_minute(str(sun['sunset']))
-        self.dusk = self.get_hour_and_minute(str(sun['dusk']))
+        try:
+            self.logger.debug("Calculating sun movements")
+            city_name = 'Stockholm'
+            a = Astral()
+            a.solar_depression = 'civil'
+            city = a[city_name]
+            sun = city.sun(date=datetime.now(), local=True)
         
+            self.dawn = self.get_hour_and_minute(str(sun['dawn']))
+            self.rise = self.get_hour_and_minute(str(sun['sunrise']))
+            self.set = self.get_hour_and_minute(str(sun['sunset']))
+            self.dusk = self.get_hour_and_minute(str(sun['dusk']))
+        except:
+            self.logger.error(traceback.format_exc())
+            self.increment_errors()
+            
     def get_sunset(self):
         return self.set
     

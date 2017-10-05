@@ -45,7 +45,7 @@ class KeypadAliveService(ReoccuringBaseService):
             self.maybe_send_update(True)
         except:
             self.increment_errors()
-            self.logger.warn("Failed to connect to keypad")
+            self.logger.warning("Failed to connect to keypad")
             self.maybe_send_update(False)
             
     def maybe_send_update(self, state):
@@ -58,13 +58,13 @@ class KeypadAliveService(ReoccuringBaseService):
         currentTime = format(n,"%Y-%m-%d %H:%M")
 
         if self.connected == True and state == False:
-            self.logger.info("Keypad state changed: False") 
+            self.logger.info("Keypad state changed[Disconnected]") 
             self.connected = False
             self.disconnected_at = currentTime
             helper.send_telegram_message(self.config, constants.KEYPAD_NOT_ANSWERING)
 
         elif self.connected ==False and state == True:
-            self.logger.info("Keypad state changed : True") 
+            self.logger.info("Keypad state changed[Connected]") 
             self.connected = True
             self.connected_at = currentTime
             self.disconnected_at = ""
