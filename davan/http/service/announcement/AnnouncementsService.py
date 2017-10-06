@@ -102,7 +102,7 @@ class AnnouncementsService(ReoccuringBaseService):
         '''
         Timeout received, produce the announcement and play in configured speaker
         '''
-        self.logger.debug("Got a timeout, play announcement[" + event.slogan + "]")
+        self.logger.debug("Play announcement[" + event.slogan + "]")
         if fibaro_functions.is_alarm_armed(self.config):
             self.logger.info("Alarm is armed, skip announcement")
             return True

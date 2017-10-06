@@ -43,7 +43,24 @@ class TvService(ReoccuringBaseService):
         self.program_begin = "-"
         self.program_end = "-"
         self.program_desc = "-"
-        
+
+    def parse_request(self, msg):
+        '''
+        Strip received request from uninteresting parts
+        Example msg :"telldus?122379=on"
+        @param msg, received request
+        '''
+        res = msg.split('=')
+        return res[1]
+
+    def handle_request(self, msg):
+        action = self.parse_request(msg)
+        self.logger.info("Received request ["+action+"]")
+        if action == "off":
+            self.enable(False)
+        else:
+            self.enabled(True)
+            
     def handle_timeout(self):
         '''
         Calculate sun movements 
@@ -121,7 +138,7 @@ class TvService(ReoccuringBaseService):
             self.logger.warning("Unknown activity")
             self.status = 'Unknown state'
     
-        self.logger.info("Tv state["+self.status+"]")
+        self.logger.debug("Tv state["+self.status+"]")
     
     def get_current_service_info(self):
         '''

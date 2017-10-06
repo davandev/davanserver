@@ -5,6 +5,8 @@
 import logging
 import os
 import urllib
+import urllib2
+
 from datetime import datetime
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -41,13 +43,30 @@ class KeypadAliveService(ReoccuringBaseService):
         '''
         #self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
         try:
-            urllib.urlopen(self.config['KEYPAD_URL'])
+            urllib.urlopen(self.config['KEYPAD_PING_URL'])
             self.maybe_send_update(True)
         except:
             self.increment_errors()
             self.logger.warning("Failed to connect to keypad")
             self.maybe_send_update(False)
-            
+    
+    def get_log(self):
+        self.logger.info("Fetch keypad logfile")
+        try:
+            log_file = urllib2.urlopen(self.config['KEYPAD_LOG_URL']).read()
+            log_file = log_file.replace("<br>","\n")
+            if os.path.exists(self.config["KEYPAD_LOG_FILE"]):
+                os.remove(self.config["KEYPAD_LOG_FILE"])
+                
+            fd = open(self.config["KEYPAD_LOG_FILE"],'w')
+            fd.write(log_file)
+            fd.close()
+            return self.config["KEYPAD_LOG_FILE"]
+        except:
+            self.increment_errors()
+            self.logger.warning("Failed to fetch log file from keypad")
+            return None
+        
     def maybe_send_update(self, state):
         '''
         Send telegram message if state has changed

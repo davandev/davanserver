@@ -255,10 +255,12 @@ def create_config(secret_config, config):
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
     config["KeypadAliveServiceEnabled"] = True
+    config["KEYPAD_LOG_FILE"] = config['TEMP_PATH'] + "/keypad_log.txt"
     # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESS'] = "192.168.2.49:8080"
     # URI used to verify if keypad is alive
-    config['KEYPAD_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
+    config['KEYPAD_PING_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
+    config['KEYPAD_LOG_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/log"
 
     #---------------------------------------------------------------------------------------------
     # Scenes to monitor, start if not running

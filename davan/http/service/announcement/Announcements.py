@@ -5,10 +5,13 @@
 '''
 import os
 import logging
+import traceback
+import urllib2
+
 import davan.util.application_logger as app_logger
 import davan.config.config_creator as config_creator
 import davan.util.helper_functions as helper_functions
-import urllib2
+
 from datetime import datetime, timedelta
 from datetime import *
 from astral import Astral
@@ -57,26 +60,29 @@ def create_water_announcement():
     return helper_functions.encode_message(announcement)
 
 def create_sunset_sunrise_announcement():
-    city_name = 'Stockholm'
-    a = Astral()
-    a.solar_depression = 'civil'
-    city = a[city_name]
-    sun = city.sun(date=datetime.now(), local=True)
-
-    announcement = "Solens upp och nedgång idag."
-
-    dawn = get_hour_and_minute(str(sun['dawn']))
-    announcement += "Gryning klockan " + dawn + "."
-
-    sunrise = get_hour_and_minute(str(sun['sunrise']))
-    announcement += "Soluppgång klockan " + sunrise + "."
+    announcement = ""
+    try:
+        city_name = 'Stockholm'
+        a = Astral()
+        a.solar_depression = 'civil'
+        city = a[city_name]
+        sun = city.sun(date=datetime.now(), local=True)
     
-    sunset = get_hour_and_minute(str(sun['sunset']))
-    announcement += "Solnedgång klockan " + sunset + "."
+        announcement = "Solens upp och nedgång idag."
     
-    dusk = get_hour_and_minute(str(sun['dusk']))
-    announcement += "Skymning klockan " + dusk + "."
+        dawn = get_hour_and_minute(str(sun['dawn']))
+        announcement += "Gryning klockan " + dawn + "."
     
+        sunrise = get_hour_and_minute(str(sun['sunrise']))
+        announcement += "Soluppgång klockan " + sunrise + "."
+        
+        sunset = get_hour_and_minute(str(sun['sunset']))
+        announcement += "Solnedgång klockan " + sunset + "."
+        
+        dusk = get_hour_and_minute(str(sun['dusk']))
+        announcement += "Skymning klockan " + dusk + "."
+    except:
+        logger.error(traceback.format_exc())
     return helper_functions.encode_message(announcement)
 
 def get_hour_and_minute(dateitem):    
@@ -86,20 +92,23 @@ def get_hour_and_minute(dateitem):
     
 def create_name_announcement():
     logger.info("Create name announcement")
-    announcement = "Dagens namnsdagsbarn "
+    announcement = ""
+    try:
+        announcement = "Dagens namnsdagsbarn "
+        encoded_result = urllib2.urlopen("http://www.dagensnamn.nu/").read()
+        
+        start_index = encoded_result.index("text-vertical-center")
+        stop_index = encoded_result.index("....namnsdag")
+        nr_of_char = stop_index-start_index 
+        index_res = encoded_result[start_index:(start_index+nr_of_char)]
     
-    encoded_result = urllib2.urlopen("http://www.dagensnamn.nu/").read()
-    
-    start_index = encoded_result.index("text-vertical-center")
-    stop_index = encoded_result.index("....namnsdag")
-    nr_of_char = stop_index-start_index 
-    index_res = encoded_result[start_index:(start_index+nr_of_char)]
-
-    start_index = encoded_result.index("margin-bottom:20px;")
-    stop_index = encoded_result.index("</h1>")
-    nr_of_char = stop_index-start_index 
-    announcement += encoded_result[start_index+len('margin-bottom:20px;">'):(start_index+nr_of_char)]
-    
+        start_index = encoded_result.index("margin-bottom:20px;")
+        stop_index = encoded_result.index("</h1>")
+        nr_of_char = stop_index-start_index 
+        announcement += encoded_result[start_index+len('margin-bottom:20px;">'):(start_index+nr_of_char)]
+    except:
+        logger.error(traceback.format_exc())
+        
     return helper_functions.encode_message(announcement+".")
     
 def create_menu_announcement(config):
@@ -107,27 +116,31 @@ def create_menu_announcement(config):
     Create menu announcement, a text file contains all daily menus
     Determine current date and read date from menu file.
     '''
-    logger.info("Create menu announcement")
-    n = datetime.now()
-    t = n.timetuple()
-    y, m, d, h, min, sec, wd, yd, i = t
-    
-    if wd >=5:
-        logger.info("Weekend no menu")
-        return ""
-
-    todays_date = str(d) + "/" + str(m)
-    logger.debug("today:" + todays_date)
+    logger.debug("Create menu announcement")
     menu = ""
-    with open(config['ANNOUNCEMENT_MENU_PATH']) as f:
-        content = f.readlines()
-        for line in content:
-            if line.startswith(todays_date):
-                logger.debug("Found todays menu: " + todays_date +": " + line)
-                menu = "Meny i Neptuniskolan. "
-                menu += line.replace(todays_date, "")
-                menu = menu.rstrip()
-                menu += "."
+    try:
+        n = datetime.now()
+        t = n.timetuple()
+        y, m, d, h, min, sec, wd, yd, i = t
+        
+        if wd >=5:
+            logger.info("Weekend no menu")
+            return ""
+    
+        todays_date = str(d) + "/" + str(m)
+        logger.debug("today:" + todays_date)
+        with open(config['ANNOUNCEMENT_MENU_PATH']) as f:
+            content = f.readlines()
+            for line in content:
+                if line.startswith(todays_date):
+                    logger.debug("Found todays menu: " + todays_date +": " + line)
+                    menu = "Meny i Neptuniskolan. "
+                    menu += line.replace(todays_date, "")
+                    menu = menu.rstrip()
+                    menu += "."
+    except:
+        logger.error(traceback.format_exc())
+
     return helper_functions.encode_message(menu)
                 
 if __name__ == '__main__':

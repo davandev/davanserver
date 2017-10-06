@@ -35,14 +35,14 @@ URL_RENDER_TRANSPORT = "/upnp/control/rendertransport1"
 URL_RENDER_CONTROL = "/upnp/control/rendercontrol1"
 
 def set_queue_loop_mode(host_address):
-    logger.info("execute command [set queue loop mode]")
+    logger.debug("execute command [set queue loop mode]")
     url = host_address + URL_PLAY_QUEUE
     headers = {'content-type': 'text/xml;charset="utf-8"','Soapaction':'"urn:schemas-wiimu-com:service:PlayQueue:1#SetQueueLoopMode"'}
     body = """<?xml version="1.0" encoding="utf-8" standalone="yes"?><s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><u:SetQueueLoopMode xmlns:u="urn:schemas-wiimu-com:service:PlayQueue:1"><LoopMode>2</LoopMode></u:SetQueueLoopMode></s:Body></s:Envelope>"""
     send_command(url, body, headers)        
 
 def get_queue_loop_mode(host_address):
-    logger.info("execute command [get queue loop mode]")
+    logger.debug("execute command [get queue loop mode]")
     url = host_address + URL_PLAY_QUEUE
     headers = {'content-type': 'text/xml;charset="utf-8"','Soapaction':'"urn:schemas-wiimu-com:service:PlayQueue:1#GetQueueLoopMode"'}
     body = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
@@ -50,14 +50,14 @@ def get_queue_loop_mode(host_address):
     send_command(url, body, headers)
 
 def create_queue(host_address):
-    logger.info("execute command [create queue]")
+    logger.debug("execute command [create queue]")
     url = host_address + URL_PLAY_QUEUE
     headers['Soapaction'] = '"urn:schemas-wiimu-com:service:PlayQueue:1#CreateQueue"'
     body = XML_START_TAG + CREATE_QUEUE_TAG + XML_END_TAG 
     send_command(url, body, headers)
 
 def replace_queue(host_address, msg):
-    logger.info("execute command [replace queue]")
+    logger.debug("execute command [replace queue]")
     url = host_address + URL_PLAY_QUEUE
     headers['Soapaction'] = '"urn:schemas-wiimu-com:service:PlayQueue:1#ReplaceQueue"'
     queue_cmd = replace_queue_tag.replace('<replace_with_mp3_file>', msg)
@@ -66,7 +66,7 @@ def replace_queue(host_address, msg):
     send_command(url, body, headers)
 
 def append_tracks_in_queue(host_address, msg):
-    logger.info("execute command [append tracks in queue]")
+    logger.debug("execute command [append tracks in queue]")
     url = host_address + URL_PLAY_QUEUE
     headers['Soapaction'] = '"urn:schemas-wiimu-com:service:PlayQueue:1#AppendTracksInQueue"'
     append = APPEND_TRACK_IN_QUEUE.replace('<replace_with_mp3_file>', msg)
@@ -75,63 +75,63 @@ def append_tracks_in_queue(host_address, msg):
     send_command(url, body, headers)
 
 def browse_queue(host_address):
-    logger.info("execute command [browse queue]")
+    logger.debug("execute command [browse queue]")
     url = host_address + URL_PLAY_QUEUE
     headers['Soapaction'] = '"urn:schemas-wiimu-com:service:PlayQueue:1#BrowseQueue"'
     body = XML_START_TAG + BROWSE_QUEUE + XML_END_TAG
     send_command(url, body, headers)
 
 def send_play_with_index(host_address):
-    logger.info("execute command [send play with index]")
+    logger.debug("execute command [send play with index]")
     url = host_address + URL_PLAY_QUEUE
     headers['Soapaction'] = '"urn:schemas-wiimu-com:service:PlayQueue:1#PlayQueueWithIndex"'
     body = XML_START_TAG + PLAY_QUEUE + XML_END_TAG
     send_command(url, body, headers)
 
 def set_play_mode(host_address):
-    logger.info("execute command [set play mode]")
+    logger.debug("execute command [set play mode]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] = '"urn:schemas-upnp-org:service:AVTransport:1#SetPlayMode"'
     body = XML_START_TAG + SET_PLAY_MODE + XML_END_TAG
     send_command(url, body, headers)
 
 def get_play_type(host_address):
-    logger.info("execute command [get play type]")
+    logger.debug("execute command [get play type]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] = '"urn:schemas-upnp-org:service:AVTransport:1#GetPlayType"'
     body = XML_START_TAG + GET_PLAY_TYPE + XML_END_TAG
     send_command(url, body, headers)
     
 def pause(host_address):
-    logger.info("execute command [send pause]")
+    logger.debug("execute command [send pause]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] ='"urn:schemas-upnp-org:service:AVTransport:1#Pause"'
     body = XML_START_TAG + PAUSE + XML_END_TAG
     send_command(url, body, headers)
 
 def stop(host_address):
-    logger.info("execute command [send stop]")
+    logger.debug("execute command [send stop]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] = '"urn:schemas-upnp-org:service:AVTransport:1#Stop"'
     body = XML_START_TAG + STOP + XML_END_TAG
     send_command(url, body, headers)
 
 def send_play(host_address):
-    logger.info("execute command [send play]")
+    logger.debug("execute command [send play]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] = '"urn:schemas-upnp-org:service:AVTransport:1#Play"'
     body = XML_START_TAG + PLAY + XML_END_TAG 
     send_command(url, body, headers)
 
 def set_volume(host_address):
-    logger.info("execute command [set volume]")
+    logger.debug("execute command [set volume]")
     url = host_address + URL_RENDER_CONTROL
     headers['Soapaction'] ='"urn:schemas-upnp-org:service:RenderingControl:1#SetVolume"'
     body = XML_START_TAG + SET_VOLUME + XML_END_TAG
     send_command(url, body, headers)
         
 def get_info(host_address):
-    logger.info("execute command [get info]")
+    logger.debug("execute command [get info]")
     url = host_address + URL_RENDER_TRANSPORT
     headers['Soapaction'] = '"urn:schemas-upnp-org:service:AVTransport:1#GetInfoEx"'
     body = XML_START_TAG + GET_INFO + XML_END_TAG
@@ -139,5 +139,4 @@ def get_info(host_address):
 
 def send_command(url, body, headers):
     r = requests.post(url,data=body,headers=headers)
-    logger.info("Received response [" + str(r.status_code) +"]")
-    #logger.info("Result:" + str(r.text))
+    logger.debug("Received response [" + str(r.status_code) +"]")

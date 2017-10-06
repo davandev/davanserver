@@ -25,6 +25,10 @@ class ScaleService(ReoccuringBaseService):
         '''
         ReoccuringBaseService.__init__(self, constants.SCALE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
+
+        logging.getLogger('oauthlib.oauth1').setLevel(logging.CRITICAL)
+        logging.getLogger('requests_oauthlib.oauth1_auth').setLevel(logging.CRITICAL)
+
         self.creds = NokiaCredentials()
         self.creds.access_token=self.config['ACCESS_TOKEN']
         self.creds.access_token_secret=self.config['ACCESS_TOKEN_SECRET']
@@ -32,17 +36,29 @@ class ScaleService(ReoccuringBaseService):
         self.creds.consumer_secret=self.config['CONSUMER_SECRET']
         self.creds.user_id=self.config['NOKIA_USER_ID']
         self.last_measure = None
-        self.time_to_next_event = 3600
+        self.time_to_next_event = 180
         
     def handle_timeout(self):
         '''
         Calculate sun movements 
         '''
-        self.logger.info("Fetch scale update")
+        self.logger.debug("Fetch scale update")
         
         client = NokiaApi(self.creds)
         measures = client.get_measures(limit=1)
-        self.logger.info("Your last measured weight: %skg" % measures[0].weight)
+        if self.last_measure == None:
+            self.last_measure = measures[0].weight
+        elif float(measures[0].weight) > float(self.last_measure):
+            msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+        elif  float(measures[0].weight) < float(self.last_measure):
+            msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+        self.last_measure = measures[0].weight
+        
+        #for measure in measures:
+        #    self.logger.info(str(measure.weight))
+        #self.logger.info("Your last measured weight: %skg" % measures[0].weight)
         #self.logger.info("Your nxt last measured weight: %skg" % measures[1].weight)
         
     def get_next_timeout(self):

@@ -133,7 +133,7 @@ class ReceiverBotService(BaseService):
                 SERVICES: [RegexHandler('^(.*)$', self.handle_service)],
                 TV: [RegexHandler('^(On|Off|Text|Menu)$', self.handle_tv)],
                 TTS: [MessageHandler(Filters.text, self.tts)],
-                LOG: [RegexHandler('^(INFO|DEBUG|Logfile|Menu)$', self.handle_log)],
+                LOG: [RegexHandler('^(INFO|DEBUG|Logfile|Keypad log|Menu)$', self.handle_log)],
                 TVTEXT: [MessageHandler(Filters.text, self.tv)]
             },
      
@@ -199,7 +199,7 @@ class ReceiverBotService(BaseService):
         '''
         Generate the log menu to display
         '''
-        reply_keyboard = [['INFO', 'DEBUG', 'Logfile'],['Menu']]
+        reply_keyboard = [['INFO', 'DEBUG', 'Logfile'],['Keypad log','Menu']]
         
         update.message.reply_text('Select command:',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
@@ -309,6 +309,11 @@ class ReceiverBotService(BaseService):
             if update.message.text == 'Logfile':
                 file_name = log_manager.get_logfile_name()
                 bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
+                return LOG 
+            if update.message.text == 'Keypad log':
+                keypad_service = self.services.get_service(constants.KEYPAD_SERVICE_NAME)
+                log_file = keypad_service.get_log()
+                bot.send_document(chat_id=update.message.chat_id, document=open(log_file, 'r'))
                 return LOG 
 
             self.increment_invoked()

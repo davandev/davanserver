@@ -47,7 +47,11 @@ class TelldusService(BaseService):
             deviceId, action = self.parse_request(msg)
             self.increment_invoked()
             
-            if action == "toggle":
+            if deviceId == "all":
+                action = self.STATES[action]
+                self.toggle_all_device_states(action)
+                return
+            elif action == "toggle":
                 action = self.get_toggled_device_state(deviceId)
             else:
                 action = self.STATES[action]
@@ -82,6 +86,23 @@ class TelldusService(BaseService):
         
         return state
     
+    def toggle_all_device_states(self, state):
+        self.logger.debug("Toggle all device states[" + str(state) + "]")
+        try:
+            response = telldus.listDevicesAndValues()
+            self.print_all_devices(response)
+                        
+            for device in response['device']:
+                if (state == telldus.TELLSTICK_TURNON):
+                    state = telldus.TELLSTICK_TURNON
+                elif (state == telldus.TELLSTICK_TURNOFF):
+                    state = telldus.TELLSTICK_TURNOFF
+                telldus.doMethod(device['id'], state)
+                self.logger.info("Change state of "+ device['name'])
+            self.logger.info("Toggled all devices [" + str(state) + "]")
+        except:
+            self.logger.error(traceback.format_exc())
+        
     def print_all_devices(self, response):
         for device in response['device']:
             if (device['state'] == tdtool.TELLSTICK_TURNON):
