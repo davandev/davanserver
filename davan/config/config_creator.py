@@ -160,7 +160,7 @@ def create_config(secret_config, config):
     config['FAMILY_DEVICES'] = {
         '192.168.2.65' : "Wilma", 
         '192.168.2.88' : "David",
-        '192.168.2.86' : "Mia",
+        '192.168.2.103' : "Mia",
         '192.168.2.233' : "Viggo" }
     
     config['GUEST_DEVICES'] = {
@@ -189,6 +189,7 @@ def create_config(secret_config, config):
         '192.168.2.100' : 'LG G4',
         '192.168.2.101' : 'Mias job iphone',
         '192.168.2.102' : 'Mias job pc',
+        '192.168.2.103' : 'Mias p10',
         '192.168.2.105' : 'Vit laptop',
         '192.168.2.119' : 'Kamera balkong',
         '192.168.2.122' : 'Roxcore Hall',
@@ -210,6 +211,7 @@ def create_config(secret_config, config):
         '192.168.2.232' : 'Wilma skoldator',
         '192.168.2.231' : 'Mias klocka',
         '192.168.2.242' : 'David job pc',
+        '192.168.2.243' : 'PS4',
         '192.168.2.219' : 'PS3'
 
                                }
@@ -339,8 +341,10 @@ def create_config(secret_config, config):
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen, 06:15,  07:30, weekdays,     10,        65,         1,        15,        194,            0',
         'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
-        'Uterum,  19:05,  23:45, week,         -1,        192,        1,        10,        195,            0',
+        'Uterum,  sunset,  23:45, week,         -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
+        'Farstukvist, sunset, 23:55, week,         -1,        226,        1,        1,        227,            0',
+
     #    'Wilma,   07:00,  07:15, weekdays,     20,        173,        1,        20,        197,            0',
         'Wilma,   18:15,  19:50, week,        20,         173,        2,        20,        197,            1',
     #    'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
@@ -371,6 +375,8 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["AnnouncementsServiceEnabled"] = True
     config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt"
+    config["ANNOUNCEMENT_THEMEDAY_PATH"] = config["ROOT"] + "tema_dagar.txt"
+    
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | 
         'SleepTime,        23:02,   weekdays,       night,           0',

@@ -11,6 +11,7 @@ import urllib2
 import davan.util.application_logger as app_logger
 import davan.config.config_creator as config_creator
 import davan.util.helper_functions as helper_functions
+from davan.util import constants
 
 from datetime import datetime, timedelta
 from datetime import *
@@ -95,8 +96,9 @@ def create_name_announcement():
     announcement = ""
     try:
         announcement = "Dagens namnsdagsbarn "
-        encoded_result = urllib2.urlopen("http://www.dagensnamn.nu/").read()
         
+        request = urllib2.Request("https://www.dagensnamn.nu/", headers=constants.USER_AGENT_HEADERS)
+        encoded_result = urllib2.urlopen(request).read()
         start_index = encoded_result.index("text-vertical-center")
         stop_index = encoded_result.index("....namnsdag")
         nr_of_char = stop_index-start_index 
@@ -142,9 +144,37 @@ def create_menu_announcement(config):
         logger.error(traceback.format_exc())
 
     return helper_functions.encode_message(menu)
+
+def create_theme_day_announcement(config):
+    '''
+    Create theme day announcement, a text file contains all daily themes
+    Determine current date and read date from menu file.
+    '''
+    logger.debug("Create theme day announcement")
+    result = ""
+    try:
+        n = datetime.now()
+        t = n.timetuple()
+        y, m, d, h, min, sec, wd, yd, i = t
+        
+        todays_date = str(d) + "/" + str(m)
+        logger.debug("today:" + todays_date)
+        with open(config['ANNOUNCEMENT_THEMEDAY_PATH']) as f:
+            content = f.readlines()
+            for line in content:
+                if line.startswith(todays_date):
+                    logger.debug("Found theme days: " + todays_date +": " + line)
+                    result = "Tema idag, "
+                    result += line.replace(todays_date, "")
+                    result = result.rstrip()
+                    result += "."
+    except:
+        logger.error(traceback.format_exc())
+
+    return helper_functions.encode_message(result)
                 
 if __name__ == '__main__':
     config = config_creator.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    result = create_menu_announcement()
+    result = create_name_announcement()
     logger.info("Menu: "+ result)

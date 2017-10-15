@@ -6,6 +6,7 @@
 import logging
 import os
 from datetime import *
+import traceback
 
 from nokia import NokiaAuth, NokiaApi, NokiaCredentials
 
@@ -13,6 +14,7 @@ import davan.util.constants as constants
 import davan.util.timer_functions as timer_functions
 import davan.util.helper_functions as helper_functions
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
+from __main__ import traceback
 
 class ScaleService(ReoccuringBaseService):
     '''
@@ -36,6 +38,7 @@ class ScaleService(ReoccuringBaseService):
         self.creds.consumer_secret=self.config['CONSUMER_SECRET']
         self.creds.user_id=self.config['NOKIA_USER_ID']
         self.last_measure = None
+        self.previous_measure = None
         self.time_to_next_event = 180
         
     def handle_timeout(self):
@@ -48,12 +51,17 @@ class ScaleService(ReoccuringBaseService):
         measures = client.get_measures(limit=1)
         if self.last_measure == None:
             self.last_measure = measures[0].weight
+        elif self.last_measure == self.previous_measure:
+            self.logger.debug("No change")
+            return
         elif float(measures[0].weight) > float(self.last_measure):
             msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
             self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
-        elif  float(measures[0].weight) < float(self.last_measure):
+        elif  float(measures[0].weight) <= float(self.last_measure):
             msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
             self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+        
+        self.previous_measure = self.last_measure
         self.last_measure = measures[0].weight
         
         #for measure in measures:
@@ -96,4 +104,19 @@ class ScaleService(ReoccuringBaseService):
         Compile and return announcment.
         @return html encoded result
         '''
-        return helper_functions.encode_message("")
+        try:
+            if self.last_measure == None:
+                announcement = "Ingen mätning är tillgänglig"
+
+            measures = str(self.last_measure).split(".")
+            self.logger.info("last:" +str(measures[0]) + " kg and " +str(measures[1]) + " gram" )
+            announcement ="Senaste vägningen visade " + measures[0] + " kg och "+ measures[1] + " gram"  
+
+            if self.last_measure > self.previous_measure:
+                announcement += " Det är en uppgång jämfört med vägningen innan"
+            elif self.last_measure < self.previous_measure:
+                announcement += " Det är en nedgång jämfört med vägningen innan"
+        except:
+            self.logger.error(traceback.format_exc())
+
+        return helper_functions.encode_message(announcement)
