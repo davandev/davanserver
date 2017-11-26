@@ -49,18 +49,24 @@ class ScaleService(ReoccuringBaseService):
         
         client = NokiaApi(self.creds)
         measures = client.get_measures(limit=1)
+        self.logger.debug("Checked weight["+str(measures[0].weight)+"] kg")
+        
         if self.last_measure == None:
             self.last_measure = measures[0].weight
-        elif self.last_measure == self.previous_measure:
+            
+        elif self.last_measure == measures[0].weight:
             self.logger.debug("No change")
             return
+
         elif float(measures[0].weight) > float(self.last_measure):
+
             msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
             self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+        
         elif  float(measures[0].weight) <= float(self.last_measure):
             msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
             self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
-        
+
         self.previous_measure = self.last_measure
         self.last_measure = measures[0].weight
         
@@ -76,7 +82,7 @@ class ScaleService(ReoccuringBaseService):
         return self.time_to_next_event
         
         self.time_to_next_event = timer_functions.calculate_time_until_midnight()
-        self.logger.info("Next timeout in " + str(self.time_to_next_event) +  " seconds")
+        self.logger.debug("Next timeout in " + str(self.time_to_next_event) +  " seconds")
         return self.time_to_next_event
         
     def has_html_gui(self):

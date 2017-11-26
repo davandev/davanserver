@@ -36,3 +36,11 @@ class ServiceIf(object):
         Abstract method to start service
         '''
         pass
+    
+    @abc.abstractmethod
+    def is_service_running(self):
+        '''
+        Abstract method to determine if service is running
+        '''
+        pass
+    

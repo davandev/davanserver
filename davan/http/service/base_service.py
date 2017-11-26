@@ -17,6 +17,7 @@ class BaseService(ServiceIf):
         self.service_name = service_name
         self.config = config
         self.services = service_provider
+        self.is_running = False
         
     def handle_request(self, input):
         """
@@ -35,12 +36,14 @@ class BaseService(ServiceIf):
         """
         Default implementation when stopping service
         """
+        self.is_running = False
         pass
     
     def start_service(self):
         """
         Default implementation when starting service
         """
+        self.is_running = True
         pass
     
     def get_counters(self):
@@ -63,9 +66,15 @@ class BaseService(ServiceIf):
 
     def is_enabled(self):
         """
-        Return True if service is enabled, false otherwise
+        Return True if service is enabled in configuration, false otherwise
         """
         return self.config[self.service_name+"Enabled"]
+    
+    def is_service_running(self):
+        """
+        Return True if service is running
+        """
+        return self.is_running
     
     def has_html_gui(self):
         """

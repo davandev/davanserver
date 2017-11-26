@@ -157,64 +157,10 @@ def create_config(secret_config, config):
                                  'Viggo':'ui.Label4.value'}
 
     # Ipadresses of devices where its wifi presence should be monitored
-    config['FAMILY_DEVICES'] = {
-        '192.168.2.65' : "Wilma", 
-        '192.168.2.88' : "David",
-        '192.168.2.103' : "Mia",
-        '192.168.2.233' : "Viggo" }
-    
-    config['GUEST_DEVICES'] = {
-        '192.168.2.170' : "Alva", 
-        '192.168.2.90' : "Elsa",
-        '192.168.2.197' : "Sonia",
-        '192.168.2.198' : "Maddis" }
-
-    config['HOUSE_DEVICES'] = {
-        '192.168.1.1' : 'Modem',
-        '192.168.2.5' : 'Tellstick',
-        '192.168.2.17' : 'Skrivare samsung',
-        '192.168.2.34' : 'Rpi pywws',
-        '192.168.2.36' : 'Boxee box',
-        '192.168.2.27' : 'Zero',
-        '192.168.2.37' : 'Mias ipad',
-        '192.168.2.49' : 'Keypad',
-        '192.168.2.50' : 'Rpi davanserver',
-        '192.168.2.51' : 'Roxcore kok Slave',
-        '192.168.2.54' : 'Fibaro',
-        '192.168.2.60' : 'Kamera uppe',
-        '192.168.2.71' : 'Viggos padda',
-        '192.168.2.74' : 'Davids padda',
-        '192.168.2.76' : 'Kamera uterum',
-        '192.168.2.77' : 'Openelec',
-        '192.168.2.100' : 'LG G4',
-        '192.168.2.101' : 'Mias job iphone',
-        '192.168.2.102' : 'Mias job pc',
-        '192.168.2.103' : 'Mias p10',
-        '192.168.2.105' : 'Vit laptop',
-        '192.168.2.119' : 'Kamera balkong',
-        '192.168.2.122' : 'Roxcore Hall',
-        '192.168.2.123' : 'Apple TV',
-        '192.168.2.139' : 'Chromecast Entre',
-        '192.168.2.143' : 'HarmonyHub',
-        '192.168.2.164' : 'Chromecast Kallare',
-        '192.168.2.172' : 'Kamera farstukvist',
-        '192.168.2.173' : 'Vu+',
-        '192.168.2.175' : 'Wilmas padda',
-        '192.168.2.179' : 'Viggos Ipad',
-        '192.168.2.183' : 'Roxcore kok Master',
-        '192.168.2.184' : 'Wilma laptop',
-        '192.168.2.185' : 'Kamera Kok',
-        '192.168.2.190' : 'DIR-615',
-        '192.168.2.200' : 'Nas',
-        '192.168.2.218' : 'Onkyo',
-        '192.168.2.227' : 'Kamera hall',
-        '192.168.2.232' : 'Wilma skoldator',
-        '192.168.2.231' : 'Mias klocka',
-        '192.168.2.242' : 'David job pc',
-        '192.168.2.243' : 'PS4',
-        '192.168.2.219' : 'PS3'
-
-                               }
+    config['FAMILY_DEVICES'] = secret_config.DEVICES_FAMILY
+    config['GUEST_DEVICES'] = secret_config.DEVICES_FRIEND
+    config['HOUSE_DEVICES'] = secret_config.DEVICES_HOUSE
+    config['UNKNOWN_DEVICES'] = secret_config.DEVICES_UNKNOWN
 #---------------------------------------------------------------------------------------
     # Authentication configuration
     #---------------------------------------------------------------------------------------
