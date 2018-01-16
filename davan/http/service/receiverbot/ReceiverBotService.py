@@ -25,7 +25,7 @@ from davan.http.service.base_service import BaseService
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT, LOG = range(7)
+COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT, LOG , SERVICESTATUS= range(8)
 
 class ReceiverBotService(BaseService):
     '''
@@ -44,6 +44,7 @@ class ReceiverBotService(BaseService):
         logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
         logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
         self.current_speaker = "0"
+        self.selected_service = None
         self.TAG_RE = re.compile(r'<[^>]+>')
         self.event = Event()
         self.bot = None
@@ -131,6 +132,7 @@ class ReceiverBotService(BaseService):
                 COMMAND: [RegexHandler('^(Services|Log|Speakers|TTS|Tv|Status)$', self.handle_command)],
                 SPEAKER: [RegexHandler('^(Hallway|Kitchen|All|Menu)$', self.handle_speaker)],
                 SERVICES: [RegexHandler('^(.*)$', self.handle_service)],
+                SERVICESTATUS: [RegexHandler('^(Status|Enable|Disable|Services)$', self.handle_service_status)],
                 TV: [RegexHandler('^(On|Off|Text|Menu)$', self.handle_tv)],
                 TTS: [MessageHandler(Filters.text, self.tts)],
                 LOG: [RegexHandler('^(INFO|DEBUG|Logfile|Keypad log|Menu)$', self.handle_log)],
@@ -255,19 +257,59 @@ class ReceiverBotService(BaseService):
     def handle_service(self, bot, update):
         logger.info("Selected service [%s]" % (update.message.text))
         
+        self.selected_service = update.message.text
+        
         if update.message.text == "Menu":
             self.build_start_menu(bot, update)
             return COMMAND
-        for name, service in self.services.services.iteritems():
-            if name == update.message.text:
-                item = self.services.get_service(name)
-                text = item.get_html_gui("")   
-                success, error = item.get_counters()
-                result = text + "\n" + "Success: " + str(success) + "\nError:" + str(error)
-                self.increment_invoked()
-#                update.message.reply_text(self.TAG_RE.sub('', text),reply_markup=ReplyKeyboardRemove())
-                update.message.reply_text(self.TAG_RE.sub('', result))
-        return SERVICES    
+
+        self.build_service_control_menu(bot, update)
+        return SERVICESTATUS
+
+    def handle_service_status(self,bot,update):
+        
+        logger.info("Status of service [%s]" % (self.selected_service))
+        if update.message.text == "Status":
+            for name, service in self.services.services.iteritems():
+                if name == self.selected_service:
+                    item = self.services.get_service(name)
+                    text = item.get_html_gui("")   
+                    success, error = item.get_counters()
+                    result = text + "\n" + "Success: " + str(success) + "\nError:" + str(error)
+                    result += "\nEnabled[" + str(item.is_service_running()) + "]"
+                    self.increment_invoked()
+    #                update.message.reply_text(self.TAG_RE.sub('', text),reply_markup=ReplyKeyboardRemove())
+                    update.message.reply_text(self.TAG_RE.sub('', result))
+            return SERVICESTATUS    
+        elif update.message.text == "Enable":
+            logger.info("Enable service")
+            item = self.services.services[self.selected_service]
+            item.start_service()
+            result = self.selected_service +" enabled ["+str(item.is_service_running())+"]"
+            update.message.reply_text(self.TAG_RE.sub('', result))
+            return SERVICESTATUS    
+        elif update.message.text == "Disable":
+            logger.info("Disable service")
+            item = self.services.services[self.selected_service]
+            item.stop_service()
+            result = self.selected_service +" enabled ["+str(item.is_service_running())+"]"
+            update.message.reply_text(result)
+            return SERVICESTATUS    
+        elif update.message.text == "Services":
+            logger.info("Services service")
+            self.build_service_menu(update)
+            return SERVICES    
+        
+    def build_service_control_menu(self, bot, update):
+        '''
+        Generate the start/command menu to display
+        '''
+        reply_keyboard = [['Status','Enable', 'Disable'],['Services']]
+        
+        update.message.reply_text("Select command:",
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False))
+ 
+        return COMMAND
 
     def handle_status(self, bot, update):
         logger.info("Selected [%s]" % (update.message.text))

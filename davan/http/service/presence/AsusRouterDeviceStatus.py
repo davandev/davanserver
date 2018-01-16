@@ -14,13 +14,17 @@ class AsusRouterDeviceStatus(object):
     '''
     classdocs
     '''
-    def __init__(self, ip_adress, user, device_type):
+    def __init__(self, ip_adress, device_info, device_type):
         '''
         Constructor
         '''
         self.logger = logging.getLogger(os.path.basename(__file__))
         # Name of the device owner
-        self.user = user
+        self.logger.debug("Device:" + device_info)
+        device = device_info.split(";")
+        self.mac = device[0].strip()
+        self.user = device[1].strip()
+        
         # Ip address of device
         self.ip_adress = ip_adress
         # Is device state changed
@@ -55,6 +59,7 @@ class AsusRouterDeviceStatus(object):
     def toString(self):
         self.logger.debug("User["+self.user+"] " + 
                           "ip["+self.ip_adress+"] " + 
+                          "Mac["+self.mac+"]" +
                           "Status["+str(self.active)+"] " +
                           "StatusChanged["+str(self.changed)+"] " +
                           "FirstActive["+self.first_active+"] " +

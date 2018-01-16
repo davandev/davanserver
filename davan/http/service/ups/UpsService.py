@@ -36,7 +36,6 @@ class UpsService(BaseService):
         Parse received request to get interesting parts
         @param msg: received request 
         '''
-        self.logger.info("Parsing: " + msg ) 
         msg = msg.replace(self.payload, "")
         return msg
              
@@ -47,6 +46,7 @@ class UpsService(BaseService):
         Fibaro invokes script to refresh status
         '''
         try:
+            self.logger.debug("Received: " + msg ) 
             self.increment_invoked()
             result =""
             service = self.parse_request(msg)

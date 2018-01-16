@@ -22,7 +22,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 global weekdays
 weekdays=['måndag','tisdag','onsdag','torsdag','fredag','lördag','söndag',]
-months=['december','januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november']
+months=['december','januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december']
 date= ['noll','första','andra','tredje','fjärde','femte','sjätte','sjunde','åttonde','nionde','tionde',
        'elfte','tolfte','trettonde','fjortonde','femtonde','sextonde','sjuttonde','artonde','nittonde','tjugonde',
        'tjugoförsta','tjugoandra','tjugotredje','tjugofjärde','tjugofemte','tjugosjätte','tjugosjunde',
@@ -33,12 +33,12 @@ def create_morning_announcement():
     t = n.timetuple()
     y, m, d, h, min, sec, wd, yd, i = t
     current_day = wd
+    logger.debug("Current month [" + str(m) + "] Day [" + str(d) + ']')
     
     logger.info("Create morning announcement")
     announcement = "God morgon familjen äntligen är det en ny dag. Idag är det "
     announcement += str(weekdays[current_day]) + ' den '
     announcement += date[d] + " " + str(months[m]) + '. '
-    logger.debug("Current month [" + str(months[m]) + "] Day [" + str(d) + ']')
     
     return helper_functions.encode_message(announcement)
 

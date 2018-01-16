@@ -88,6 +88,11 @@ class AsusRouterPresenceService(ReoccuringBaseService):
                     if items[0] not in self.unknown_devices:
                         self.logger.warning("Unknown: "+ items[0])
                         self.unknown_devices.append(items[0])
+                    if items[3] == "REACHABLE" or items[3] == "STALE":
+                        self.logger.warning("Unknown active device : "+ str(items))
+                        helper.send_telegram_message(self.config, "Unknown device is now active on network")
+
+                        
  
     def check_device_group(self, monitored_devices, active_devices):
         # Reset changed state to false for all devices
@@ -161,6 +166,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         if("REACHABLE" in status or "STALE" in status):
             device.active = True
+            if status[4].strip() != device.mac:
+                self.logger.info(device.user +"["+device.ip_adress+"] do not match received[" + status[4].strip() + "] != stored[" + device.mac+"]")
         elif "FAILED" in status:
             device.active = False
             

@@ -12,10 +12,14 @@ class ReoccuringBaseService(BaseService):
     '''
     def __init__(self, service_name, service_provider, config):
         BaseService.__init__(self, service_name, service_provider, config)
-        self.event = Event()
+        self.event = None
             
     def stop_service(self):
+        '''
+        Stop the service
+        '''
         self.logger.debug("Stopping service")
+        self.is_running = False
         self.event.set()
 
     def start_service(self):
@@ -24,7 +28,7 @@ class ReoccuringBaseService(BaseService):
         @interval time in seconds between timeouts
         @func callback function at timeout.
         '''
-        
+        self.logger.debug("Starting service")
         # Workaround to avoid attribute error exception in .strptime()
         # Use strptime before starting thread. 
         # See http://bugs.python.org/issue7980
@@ -33,6 +37,9 @@ class ReoccuringBaseService(BaseService):
         # End of workaround
 
         #self.logger.info("Starting re-occuring service ")
+        self.is_running = True
+        self.event = Event()
+
         def loop():
             while not self.event.wait(self.get_next_timeout()):
                 self.increment_invoked()
@@ -46,12 +53,12 @@ class ReoccuringBaseService(BaseService):
         """
         Default implementation when timeout occur
         """
-        self.logger.warning("Default implementation")
+        self.logger.error("Default implementation")
         pass
-    
+
     def get_next_timeout(self):
         """
         Default implementation 
         """
-        self.logger.warning("Default implementation")
+        self.logger.error("Default implementation")
         pass

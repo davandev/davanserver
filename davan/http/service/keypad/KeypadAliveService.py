@@ -44,6 +44,8 @@ class KeypadAliveService(ReoccuringBaseService):
         #self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
         try:
             urllib.urlopen(self.config['KEYPAD_PING_URL'])
+            self.logger.debug("Sending ping to keypad")
+
             self.maybe_send_update(True)
         except:
             self.increment_errors()
