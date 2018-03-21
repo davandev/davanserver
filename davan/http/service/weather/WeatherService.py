@@ -84,14 +84,18 @@ class WeatherService(ReoccuringBaseService):
             if not self.is_raining:
                 self.logger.info("It has started to rain")
                 helper.send_telegram_message(self.config, constants.RAIN_STARTED)
-                self.services.get_service(constants.TTS_SERVICE_NAME).start(constants.RAIN_STARTED,1)
+                self.services.get_service(constants.TTS_SERVICE_NAME).start(
+                    constants.RAIN_STARTED,
+                    constants.SPEAKER_KITCHEN)
                 self.is_raining = True
 
         else:
             if self.is_raining:
                 self.logger.info("It has stopped to rain")
                 helper.send_telegram_message(self.config, constants.RAIN_STOPPED)
-                self.services.get_service(constants.TTS_SERVICE_NAME).start(constants.RAIN_STOPPED,1)
+                self.services.get_service(constants.TTS_SERVICE_NAME).start(
+                    constants.RAIN_STOPPED,
+                    constants.SPEAKER_KITCHEN)
                 self.is_raining = False
     
     def get_forecast(self):

@@ -42,15 +42,14 @@ def create_morning_announcement():
     
     return helper_functions.encode_message(announcement)
 
-def create_night_announcement():
+def create_night_announcement(name):
     '''
-    
     '''
     logger.info("Create night announcement")
-    announcement = "Nu är det dags att gå och lägga sig Mia. God natt"
+    announcement = name + " nu är det dags att gå och lägga sig. God natt och sov gott"
     
     return helper_functions.encode_message(announcement)
-
+    
 def create_water_announcement():
     '''
     

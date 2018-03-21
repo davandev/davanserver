@@ -285,7 +285,7 @@ def create_config(secret_config, config):
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
-        'Kitchen, 06:15,  07:30, weekdays,     10,        65,         1,        15,        194,            0',
+        'Kitchen, 06:15,  08:30, weekdays,     10,        65,         1,        15,        194,            0',
         'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
         'Uterum,  sunset,  23:45, week,         -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
@@ -324,14 +324,16 @@ def create_config(secret_config, config):
     config["ANNOUNCEMENT_THEMEDAY_PATH"] = config["ROOT"] + "tema_dagar.txt"
     
     config['ANNOUNCEMENTS_SCHEMA'] = [
-        #Slogan          | Time, | Interval | | announcementname | speaker id | 
-        'SleepTime,        23:02,   weekdays,       night,           0',
-        'Morning,          07:15,   weekdays,       morning,         0',
-        'MorningWeekend,   09:00,   weekend,        morning,         0',
-        'WilmaBirthDay,    08:00,   02/06,          birthday,        0',
-        'ViggoBirthDay,    08:00,   20/06,          birthday,        0',
-        'MiaBirthDay,      08:00,   30/06,          birthday,        0',
-        'DavidBirthDay,    08:00,   08/07,          birthday,        0',
+        #Slogan          | Time, | Interval | | announcementname | speaker id | Text
+        'SleepTime,        23:02,   weekdays,       night,           0,          Mia',
+        'SleepTimeViggo,   20:30,   weekdays,       night,           0,          Viggo',
+        'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
+        'Morning,          07:15,   weekdays,       morning,         0,          -',
+        'MorningWeekend,   09:00,   weekend,        morning,         0,          -',
+        'WilmaBirthDay,    08:00,   02/06,          birthday,        0,          -',
+        'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
+        'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
+        'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
 
@@ -377,6 +379,16 @@ def create_config(secret_config, config):
     config['FibaroServiceEnabled'] = True
     config['FibaroTimeout'] = 300
     config['FibaroVirtualDeviceId'] = "69"
+
+    #---------------------------------------------------------------------------------------------
+    # DishWashService
+    #---------------------------------------------------------------------------------------------
+    config['DishWashServiceEnabled'] = True
+    #---------------------------------------------------------------------------------------------
+    # DepartureService
+    #---------------------------------------------------------------------------------------------
+    config['DepartureServiceEnabled'] = True
+    config['DEPARTURE_SETTING'] = secret_config.SL_API_KEYS
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

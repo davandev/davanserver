@@ -19,20 +19,24 @@ import davan.util.fibaro_functions as fibaro_functions
 import davan.util.helper_functions as helper_functions
 
 class AnnouncementEvent():
-    def __init__(self, slogan, time, announcement_id, speaker):
+    def __init__(self, slogan, time, announcement_id, speaker, text):
         self.logger = logging.getLogger(os.path.basename(__file__))
 
         self.slogan = slogan
         self.time = time
         self.announcement_id = announcement_id
         self.speaker_id = speaker
+        self.text =""
+        
+        if text != "-":
+            self.text = text
         
 
     def toString(self):
         return "Slogan[ "+self.slogan+" ] "\
             "AnnouncmentId[ "+self.announcement_id+" ] "\
-            "Speaker[ "+self.speaker+" ]"
-        
+            "Speaker[ "+self.speaker+" ]" \
+            "Text[ "+self.text+" ]"
 
 class AnnouncementsService(ReoccuringBaseService):
     '''
@@ -66,8 +70,16 @@ class AnnouncementsService(ReoccuringBaseService):
         @param msg, received request 
         '''
         self.logger.debug("Msg:"+msg)
-        announcement_id = (msg.split('=')[1])
-        event = AnnouncementEvent("ExternalCall", "", announcement_id, "0")
+        data = (msg.split('=')[1])
+        speaker_id="0"
+        if "?" in data:
+            data_array = data.split('?')
+            announcement_id=data_array[0]
+            speaker_id=data_array[1]
+        else:
+            announcement_id=data
+            
+        event = AnnouncementEvent("ExternalCall", "", announcement_id, speaker_id, "-")
         if self.invoke_event(event):
             return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_OK
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_NOT_OK
@@ -129,7 +141,7 @@ class AnnouncementsService(ReoccuringBaseService):
             elif event.announcement_id == "themeday":
                 result = announcements.create_theme_day_announcement(self.config)
             elif event.announcement_id == "night":
-                result = announcements.create_night_announcement()
+                result = announcements.create_night_announcement(event.text)
             elif event.announcement_id == "sun":
                 result = announcements.create_sunset_sunrise_announcement()
             elif event.announcement_id == "status":
@@ -201,7 +213,8 @@ class AnnouncementsService(ReoccuringBaseService):
             self.todays_events.append(AnnouncementEvent(items[0].strip(),  # Slogan
                                                 items[1].strip(),  # time
                                                 items[3].strip(),  # announcment id
-                                                items[4].strip()))  # speaker_id
+                                                items[4].strip(), # speaker_id
+                                                items[5].strip())) # text  
                                                 
     
 if __name__ == '__main__':

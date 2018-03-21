@@ -39,37 +39,38 @@ class ScaleService(ReoccuringBaseService):
         self.creds.user_id=self.config['NOKIA_USER_ID']
         self.last_measure = None
         self.previous_measure = None
-        self.time_to_next_event = 180
+        self.time_to_next_event = 3600
         
     def handle_timeout(self):
         '''
         Calculate sun movements 
         '''
         self.logger.debug("Fetch scale update")
-        
-        client = NokiaApi(self.creds)
-        measures = client.get_measures(limit=1)
-        self.logger.debug("Checked weight["+str(measures[0].weight)+"] kg")
-        
-        if self.last_measure == None:
-            self.last_measure = measures[0].weight
+        try:
+            client = NokiaApi(self.creds)
+            measures = client.get_measures(limit=1)
+            self.logger.debug("Checked weight["+str(measures[0].weight)+"] kg")
             
-        elif self.last_measure == measures[0].weight:
-            self.logger.debug("No change")
-            return
-
-        elif float(measures[0].weight) > float(self.last_measure):
-
-            msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
-        
-        elif  float(measures[0].weight) <= float(self.last_measure):
-            msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
-
-        self.previous_measure = self.last_measure
-        self.last_measure = measures[0].weight
-        
+            if self.last_measure == None:
+                self.last_measure = measures[0].weight
+                
+            elif self.last_measure == measures[0].weight:
+                self.logger.debug("No change")
+                return
+    
+            elif float(measures[0].weight) > float(self.last_measure):
+    
+                msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
+                self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+            
+            elif  float(measures[0].weight) <= float(self.last_measure):
+                msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
+                self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
+    
+            self.previous_measure = self.last_measure
+            self.last_measure = measures[0].weight
+        except:
+            self.logger.error(traceback.format_exc())
         #for measure in measures:
         #    self.logger.info(str(measure.weight))
         #self.logger.info("Your last measured weight: %skg" % measures[0].weight)
@@ -80,8 +81,8 @@ class ScaleService(ReoccuringBaseService):
         Return time until next timeout, only once per day.
         '''
         return self.time_to_next_event
-        
-        self.time_to_next_event = timer_functions.calculate_time_until_midnight()
+    
+        self.time_to_next_event = timer_functions.calculate_next_timeout("07:00")
         self.logger.debug("Next timeout in " + str(self.time_to_next_event) +  " seconds")
         return self.time_to_next_event
         
