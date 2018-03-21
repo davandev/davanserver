@@ -45,6 +45,8 @@ TV_SERVICE_NAME = "TvService"
 SCALE_SERVICE_NAME = "ScaleService"
 CONNECTIVITY_SERVICE_NAME = "ConnectivityService"
 FIBARO_SERVICE_NAME = "FibaroService"
+DISHWASH_SERVICE_NAME = "DishWashService"
+DEPARTURE_SERVICE_NAME = "DepartureService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
