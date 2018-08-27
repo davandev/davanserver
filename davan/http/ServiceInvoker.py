@@ -88,6 +88,8 @@ class ServiceInvoker(object):
             return self.services[constants.HTML_SERVICE_NAME]
         
         # No service found
+        self.logger.debug("No service ["+str(service)+"] found")
+        
         return None
             
     def stop_services(self):

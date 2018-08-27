@@ -29,7 +29,7 @@ class KeypadAliveService(ReoccuringBaseService):
         self.connected = False
         self.connected_at =""
         self.disconnected_at = ""
-        self.time_to_next_timeout = 300
+        self.time_to_next_timeout = 600
         
     def get_next_timeout(self):
         '''
@@ -82,10 +82,17 @@ class KeypadAliveService(ReoccuringBaseService):
             self.logger.info("Keypad state changed[Disconnected]") 
             self.connected = False
             self.disconnected_at = currentTime
+            
+            self.raise_alarm(constants.KEYPAD_NOT_ANSWERING,
+                      "Warning",
+                      constants.KEYPAD_NOT_ANSWERING)
+            
             helper.send_telegram_message(self.config, constants.KEYPAD_NOT_ANSWERING)
 
         elif self.connected ==False and state == True:
             self.logger.info("Keypad state changed[Connected]") 
+            self.clear_alarm(constants.KEYPAD_NOT_ANSWERING)
+
             self.connected = True
             self.connected_at = currentTime
             self.disconnected_at = ""

@@ -62,7 +62,10 @@ class RoxcoreService(BaseService):
                 self._send_to_speaker(speaker_address, msg, self.speakers[speaker_id].play_announcement)
             self.increment_invoked()
         except:
-            helper.send_telegram_message(self.config, "Misslyckades att spela upp meddelande i högtalare ["+ self.speakers[speaker_id].slogan+"]")
+            msg = "Misslyckades att spela upp meddelande i högtalare ["+ self.speakers[speaker_id].slogan+"]"
+            helper.send_telegram_message(self.config, msg)
+            self.raise_alarm(constants.ROXCORE_SPEAKER_SERVICE_NAME, "Warning", msg)
+            
             self.logger.error(traceback.format_exc())
             self.increment_errors()
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG

@@ -4,7 +4,9 @@
 
 from davan.http.service.serviceIf import ServiceIf
 import davan.util.constants as constants
- 
+from davan.http.service.alarm.Alarm import Alarm
+
+
 class BaseService(ServiceIf):
     '''
     Default implementations of a few service methods  
@@ -18,6 +20,8 @@ class BaseService(ServiceIf):
         self.config = config
         self.services = service_provider
         self.is_running = False
+        self.next_timeout =""
+        self.last_timeout =""
         
     def handle_request(self, input):
         """
@@ -70,6 +74,12 @@ class BaseService(ServiceIf):
         """
         return self.config[self.service_name+"Enabled"]
     
+    def get_next_timeout(self):
+        return  self.next_timeout
+
+    def get_last_timeout(self):
+        return  self.last_timeout
+    
     def is_service_running(self):
         """
         Return True if service is running
@@ -81,6 +91,17 @@ class BaseService(ServiceIf):
         Override if service has gui
         """
         return False
+    
+    def raise_alarm(self, alarm_id, severence, title):
+        alarm_mgr = self.services.get_service(constants.ALARM_SERVICE_NAME)
+        if alarm_mgr != None:
+            alarm = Alarm( alarm_id, severence, title )
+            alarm_mgr.raise_alarm(alarm)
+
+    def clear_alarm(self, id):
+        alarm_mgr = self.services.get_service(constants.ALARM_SERVICE_NAME)
+        if alarm_mgr != None:
+            alarm_mgr.clear_alarm(id)
     
     def get_html_gui(self, column_ud):
         """

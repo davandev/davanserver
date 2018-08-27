@@ -14,7 +14,6 @@ import davan.util.helper_functions as helper_functions
 class DishWashService(BaseService):
     '''
     '''
-
     def __init__(self, service_provider, config):
         '''
         Constructor
@@ -37,4 +36,6 @@ class DishWashService(BaseService):
         msg = helper_functions.encode_message("Tvättmaskinen är färdig")
         self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
 
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, \
+               constants.MIME_TYPE_HTML, \
+               constants.RESPONSE_EMPTY_MSG

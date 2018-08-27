@@ -111,6 +111,25 @@ class DepartureService(BaseService):
         for departure in timetable[1:]:
             msg +=  str(departure.timetable) + ", "
         return msg
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, column_id):
+        """
+        Override and provide gui
+        """
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+#         htmlresult = "Previous: " + str(self.previous_measure)+"\n"
+#         htmlresult += "Last: " +str(self.last_measure)                
+        htmlresult=""
+        column  = column.replace("<SERVICE_VALUE>", htmlresult)
+
+        return column
             
 if __name__ == '__main__':
     from davan.util import application_logger as log_config

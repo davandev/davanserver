@@ -14,24 +14,24 @@ def create_config(secret_config, config):
     # General server configuration
     #------------------------------------------------------------------------------------------------
     # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
-    config["LOGLEVEL"] = 3
+    config["LOGLEVEL"]      = 3
     # Root path of server
-    config["ROOT"] = '/home/pi/share/davanserver/'
+    config["ROOT"]          = '/home/pi/share/davanserver/'
     # Log directory path
-    config['LOGFILE_PATH'] = config["ROOT"] + "logs"
-    config['TEMP_PATH'] = config["ROOT"] + "temp"
+    config['LOGFILE_PATH']  = config["ROOT"] + "logs"
+    config['TEMP_PATH']     = config["ROOT"] + "temp"
     # Service directory path
-    config['SERVICE_PATH'] = config["ROOT"] + "davan/http/service/"
+    config['SERVICE_PATH']  = config["ROOT"] + "davan/http/service/"
     # Server port
-    config["SERVER_PORT"] = 8080
+    config["SERVER_PORT"]   = 8080
     config["SERVER_ADRESS"] = "192.168.2.50"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro configuration
     #---------------------------------------------------------------------------------------------
-    config['FIBARO_USER_NAME'] = secret_config.FIBARO_USER
-    config['FIBARO_PASSWORD'] = secret_config.FIBARO_PASSWORD
-    config['FIBARO_IP_ADDRESS'] = "192.168.2.54"
+    config['FIBARO_USER_NAME']   = secret_config.FIBARO_USER
+    config['FIBARO_PASSWORD']    = secret_config.FIBARO_PASSWORD
+    config['FIBARO_IP_ADDRESS']  = "192.168.2.54"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro path for common functions
@@ -151,10 +151,12 @@ def create_config(secret_config, config):
     # Virtual device id of the virtual device in HC2 that shows the presence of the users 
     config['FIBARO_VD_PRESENCE_ID'] = "75"
     # Mappings of users and the label in the presense virtual device
-    config['FIBARO_VD_MAPPINGS'] = {'Wilma':'ui.Label3.value', # User : HC2 Virtualdevice ID
-                                 'David':'ui.Label1.value',
-                                 'Mia':'ui.Label2.value',
-                                 'Viggo':'ui.Label4.value'}
+    config['FIBARO_VD_MAPPINGS'] = {
+      # User    : HC2 Virtualdevice ID
+        'Wilma' : 'ui.Label3.value',
+        'David' : 'ui.Label1.value',
+          'Mia' : 'ui.Label2.value',
+        'Viggo' : 'ui.Label4.value' }
 
     # Ipadresses of devices where its wifi presence should be monitored
     config['FAMILY_DEVICES'] = secret_config.DEVICES_FAMILY
@@ -184,13 +186,16 @@ def create_config(secret_config, config):
     # Telldus private key
     config["TELLDUS_PRIVATE_KEY"] =  secret_config.TELLDUS_PRIVATE_KEY
     # Dict holding name of room and virtual device id
-    config['SENSOR_MAP'] = {'Badrum':'147', # Room name : HC2 Virtualdevice ID
-                           'Tvattstuga':'220',
-                           'Garage':'149',
-                           'Gillestuga':'153',
-                           'Farstukvist':'152',
-                           'Sovrum':'151',
-                           'Wilma':'150'}
+    config['SENSOR_MAP'] = {
+               # Room name : HC2 Virtualdevice ID 
+                  'Badrum' :  '147', 
+               'Tvattstuga':  '220',
+                   'Garage':  '149',
+               'Gillestuga':  '153',
+              'Farstukvist':  '152',
+                   'Sovrum':  '151',
+                    'Wilma':  '150' }
+    
     config['SENSOR_HUMIDITY_LIMITS'] = {'Badrum': 60, 'Tvattstuga': 60}
     config['SENSOR_TEMP_HIGH_LIMITS'] = {}
     config['SENSOR_TEMP_LOW_LIMITS'] = {}
@@ -203,12 +208,14 @@ def create_config(secret_config, config):
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
     config["KeypadAliveServiceEnabled"] = True
-    config["KEYPAD_LOG_FILE"] = config['TEMP_PATH'] + "/keypad_log.txt"
+    config["KEYPAD_LOG_FILE"]           = config['TEMP_PATH'] + "/keypad_log.txt"
+    
     # IP address of android alarm keypad
-    config['KEYPAD_IP_ADDRESS'] = "192.168.2.49:8080"
+    config['KEYPAD_IP_ADDRESS']         = "192.168.2.49:8080"
+    
     # URI used to verify if keypad is alive
-    config['KEYPAD_PING_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
-    config['KEYPAD_LOG_URL'] = "http://" + config['KEYPAD_IP_ADDRESS'] + "/log"
+    config['KEYPAD_PING_URL']           = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
+    config['KEYPAD_LOG_URL']            = "http://" + config['KEYPAD_IP_ADDRESS'] + "/log"
 
     #---------------------------------------------------------------------------------------------
     # Scenes to monitor, start if not running
@@ -230,19 +237,19 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Internet speed test configuration
     #---------------------------------------------------------------------------------------------
-    config["speedtestEnabled"] = True
-    config['SPEED_TEST_FILE'] = config["SERVICE_PATH"] + "speedtest/internet_speed_measure.sh"
+    config["speedtestEnabled"]  = True
+    config['SPEED_TEST_FILE']   = config["SERVICE_PATH"] + "speedtest/internet_speed_measure.sh"
     config['SPEED_TEST_RESULT'] = config['SERVICE_PATH'] + "speedtest/speedtest.txt"
 
     #---------------------------------------------------------------------------------------------
     # Audio service configuration
     #---------------------------------------------------------------------------------------------
-    config["AudioServiceEnabled"] = True
-    config['RECEIVER_TURN_ON'] = "onkyo --host 192.168.2.218 PWR01"
-    config['RECEIVER_TURN_OFF'] = "onkyo --host 192.168.2.218 PWR00"
+    config["AudioServiceEnabled"]   = True
+    config['RECEIVER_TURN_ON']      = "onkyo --host 192.168.2.218 PWR01"
+    config['RECEIVER_TURN_OFF']     = "onkyo --host 192.168.2.218 PWR00"
     config['RECEIVER_SELECT_INPUT'] = "onkyo --host 192.168.2.218 SLI02"
-    config['RECEIVER_SET_VOLUME'] = "onkyo --host 192.168.2.218 MVL25"
-    config["CHROMECAST_NAME"] = "ChromecastEntre"
+    config['RECEIVER_SET_VOLUME']   = "onkyo --host 192.168.2.218 MVL25"
+    config["CHROMECAST_NAME"]       = "ChromecastEntre"
 
     #---------------------------------------------------------------------------------------------
     # HTML Service configuration
@@ -252,6 +259,7 @@ def create_config(secret_config, config):
     config["HTML_STYLE_FILE"] = config['SERVICE_PATH'] + "html/style.css"
     config["HTML_STATISTICS_FILE"]  = config['SERVICE_PATH'] + "html/statistics_template.html"
     config["HTML_SELECT_LOGFILE"] = config['SERVICE_PATH'] + "html/select_logfile.html"
+
     #---------------------------------------------------------------------------------------------
     # Sonos Service configuration
     #---------------------------------------------------------------------------------------------
@@ -259,19 +267,19 @@ def create_config(secret_config, config):
     # Adress to Sonos speaker
     config['SONOS_SPEAKERS'] = [
         #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
-        '0,        Livingroom,      192.168.2.108,  True,         False',
-        '1,        Hallway,         192.168.2.108,  False,        False',
-        '2,         All,            ,               False,        True',
+        '0,        Livingroom,   192.168.2.108,  True,         False',
+        '1,        Hallway,      192.168.2.108,  False,        False',
+        '2,         All,         ,               False,        True',
     
     ]
     #---------------------------------------------------------------------------------------------
     # Weather Service configuration
     #---------------------------------------------------------------------------------------------
-    config["WeatherEnabled"] = True
-    config["WEATHER_API_PATH"] = "http://api.wunderground.com/api/"
-    config["WEATHER_TOKEN"] = secret_config.WEATHER_TOKEN
+    config["WeatherEnabled"]     = True
+    config["WEATHER_API_PATH"]   = "http://api.wunderground.com/api/"
+    config["WEATHER_TOKEN"]      = secret_config.WEATHER_TOKEN
     config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
-    config["WUNDERGROUND_PATH"] = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
+    config["WUNDERGROUND_PATH"]  = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
     # Weather virtual id on fibaro system
     config["WEATHER_VD_ID"] = "79"
     # Weather button to push
@@ -287,14 +295,13 @@ def create_config(secret_config, config):
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen, 06:15,  08:30, weekdays,     10,        65,         1,        15,        194,            0',
         'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
-        'Uterum,  sunset,  23:45, week,         -1,        192,        1,        10,        195,            0',
+        'Uterum,  sunset,  23:45, week,        -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
-        'Farstukvist, sunset, 23:55, week,         -1,        226,        1,        1,        227,            0',
-
-    #    'Wilma,   07:00,  07:15, weekdays,     20,        173,        1,        20,        197,            0',
-        'Wilma,   18:15,  19:50, week,        20,         173,        2,        20,        197,            1',
-    #    'Viggo,07:00,07:15,weekdays,10,177,1,15,198,0',
-        'Viggo,18:55,19:39,week,10,177,1,15,198,1',
+        'Farstukvist, sunset, 23:55, week,     -1,        226,        1,        1,         227,            0',
+        'Wilma,   06:30,  07:15, weekdays,     20,        173,        1,        20,        197,            1',
+        'Wilma,   18:15,  22:00, week,         20,        173,        2,        20,        197,            1',
+        'Viggo,   06:30,  07:15, weekdays,     10,        177,        1,        15,        198,            1',
+        'Viggo,   18:55,  21:00, week,         10,        177,        1,        15,        198,            1',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 
@@ -328,7 +335,7 @@ def create_config(secret_config, config):
         'SleepTime,        23:02,   weekdays,       night,           0,          Mia',
         'SleepTimeViggo,   20:30,   weekdays,       night,           0,          Viggo',
         'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
-        'Morning,          07:15,   weekdays,       morning,         0,          -',
+        'Morning,          06:30,   weekdays,       morning,         0,          -',
         'MorningWeekend,   09:00,   weekend,        morning,         0,          -',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        0,          -',
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
@@ -353,12 +360,12 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
 
     config['ScaleServiceEnabled'] = True
-    config['CONSUMER_KEY'] = secret_config.NOKIA_CONSUMER_KEY
-    config['CONSUMER_SECRET'] = secret_config.NOKIA_CONSUMER_SECRET
-    config['OAUTH_VERIFIER'] = secret_config.NOKIA_OAUTH_VERIFIER
-    config['ACCESS_TOKEN'] = secret_config.NOKIA_ACCESS_TOKEN
+    config['CONSUMER_KEY']        = secret_config.NOKIA_CONSUMER_KEY
+    config['CONSUMER_SECRET']     = secret_config.NOKIA_CONSUMER_SECRET
+    config['OAUTH_VERIFIER']      = secret_config.NOKIA_OAUTH_VERIFIER
+    config['ACCESS_TOKEN']        = secret_config.NOKIA_ACCESS_TOKEN
     config['ACCESS_TOKEN_SECRET'] = secret_config.NOKIA_ACCESS_TOKEN_SECRET
-    config['NOKIA_USER_ID'] = secret_config.NOKIA_USER_ID
+    config['NOKIA_USER_ID']       = secret_config.NOKIA_USER_ID
     
 
     #---------------------------------------------------------------------------------------------
@@ -389,6 +396,11 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config['DepartureServiceEnabled'] = True
     config['DEPARTURE_SETTING'] = secret_config.SL_API_KEYS
+
+    #---------------------------------------------------------------------------------------------
+    # AlarmService
+    #---------------------------------------------------------------------------------------------
+    config["AlarmServiceEnabled"] = True
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

@@ -5,6 +5,7 @@ import datetime
 import time
 from davan.http.service.base_service import BaseService
 from threading import Thread,Event
+import traceback
 
 class ReoccuringBaseService(BaseService):
     '''
@@ -41,9 +42,18 @@ class ReoccuringBaseService(BaseService):
         self.event = Event()
 
         def loop():
-            while not self.event.wait(self.get_next_timeout()):
-                self.increment_invoked()
-                self.handle_timeout()
+            self.next_timeout = self.get_next_timeout()     
+            while not self.event.wait(self.next_timeout):
+                try:                    
+                    self.increment_invoked()
+                    self.handle_timeout()
+                except:
+                    self.logger.error(traceback.format_exc())
+                    self.increment_errors()
+                finally:
+                    self.next_timeout = self.get_next_timeout()  
+                    self.last_timeout = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+                       
 
         Thread(target=loop).start()    
         return self.event.set

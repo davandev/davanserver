@@ -101,8 +101,10 @@ class ScaleService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        
-        column  = column.replace("<SERVICE_VALUE>", "")
+        htmlresult = "Previous: " + str(self.previous_measure)+"\n"
+        htmlresult += "Last: " +str(self.last_measure)                
+
+        column  = column.replace("<SERVICE_VALUE>", htmlresult)
 
         return column
 

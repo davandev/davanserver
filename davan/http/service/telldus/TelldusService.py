@@ -13,6 +13,7 @@ from davan.http.service.base_service import BaseService
 import davan.util.helper_functions as helper
 from davan.http.service.telldus import tdtool
 
+
 class TelldusService(BaseService):
     '''
     Telldus service, acts as a proxy between Fibaro system and Telldus Live.
@@ -62,6 +63,7 @@ class TelldusService(BaseService):
             self.logger.error(traceback.format_exc())
             self.increment_errors()
             helper.send_telegram_message(self.config, "Telldus svarar inte") 
+            self.raise_alarm(constants.TELLDUS_NOT_ANSWERING, "Warning", constants.TELLDUS_NOT_ANSWERING)
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
     

@@ -2,13 +2,15 @@
 '''
 @author: davandev
 '''
-
+import datetime
+        
 import logging
 import os
 import json
 import re
 import time
 import traceback
+from datetime import date
 
 import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd
@@ -29,7 +31,8 @@ class ConnectivityService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.command = "ping -c 1 www.google.com"
         self.time_to_next_timeout = 60
-        self.connected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+        current_time = datetime.datetime.now().strftime('%H:%M')
+        self.connected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
         self.disconnected_at = None
         self.disconnected_result =" 100% packet loss"
         
@@ -47,25 +50,34 @@ class ConnectivityService(ReoccuringBaseService):
                 self.increment_errors()        
                 if self.disconnected_at == None:
                     self.logger.error("Lost internet connectivity")
-                    self.disconnected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+#                    self.disconnected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+                    self.raise_alarm(constants.CONNECTIVITY_SERVICE_NAME, "Warning", "Inget internet")
+                    current_time = datetime.datetime.now().strftime('%H:%M')
+                    self.disconnected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
+                    #self.disconnected_at = time.time()
             else:
                 self.increment_invoked()
                 if self.disconnected_at != None:
+                    self.clear_alarm(constants.CONNECTIVITY_SERVICE_NAME)
                     # Got connection back again'
-                    self.connected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+                    current_time = datetime.datetime.now().strftime('%H:%M')
+                    self.connected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
+                    #self.connected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
                     self.report_down_time()
         except:
             if self.disconnected_at == None:
-                self.disconnected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+                self.disconnected_at = datetime.datetime.now().strptime('%H:%M')
+#                self.disconnected_at = time.strftime("%Y-%m-%d %H:%M", time.localtime())
 
             self.logger.error(traceback.format_exc())
             self.increment_errors()        
     
     def report_down_time(self):
-        result = "No internet connectivity from ["+ self.disconnected_at +"] to [" + self.connected_at + "]"
+        result = "No internet connectivity from ["+ str(self.disconnected_at) +"] to [" + str(self.connected_at) + "]"
         self.logger.warning(result)
-        
-        helper.send_telegram_message(self.config, result )
+        diff = self.connected_at - self.disconnected_at
+        if diff.seconds > 70:
+            helper.send_telegram_message(self.config, result )
         self.disconnected_at = None
         
     def get_next_timeout(self):
@@ -81,4 +93,11 @@ if __name__ == '__main__':
     config = configuration.create()
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = ConnectivityService(config)
+    test = ConnectivityService("",config)
+    current_time = datetime.datetime.now().strftime('%H:%M')
+    test.disconnected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
+    
+    time.sleep(70)
+    current_time = datetime.datetime.now().strftime('%H:%M')
+    test.connected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
+    test.report_down_time()

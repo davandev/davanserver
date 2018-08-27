@@ -144,6 +144,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 result = announcements.create_night_announcement(event.text)
             elif event.announcement_id == "sun":
                 result = announcements.create_sunset_sunrise_announcement()
+            elif event.announcement_id == "pig":
+                result = "pig"
             elif event.announcement_id == "status":
                 result = helper_functions.encode_message("Status uppdatering. ")
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()

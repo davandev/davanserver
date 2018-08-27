@@ -277,6 +277,8 @@ class ReceiverBotService(BaseService):
                     success, error = item.get_counters()
                     result = text + "\n" + "Success: " + str(success) + "\nError:" + str(error)
                     result += "\nEnabled[" + str(item.is_service_running()) + "]"
+                    result += "\nLastTimeout[" + str(item.get_last_timeout()) + "]"
+                    result += "\nNextTimeout[" + str(item.get_next_timeout()) + "]"
                     self.increment_invoked()
     #                update.message.reply_text(self.TAG_RE.sub('', text),reply_markup=ReplyKeyboardRemove())
                     update.message.reply_text(self.TAG_RE.sub('', result))
