@@ -8,6 +8,7 @@ RESPONSE_NOT_OK = 401
 RESPONSE_FILE_NOT_FOUND = "File not found"
 RESPONSE_EMPTY_MSG = ""
 RESPONSE_FAILED_TO_TAKE_PICTURE = "Failed to take picture"
+RESPONSE_FAILED_TO_PARSE_REQUEST = "Failed to parse request"
 TURN_ON = "turnOn"
 TURN_OFF ="turnOff"
 
@@ -49,6 +50,7 @@ FIBARO_SERVICE_NAME = "FibaroService"
 DISHWASH_SERVICE_NAME = "DishWashService"
 DEPARTURE_SERVICE_NAME = "DepartureService"
 ALARM_SERVICE_NAME = "AlarmService"
+POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"

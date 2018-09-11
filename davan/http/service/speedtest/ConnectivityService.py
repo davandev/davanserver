@@ -76,7 +76,7 @@ class ConnectivityService(ReoccuringBaseService):
         result = "No internet connectivity from ["+ str(self.disconnected_at) +"] to [" + str(self.connected_at) + "]"
         self.logger.warning(result)
         diff = self.connected_at - self.disconnected_at
-        if diff.seconds > 70:
+        if diff.seconds > 120:
             helper.send_telegram_message(self.config, result )
         self.disconnected_at = None
         
