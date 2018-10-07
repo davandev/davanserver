@@ -341,6 +341,8 @@ def create_config(secret_config, config):
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
         'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
+        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
+        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
 

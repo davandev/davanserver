@@ -6,6 +6,7 @@ Created on 17 feb. 2017
 
 import logging
 import os
+import re
 import traceback
 from davan.http.service.base_service import BaseService
 from davan.util import application_logger as app_logger
@@ -24,6 +25,7 @@ class RoxcoreSpeaker():
         self.default_speaker = default_speaker
         self.play_announcement = play_announcement
 
+
     def toString(self):
         return "Slogan[ "+self.slogan+" ] "\
             "Id[ "+self.id+" ] "\
@@ -41,6 +43,8 @@ class RoxcoreService(BaseService):
         '''
         BaseService.__init__(self, constants.ROXCORE_SPEAKER_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
+        self.state_exp = re.compile(r'<CurrentTransportState>(.+?)<\/CurrentTransportState>')
+        self.uri_exp = re.compile(r'<TrackURI>(.+?)<\/TrackURI>')
         self.speakers = {}
         self.get_speakers_from_config()
 
@@ -78,13 +82,50 @@ class RoxcoreService(BaseService):
         @param play_announcement, determine if an announcement message should be played 
         before the actual message.
         '''
+        current_play = self.maybe_save_current_play(speaker_address)
+        
         if play_announcement == "True":
             commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
             commands.append_tracks_in_queue(speaker_address, msg)
         else:
             commands.replace_queue(speaker_address, msg)
+
+        if current_play != None:
+            commands.append_external_tracks_in_queue(speaker_address, current_play)
+
         commands.send_play_with_index(speaker_address)
         commands.set_play_mode(speaker_address)
+
+    def stop_playing(self):
+        for _,speaker in self.speakers.items():
+            self.logger.info("Stop playing in speaker: " + speaker.slogan)
+            speaker_address = "http://" + speaker.address + ":" + self.config['ROXCORE_PORT_NR']
+            commands.stop(speaker_address)
+        
+    def play_external_url(self, url):
+            speaker_address = "http://" + self.speakers["0"].address + ":" + self.config['ROXCORE_PORT_NR']
+            self.logger.info("Start playing url : " + url)
+            commands.append_external_tracks_in_queue(speaker_address, url)
+            commands.send_play_with_index(speaker_address)
+            commands.set_play_mode(speaker_address)
+            
+    def maybe_save_current_play(self,speaker_address):
+        result = commands.get_info(speaker_address)
+        current_uri = None
+        
+        match = self.state_exp.search(str(result.text))
+        if match:
+            current_state = match.group(1).strip()
+            self.logger.debug(str(current_state))
+            if "STOPPED" in current_state:
+                self.logger.debug("Nothing is currently playing.")
+            elif "PLAYING" in current_state:
+                match = self.uri_exp.search(str(result.text))
+                if match:
+                    current_uri = match.group(1).strip()
+                    self.logger.debug("currently playing "+current_uri)
+        self.logger.info(str(result.text))
+        return current_uri
 
     def has_html_gui(self):
         """

@@ -151,6 +151,13 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.DEVICE_PRESENCE_SERVICE_NAME).get_announcement()
+            elif event.announcement_id == "radio":
+                self.logger.info("Radio Event: " + event.text)
+                if event.text == 'stop':
+                    self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME).stop_playing()
+                else:
+                    self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME).play_external_url(event.text)
+                return False
             else:
                 self.logger.warning("Cant find announcement to play:" + event.announcement_id)
                 return False
