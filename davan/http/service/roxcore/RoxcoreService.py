@@ -82,8 +82,12 @@ class RoxcoreService(BaseService):
         @param play_announcement, determine if an announcement message should be played 
         before the actual message.
         '''
-        current_play = self.maybe_save_current_play(speaker_address)
-        
+        try:
+            current_play = self.maybe_save_current_play(speaker_address)
+        except:
+            self.logger.info("Failed to determine current played stream")
+            current_play = None
+            
         if play_announcement == "True":
             commands.replace_queue(speaker_address, self.config['MESSAGE_ANNOUNCEMENT'])
             commands.append_tracks_in_queue(speaker_address, msg)

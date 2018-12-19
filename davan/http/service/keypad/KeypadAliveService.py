@@ -6,6 +6,7 @@ import logging
 import os
 import urllib
 import urllib2
+import traceback
 
 from datetime import datetime
 import davan.config.config_creator as configuration
@@ -13,6 +14,24 @@ import davan.util.constants as constants
 import davan.util.helper_functions as helper
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
+class KeypadEvent():
+    def __init__(self, name, ip):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+
+        self.name = name
+        self.ip = ip
+        self.connected = False
+        self.connected_at = ""
+        self.disconnected_at = ""
+        
+
+    def toString(self):
+        return "Name["+self.name+"] "\
+            "IP["+self.ip+"] "\
+            "Connected["+str(self.connected)+"] " \
+            "Disconnected_at["+self.disconnected_at+"] " \
+            "Connected_at["+self.connected_at+"]"
+            
 class KeypadAliveService(ReoccuringBaseService):
     '''
     Check if keypad is still running by sending a http request towards the keypad
@@ -26,11 +45,16 @@ class KeypadAliveService(ReoccuringBaseService):
         '''
         ReoccuringBaseService.__init__(self, constants.KEYPAD_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.connected = False
-        self.connected_at =""
-        self.disconnected_at = ""
+        self.keypads= []
         self.time_to_next_timeout = 600
-        
+        try:
+            for name, ip in self.config['KEYPAD_IP_ADDRESSES'].iteritems():
+                keypad = KeypadEvent(name, ip)
+                self.logger.info(keypad.toString())
+                self.keypads.append(keypad)
+        except:
+            self.logger.error(traceback.format_exc())
+            
     def get_next_timeout(self):
         '''
         Return time to next timeout
@@ -41,16 +65,17 @@ class KeypadAliveService(ReoccuringBaseService):
         '''
         Timeout received, send a "ping" to key pad, send telegram message if failure.
         '''
-        #self.logger.info("Got a timeout, send keep alive to "+self.config['KEYPAD_URL'])
-        try:
-            urllib.urlopen(self.config['KEYPAD_PING_URL'])
-            self.logger.debug("Sending ping to keypad")
-
-            self.maybe_send_update(True)
-        except:
-            self.increment_errors()
-            self.logger.warning("Failed to connect to keypad")
-            self.maybe_send_update(False)
+        self.logger.info("Got a timeout, send keep alive to")
+        for keypad in self.keypads:
+            try:
+                self.logger.debug("Sending ping to keypad[" + keypad.name + "]")
+                urllib.urlopen(self.config['KEYPAD_PING_URL'].replace('%IP%',keypad.ip))
+                self.maybe_send_update(keypad, True)
+            except:
+                self.logger.warning("Failed to connect to keypad[" + keypad.name + "]")
+                self.increment_errors()
+                self.maybe_send_update(keypad, False)
+    
     
     def get_log(self):
         self.logger.info("Fetch keypad logfile")
@@ -69,7 +94,7 @@ class KeypadAliveService(ReoccuringBaseService):
             self.logger.warning("Failed to fetch log file from keypad")
             return None
         
-    def maybe_send_update(self, state):
+    def maybe_send_update(self, keypad, state):
         '''
         Send telegram message if state has changed
         @param state, current state of keypad
@@ -78,25 +103,25 @@ class KeypadAliveService(ReoccuringBaseService):
         n = datetime.now()
         currentTime = format(n,"%Y-%m-%d %H:%M")
 
-        if self.connected == True and state == False:
-            self.logger.info("Keypad state changed[Disconnected]") 
-            self.connected = False
-            self.disconnected_at = currentTime
+        if keypad.connected == True and state == False:
+            self.logger.info("Keypad[ " + keypad.name + " ] state changed[Disconnected]") 
+            keypad.connected = False
+            keypad.disconnected_at = currentTime
+            str = constants.KEYPAD_NOT_ANSWERING.replace("%", keypad.name)
+            self.raise_alarm(str,"Warning",str)
             
-            self.raise_alarm(constants.KEYPAD_NOT_ANSWERING,
-                      "Warning",
-                      constants.KEYPAD_NOT_ANSWERING)
-            
-            helper.send_telegram_message(self.config, constants.KEYPAD_NOT_ANSWERING)
+            helper.send_telegram_message(self.config, str)
 
-        elif self.connected ==False and state == True:
-            self.logger.info("Keypad state changed[Connected]") 
-            self.clear_alarm(constants.KEYPAD_NOT_ANSWERING)
+        elif keypad.connected == False and state == True:
+            self.logger.info("Keypad[" + keypad.name + "] state changed[Connected]") 
+            str = constants.KEYPAD_NOT_ANSWERING.replace("%", keypad.name)
+            self.clear_alarm(str)
 
-            self.connected = True
-            self.connected_at = currentTime
-            self.disconnected_at = ""
-            helper.send_telegram_message(self.config, constants.KEYPAD_ANSWERING)
+            keypad.connected = True
+            keypad.connected_at = currentTime
+            keypad.disconnected_at = ""
+            str = constants.KEYPAD_ANSWERING.replace("%", keypad.name)
+            helper.send_telegram_message(self.config, str)
     
     def has_html_gui(self):
         """
@@ -113,9 +138,13 @@ class KeypadAliveService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        html = "<li>Connected: " + str(self.connected) + " </li>\n"
-        html += "<li>Connected at: " + str(self.connected_at) + " </li>\n"
-        html += "<li>Disconnected at: " + str(self.disconnected_at) + " </li>\n"
+        html = ""
+        for keypad in self.keypads:
+            html += "<li>Name: " + str(keypad.name) + " </li>\n"
+            html += "<li>Ip: " + str(keypad.ip) + " </li>\n"
+            html += "<li>Connected: " + str(keypad.connected) + " </li>\n"
+            html += "<li>Connected at: " + str(keypad.connected_at) + " </li>\n"
+            html += "<li>Disconnected at: " + str(keypad.disconnected_at) + " </li>\n"
         column = column.replace("<SERVICE_VALUE>", html)
         return column
     

@@ -59,36 +59,6 @@ def create_config(secret_config, config):
     # Log directory path
     config['HC2LOG_PATH'] = config["LOGFILE_PATH"] + "/hc2"
     
-    #-----------------------------------------------------------------------------------------
-    # TTS configuration
-    #-----------------------------------------------------------------------------------------
-    config["ttsEnabled"] = True
-    # Path to cached tts messages
-    config['TTS_PRECOMPILED_MSG_PATH'] = config["ROOT"] + "davan/tts_mp3/"
-    # Path to cached tts alarm messages
-    config['TTS_PRECOMPILED_ALARM_MSG_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "alarm/"
-    # Mp3 file to play
-    config['SPEAK_FILE'] = '/dev/shm/speak.mp3'
-    # Application used to play mp3 file on raspberry pi
-    config['SPEAK_CMD'] = '/usr/bin/mpg123'
-    # Url with key where to translate message to mp3
-    config['TTS_GENERATOR_IP_ADDRESS'] = "192.168.2.49:8080"
-    # Url to fetch created mp3 file on android phone
-    config['TTS_GENERATOR_FETCH_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/ttsFetch"
-    # Url to generate mp3 file on android phone
-    config['TTS_GENERATOR_CREATE_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/tts"
-    # Select the speakers for plauging TTS messages, currently supports 
-    # "RoxcoreService", "SonosService" or internal speaker
-    config['SPEAKER_SERVICE'] = "RoxcoreService"
-    #-----------------------------------------------------------------------------------------
-    # DailyQuote configuration
-    #-----------------------------------------------------------------------------------------
-    config["DailyQuoteEnabled"] = True
-    # Path to dailyquote path
-    config['TTS_DAILY_QUOTE_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "daily_quote/"
-    # Path to dailyquote file
-    config['TTS_DAILY_QUOTE_FILE'] = config['TTS_DAILY_QUOTE_PATH'] + "daily_quote.mp3"
-    
     #---------------------------------------------------------------------------------------------
     # Telegram configuration
     #---------------------------------------------------------------------------------------------
@@ -111,22 +81,6 @@ def create_config(secret_config, config):
     # Password used when accessing cameras
     config['CAMERA_PASSWORD'] = secret_config.CAMERA_PASSWORD
     
-    #-----------------------------------------------------------------------------------------
-    # Mp3 provider configuration
-    #-----------------------------------------------------------------------------------------
-    config["mp3Enabled"] = True
-    config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_MSG_PATH']
-    
-    #---------------------------------------------------------------------------------------
-    # TTS Service configuration
-    #---------------------------------------------------------------------------------------
-    config["ttsEnabled"] = True
-    # VoiceRSS token
-    config['VOICERSS_TOKEN'] = secret_config.VOICERSS_TOKEN
-    # VoiceRSS api path for generating mp3 from message 
-    config['VOICERSS_URL'] = "http://api.voicerss.org/?key=" + config['VOICERSS_TOKEN'] + "&src=REPLACE_WITH_MESSAGE&f=22khz_16bit_mono&hl=sv-se"
- 
- 
     #---------------------------------------------------------------------------------------
     # Presence Service configuration
     #---------------------------------------------------------------------------------------
@@ -164,7 +118,7 @@ def create_config(secret_config, config):
     config['HOUSE_DEVICES'] = secret_config.DEVICES_HOUSE
     config['UNKNOWN_DEVICES'] = secret_config.DEVICES_UNKNOWN
 #---------------------------------------------------------------------------------------
-    # Authentication configuration
+    # Authentication configuration  98:00:c6:32:85:30
     #---------------------------------------------------------------------------------------
     config["authenticateEnabled"] = False
 
@@ -208,15 +162,61 @@ def create_config(secret_config, config):
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
     config["KeypadAliveServiceEnabled"] = True
-    config["KEYPAD_LOG_FILE"]           = config['TEMP_PATH'] + "/keypad_log.txt"
-    
     # IP address of android alarm keypad
+    config['KEYPAD_IP_ADDRESSES'] = {
+               # Name :  IP Address 
+                  'S4'  :  '192.168.2.49:8080', 
+                  'lgg4':  '192.168.2.100:8080'}
+    
     config['KEYPAD_IP_ADDRESS']         = "192.168.2.49:8080"
     
+    config["KEYPAD_LOG_FILE"]           = config['TEMP_PATH'] + "/keypad_log.txt"
     # URI used to verify if keypad is alive
     config['KEYPAD_PING_URL']           = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
+    # URI used to fetch logfile
     config['KEYPAD_LOG_URL']            = "http://" + config['KEYPAD_IP_ADDRESS'] + "/log"
-
+    #-----------------------------------------------------------------------------------------
+    # TTS configuration
+    #-----------------------------------------------------------------------------------------
+    config["ttsEnabled"] = True
+    # VoiceRSS token
+    config['VOICERSS_TOKEN'] = secret_config.VOICERSS_TOKEN
+    # VoiceRSS api path for generating mp3 from message 
+    config['VOICERSS_URL'] = "http://api.voicerss.org/?key=" + config['VOICERSS_TOKEN'] + "&src=REPLACE_WITH_MESSAGE&f=22khz_16bit_mono&hl=sv-se"
+    # Url with key where to translate message to mp3
+    config['TTS_GENERATOR_IP_ADDRESS'] = "192.168.2.49:8080"
+    # Path to cached tts messages
+    config['TTS_PRECOMPILED_MSG_PATH'] = config["ROOT"] + "davan/tts_mp3/"
+    # Path to cached tts alarm messages
+    config['TTS_PRECOMPILED_ALARM_MSG_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "alarm/"
+    # Mp3 file to play
+    config['SPEAK_FILE'] = '/dev/shm/speak.mp3'
+    # Application used to play mp3 file on raspberry pi
+    config['SPEAK_CMD'] = '/usr/bin/mpg123'
+    # Url to fetch created mp3 file on android phone
+    config['TTS_GENERATOR_FETCH_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/ttsFetch"
+    # Url to generate mp3 file on android phone
+    config['TTS_GENERATOR_CREATE_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/tts"
+    # Select the speakers for plauging TTS messages, currently supports 
+    # "RoxcoreService", "SonosService" or internal speaker
+    config['SPEAKER_SERVICE'] = "RoxcoreService"
+    #-----------------------------------------------------------------------------------------
+    # Mp3 provider configuration
+    #-----------------------------------------------------------------------------------------
+    config["mp3Enabled"] = True
+    config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_MSG_PATH']
+ 
+    
+    #-----------------------------------------------------------------------------------------
+    # DailyQuote configuration
+    #-----------------------------------------------------------------------------------------
+    config["DailyQuoteEnabled"] = True
+    # Path to dailyquote path
+    config['TTS_DAILY_QUOTE_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "daily_quote/"
+    # Path to dailyquote file
+    config['TTS_DAILY_QUOTE_FILE'] = config['TTS_DAILY_QUOTE_PATH'] + "daily_quote.mp3"
+    
+    
     #---------------------------------------------------------------------------------------------
     # Scenes to monitor, start if not running
     # Monitors running scens on fibaro system
@@ -294,14 +294,15 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen, 06:15,  08:30, weekdays,     10,        65,         1,        15,        194,            0',
-        'Kitchen, 18:15,  23:45, week,         10,        65,         2,        1,         194,            0',
+        'Kitchen, 16:15,  23:45, week,         10,        65,         2,        1,         194,            0',
         'Uterum,  sunset,  23:45, week,        -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
         'Farstukvist, sunset, 23:55, week,     -1,        226,        1,        1,         227,            0',
         'Wilma,   06:30,  07:15, weekdays,     20,        173,        1,        20,        197,            1',
-        'Wilma,   18:15,  22:00, week,         20,        173,        2,        20,        197,            1',
+        'Wilma,   16:25,  22:00, week,         20,        173,        2,        20,        197,            1',
         'Viggo,   06:30,  07:15, weekdays,     10,        177,        1,        15,        198,            1',
-        'Viggo,   18:55,  21:00, week,         10,        177,        1,        15,        198,            1',
+        'Viggo,   16:15,  21:00, week,         10,        177,        1,        15,        198,            1',
+        'Parkering, sunset, 23:55, week,       -1,        276,        1,        1,         281,            0',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 
@@ -341,8 +342,8 @@ def create_config(secret_config, config):
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
         'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
-        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
-        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
+        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=nrj_instreamtest_se_aacp',
+        #        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
 
@@ -377,13 +378,16 @@ def create_config(secret_config, config):
     config['TvServiceTimeout'] = 300
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
     config['WATCH_TV_ACTIVITY'] = '26681450'
+    
     #---------------------------------------------------------------------------------------------
     # Connectivity service
+    # Check internet connectivity
     #---------------------------------------------------------------------------------------------
     config['ConnectivityServiceEnabled'] = True
     
     #---------------------------------------------------------------------------------------------
     # Fibaro service
+    # Monitor Fibaro system alarm state.
     #---------------------------------------------------------------------------------------------
     config['FibaroServiceEnabled'] = True
     config['FibaroTimeout'] = 300
@@ -391,21 +395,25 @@ def create_config(secret_config, config):
 
     #---------------------------------------------------------------------------------------------
     # DishWashService
+    # Determine when dishwascher is ready with a Fibaro power plug
     #---------------------------------------------------------------------------------------------
     config['DishWashServiceEnabled'] = True
     #---------------------------------------------------------------------------------------------
     # DepartureService
+    # Fetch 
     #---------------------------------------------------------------------------------------------
     config['DepartureServiceEnabled'] = True
     config['DEPARTURE_SETTING'] = secret_config.SL_API_KEYS
 
     #---------------------------------------------------------------------------------------------
     # AlarmService
+    # Keep a list of active alarms
     #---------------------------------------------------------------------------------------------
     config["AlarmServiceEnabled"] = True
     
     #---------------------------------------------------------------------------------------------
     # PowerUsageService
+    # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
     config["PowerUsageServiceEnabled"] = True
 
