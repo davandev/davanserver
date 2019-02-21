@@ -65,7 +65,7 @@ class KeypadAliveService(ReoccuringBaseService):
         '''
         Timeout received, send a "ping" to key pad, send telegram message if failure.
         '''
-        self.logger.info("Got a timeout, send keep alive to")
+        self.logger.info("Got a timeout, send keep alive")
         for keypad in self.keypads:
             try:
                 self.logger.debug("Sending ping to keypad[" + keypad.name + "]")

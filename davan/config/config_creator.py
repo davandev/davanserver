@@ -1,7 +1,7 @@
 """
 Creates the config data used by services.
 
-@author: davandev
+@author: Davandev
 """
 
 import davan.util.helper_functions as common
@@ -165,14 +165,16 @@ def create_config(secret_config, config):
     # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESSES'] = {
                # Name :  IP Address 
-                  'S4'  :  '192.168.2.49:8080', 
+                  'S4'  :  '192.168.2.49:8080',
+                  'S6'  :  '192.168.2.88:8080',  
+                  'P5'  :  '192.168.2.233:8080', 
                   'lgg4':  '192.168.2.100:8080'}
     
     config['KEYPAD_IP_ADDRESS']         = "192.168.2.49:8080"
     
     config["KEYPAD_LOG_FILE"]           = config['TEMP_PATH'] + "/keypad_log.txt"
     # URI used to verify if keypad is alive
-    config['KEYPAD_PING_URL']           = "http://" + config['KEYPAD_IP_ADDRESS'] + "/Ping"
+    config['KEYPAD_PING_URL']           = "http://%IP%/Ping"
     # URI used to fetch logfile
     config['KEYPAD_LOG_URL']            = "http://" + config['KEYPAD_IP_ADDRESS'] + "/log"
     #-----------------------------------------------------------------------------------------
@@ -342,7 +344,7 @@ def create_config(secret_config, config):
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
         'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
-        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=nrj_instreamtest_se_aacp',
+        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
         #        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
@@ -416,6 +418,20 @@ def create_config(secret_config, config):
     # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
     config["PowerUsageServiceEnabled"] = True
+
+    #---------------------------------------------------------------------------------------------
+    # PowerUsageService
+    # Measure usage time of certain devices with a Fibaro power plug. 
+    #---------------------------------------------------------------------------------------------
+    config["TradfriServiceEnabled"] = True
+    config['TRADFRI_GATEWAY_IP'] = "192.168.2.4"
+    config['TRADFRI_ID'] = "tradfri-bash" 
+    config['TRADFRI_ID_KEY'] = secret_config.TRADFRI_KEYS
+
+    config['TRADFRI_DEVICES'] = {
+               # Name :  IP Address 
+              'KITCHEN'  :  '65539'
+    }
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

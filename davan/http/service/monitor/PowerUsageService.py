@@ -146,7 +146,7 @@ class PowerUsageService(ReoccuringBaseService):
         """
         Override and provide gui
         """
-        if self.actual_usage_time > 60:
+        if self.actual_usage_time > 60: 
             usage = str(self.actual_usage_time/60)
         else:
             usage = self.actual_usage_time

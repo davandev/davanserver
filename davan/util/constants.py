@@ -19,8 +19,11 @@ KEYPAD_ANSWERING = "Alarm Keypad[%] har startats"
 RAIN_STARTED = "Det har startat att regna"
 RAIN_STOPPED = "Det har slutat att regna"
 TELLDUS_NOT_ANSWERING = "Telldus svarar inte"
+TRADFRI_NOT_ANSWERING = "Tradfri svarar inte"
 
 UPS_SERVICE_NAME = "Ups"
+TRADFRI_SERVICE_NAME = "TradfriService"
+
 AUTH_SERVICE_NAME = "authenticate"
 AUDIO_SERVICE_NAME = "AudioService"
 SPEEDTEST_SERVICE_NAME = "speedtest"

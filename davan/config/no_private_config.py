@@ -46,3 +46,4 @@ SL_API_KEYS = {
 'REALTID': '',
 'SITEID': ''
 }
+TRADFRI_KEYS=""

@@ -18,6 +18,7 @@ from davan.http.service.base_service import BaseService
 class UpsService(BaseService):
     '''
     classdocs
+    service apcupsd restart
     '''
 
     def __init__(self, service_provider, config):
