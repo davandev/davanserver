@@ -20,8 +20,9 @@ class ReoccuringBaseService(BaseService):
         Stop the service
         '''
         self.logger.debug("Stopping service")
-        self.is_running = False
-        self.event.set()
+        if self.is_running:
+            self.is_running = False
+            self.event.set()
 
     def start_service(self):
         '''

@@ -60,7 +60,7 @@ class ServiceInvoker(object):
         """
         self.logger.info("Starting services")
         for name, service in self.services.iteritems():
-            if service.is_enabled():
+            if service.is_enabled() and not service.is_service_running():
                 service.start_service()
             else:
                 self.logger.debug("Service " + name + " is disabled")
@@ -91,7 +91,18 @@ class ServiceInvoker(object):
         self.logger.debug("No service ["+str(service)+"] found")
         
         return None
-            
+    
+    def stop_all_except(self, service_name):
+        self.logger.info("Stopping all services")
+
+        for service in self.services.itervalues():
+            #self.logger.debug("Stopping: " + str(service.get_name()))
+            if service.service_name == service_name:
+                continue
+            service.stop_service()
+        self.running = False
+        self.logger.info("All started services stopped")
+                    
     def stop_services(self):
         """
         Stop all services

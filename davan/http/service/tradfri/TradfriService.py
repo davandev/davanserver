@@ -1,6 +1,7 @@
 '''
 @author: davandev
 '''
+# coding: utf-8
 
 import logging
 import os
@@ -58,10 +59,10 @@ class TradfriService(BaseService):
             self.logger.info("Device[" +device_name+ "] Action[" + str(action_str)+"]")
             self.set_state(device_name, action)
         
-        except:
+        except Exception as e:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
-            helper.send_telegram_message(self.config, constants.TRADFRI_NOT_ANSWERING) 
+            helper.send_telegram_message(self.config, str(e)) 
             self.raise_alarm(constants.TRADFRI_NOT_ANSWERING, "Warning", constants.TRADFRI_NOT_ANSWERING)
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
@@ -90,15 +91,19 @@ class TradfriService(BaseService):
             self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
             return
         
-        device_id = self.config['TRADFRI_DEVICES'][device_name]
-        current_state = commands.get_state(self.config, device_id)
-        
-        self.logger.debug("State of " + device_name + " = " + current_state)
-        
-        if current_state == str(self.STATES["on"]):
-            return self.STATES["off"]
-        return self.STATES["on"]
-                
+        try:
+            device_id = self.config['TRADFRI_DEVICES'][device_name]
+            current_state = commands.get_state(self.config, device_id)
+            
+            self.logger.debug("State of " + str(device_name) + " = " + str(current_state))
+            
+            if current_state == str(self.STATES["on"]):
+                return self.STATES["off"]
+            return self.STATES["on"]
+        except Exception as e:
+            self.logger.debug("Caught exception: " + str(e))
+            raise Exception("Misslyckades att hämta status för "+ device_name)
+            
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        
     

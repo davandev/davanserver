@@ -300,10 +300,10 @@ def create_config(secret_config, config):
         'Uterum,  sunset,  23:45, week,        -1,        192,        1,        10,        195,            0',
         'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
         'Farstukvist, sunset, 23:55, week,     -1,        226,        1,        1,         227,            0',
-        'Wilma,   06:30,  07:15, weekdays,     20,        173,        1,        20,        197,            1',
-        'Wilma,   16:25,  22:00, week,         20,        173,        2,        20,        197,            1',
-        'Viggo,   06:30,  07:15, weekdays,     10,        177,        1,        15,        198,            1',
-        'Viggo,   16:15,  21:00, week,         10,        177,        1,        15,        198,            1',
+        'Wilma,   06:30,  07:15, weekdays,      20,       173,        1,        20,        197,            1',
+        'Wilma,   sunset,  22:00, week,         20,       173,        2,        20,        197,            1',
+        'Viggo,   06:30,  07:15, weekdays,      10,       177,        1,        15,        198,            1',
+        'Viggo,   sunset,  21:00, week,         10,       177,        1,        15,        198,            1',
         'Parkering, sunset, 23:55, week,       -1,        276,        1,        1,         281,            0',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
@@ -364,7 +364,7 @@ def create_config(secret_config, config):
     # Scale service
     #---------------------------------------------------------------------------------------------
 
-    config['ScaleServiceEnabled'] = True
+    config['ScaleServiceEnabled'] = False
     config['CONSUMER_KEY']        = secret_config.NOKIA_CONSUMER_KEY
     config['CONSUMER_SECRET']     = secret_config.NOKIA_CONSUMER_SECRET
     config['OAUTH_VERIFIER']      = secret_config.NOKIA_OAUTH_VERIFIER
@@ -425,12 +425,15 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["TradfriServiceEnabled"] = True
     config['TRADFRI_GATEWAY_IP'] = "192.168.2.4"
-    config['TRADFRI_ID'] = "tradfri-bash" 
+    config['TRADFRI_ID'] = "tradfri-pi-bash" 
     config['TRADFRI_ID_KEY'] = secret_config.TRADFRI_KEYS
 
     config['TRADFRI_DEVICES'] = {
-               # Name :  IP Address 
-              'KITCHEN'  :  '65539'
+               # Name        :    ID
+              'ViggoWindow'  :  '65539',
+              'ViggoShelf'   :  '65540',
+              'WilmaWindow'  :  '65541',
+              'WilmaSlinga'  :  '65542'
     }
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
