@@ -98,19 +98,16 @@ def create_name_announcement():
         
         request = urllib2.Request("https://www.dagensnamn.nu/", headers=constants.USER_AGENT_HEADERS)
         encoded_result = urllib2.urlopen(request).read()
-        start_index = encoded_result.index("text-vertical-center")
-        stop_index = encoded_result.index("....namnsdag")
+        start_index = encoded_result.index("</span></div><h1>")
+        start_index += 17
+        stop_index = encoded_result.index("</h1><div class=")
         nr_of_char = stop_index-start_index 
-        index_res = encoded_result[start_index:(start_index+nr_of_char)]
+        announcement += encoded_result[start_index:(start_index+nr_of_char)]
     
-        start_index = encoded_result.index("margin-bottom:20px;")
-        stop_index = encoded_result.index("</h1>")
-        nr_of_char = stop_index-start_index 
-        announcement += encoded_result[start_index+len('margin-bottom:20px;">'):(start_index+nr_of_char)]
     except:
         logger.error(traceback.format_exc())
         
-    return helper_functions.encode_message(announcement+".")
+    return helper_functions.encode_message(announcement + ".")
     
 def create_menu_announcement(config):
     '''
@@ -135,7 +132,7 @@ def create_menu_announcement(config):
             for line in content:
                 if line.startswith(todays_date):
                     logger.debug("Found todays menu: " + todays_date +": " + line)
-                    menu = "Meny i Neptuniskolan. "
+                    menu = "Meny i Björkebyskolan. "
                     menu += line.replace(todays_date, "")
                     menu = menu.rstrip()
                     menu += "."
@@ -144,6 +141,48 @@ def create_menu_announcement(config):
 
     return helper_functions.encode_message(menu)
 
+def create_random_idiom(config):
+    '''
+    '''
+    import random
+    logger.debug("Create idiom announcement")
+    menu = ""
+    try:
+        line_number, idiom = get_random_idiom(config)
+        logger.debug("Found an idom: " + idiom )
+        menu = "Dagens idiom. "
+        menu += idiom
+        menu = menu.rstrip()
+        menu += " "
+        update_idiom_file(config,line_number)
+    except:
+        logger.error(traceback.format_exc())
+
+    return helper_functions.encode_message(menu)
+
+def update_idiom_file(config, line):
+    logger.debug("Update idiom announcement")
+    with open(config['IDIOM_ANNOUNCEMENTS'], 'r') as file_handler:
+        contents= file_handler.readlines()
+
+        contents[line] = '--' + contents[line]
+
+    with open(config['IDIOM_ANNOUNCEMENTS'], 'w') as file_handler:
+        file_handler.writelines(contents)
+        
+def get_random_idiom(config):
+    logger.debug("Get a random idiom announcement")
+    import random
+    with open(config['IDIOM_ANNOUNCEMENTS']) as f:
+        unique_idiom_found = False
+        content = f.readlines()
+        while not unique_idiom_found:
+            line = random.randint(1, 1459)  
+            if not content[line].startswith('--'):
+                unique_idiom_found = True
+
+        return line, content[line]
+                
 def create_theme_day_announcement(config):
     '''
     Create theme day announcement, a text file contains all daily themes
@@ -175,5 +214,7 @@ def create_theme_day_announcement(config):
 if __name__ == '__main__':
     config = config_creator.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    result = create_name_announcement()
-    logger.info("Menu: "+ result)
+    
+    result = create_random_idiom(config)
+    logger.info("Morning : "+ result)
+    

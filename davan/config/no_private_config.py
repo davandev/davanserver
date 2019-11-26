@@ -34,6 +34,10 @@ RECEIVER_BOT_TOKEN = "my_token"
 
 GOOGLE_CALENDAR_TOKEN = "my_google_token"
 
+DEVICES_UNKNOWN={}
+DEVICES_FAMILY={}
+DEVICES_FRIEND={}
+DEVICES_HOUSE={}
 NOKIA_CONSUMER_KEY ="consumer_key"
 NOKIA_CONSUMER_SECRET = "consumer secret"
 NOKIA_OAUTH_VERIFIER = "oauth verifier"

@@ -128,11 +128,12 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += announcements.create_name_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
+                result += announcements.create_random_idiom(self.config)
                 result += announcements.create_menu_announcement(self.config)
 #                result += announcements.create_sunset_sunrise_announcement()
                 result += announcements.create_theme_day_announcement(self.config)
                 result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
-                result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_quest_announcement()
+                #result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_quest_announcement()
 
             elif event.announcement_id == "name":
                 result = announcements.create_name_announcement()

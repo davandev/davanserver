@@ -14,9 +14,9 @@ def create_config(secret_config, config):
     # General server configuration
     #------------------------------------------------------------------------------------------------
     # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
-    config["LOGLEVEL"]      = 3
+    config["LOGLEVEL"]      = 4
     # Root path of server
-    config["ROOT"]          = '/home/pi/share/davanserver/'
+    config["ROOT"]          = '/share/davanserver/'
     # Log directory path
     config['LOGFILE_PATH']  = config["ROOT"] + "logs"
     config['TEMP_PATH']     = config["ROOT"] + "temp"
@@ -165,12 +165,12 @@ def create_config(secret_config, config):
     # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESSES'] = {
                # Name :  IP Address 
-                  'S4'  :  '192.168.2.49:8080',
-                  'S6'  :  '192.168.2.88:8080',  
-                  'P5'  :  '192.168.2.233:8080', 
-                  'lgg4':  '192.168.2.100:8080'}
+                  'S4'  :  '192.168.2.155:8080'}
+                  #'S6'  :  '192.168.2.88:8080',  
+                  #'P5'  :  '192.168.2.233:8080', 
+                  #'lgg4':  '192.168.2.100:8080'}
     
-    config['KEYPAD_IP_ADDRESS']         = "192.168.2.49:8080"
+    config['KEYPAD_IP_ADDRESS']         = "192.168.2.155:8080"
     
     config["KEYPAD_LOG_FILE"]           = config['TEMP_PATH'] + "/keypad_log.txt"
     # URI used to verify if keypad is alive
@@ -186,7 +186,7 @@ def create_config(secret_config, config):
     # VoiceRSS api path for generating mp3 from message 
     config['VOICERSS_URL'] = "http://api.voicerss.org/?key=" + config['VOICERSS_TOKEN'] + "&src=REPLACE_WITH_MESSAGE&f=22khz_16bit_mono&hl=sv-se"
     # Url with key where to translate message to mp3
-    config['TTS_GENERATOR_IP_ADDRESS'] = "192.168.2.49:8080"
+    config['TTS_GENERATOR_IP_ADDRESS'] = "192.168.2.155:8080"
     # Path to cached tts messages
     config['TTS_PRECOMPILED_MSG_PATH'] = config["ROOT"] + "davan/tts_mp3/"
     # Path to cached tts alarm messages
@@ -265,7 +265,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Sonos Service configuration
     #---------------------------------------------------------------------------------------------
-    config["SonosServiceEnabled"] = True
+    config["SonosServiceEnabled"] = False
     # Adress to Sonos speaker
     config['SONOS_SPEAKERS'] = [
         #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
@@ -277,7 +277,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Weather Service configuration
     #---------------------------------------------------------------------------------------------
-    config["WeatherEnabled"]     = True
+    config["WeatherEnabled"]     = False
     config["WEATHER_API_PATH"]   = "http://api.wunderground.com/api/"
     config["WEATHER_TOKEN"]      = secret_config.WEATHER_TOKEN
     config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
@@ -321,8 +321,8 @@ def create_config(secret_config, config):
     config['ROXCORE_PORT_NR'] = "59152"
     config['ROXCORE_SPEAKERS'] = [
         #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
-        '0,        Kitchen,      192.168.2.51,  True,         True',
-        '1,        Hallway,      192.168.2.122, False,        False',
+        '0,        Kitchen,      192.168.2.49,  True,         True',
+        '1,        Hallway,      192.168.2.121, False,        False',
         '2,         All,            ,           False,        True',
     ]
     config['MESSAGE_ANNOUNCEMENT'] = "announcement.mp3"
@@ -332,7 +332,7 @@ def create_config(secret_config, config):
     config["AnnouncementsServiceEnabled"] = True
     config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt"
     config["ANNOUNCEMENT_THEMEDAY_PATH"] = config["ROOT"] + "tema_dagar.txt"
-    
+    config["IDIOM_ANNOUNCEMENTS"] = config["ROOT"] + "idiomatisk.txt"
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | Text
         'SleepTime,        23:02,   weekdays,       night,           0,          Mia',

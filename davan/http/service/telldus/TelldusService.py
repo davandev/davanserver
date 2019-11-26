@@ -135,5 +135,5 @@ if __name__ == '__main__':
     
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = TelldusService(config)
+    test = TelldusService("",config)
     test.list_all_devices()

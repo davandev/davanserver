@@ -55,29 +55,29 @@ class ConnectivityService(ReoccuringBaseService):
             self.logger.error(traceback.format_exc())
             self.increment_errors()        
             
-        isFailure = False
-        for failure_string in self.disconnected_result:
-            if failure_string in str(result):
-                isFailure = True
-                self.increment_errors()        
-                if self.disconnected_at == None:
-                    self.logger.error("Lost internet connectivity")
-                    self.raise_alarm(constants.CONNECTIVITY_SERVICE_NAME, "Warning", "Inget internet")
-                    current_time = datetime.datetime.now().strftime('%H:%M')
-                    self.disconnected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
-                    self.logger.info("Stopp all services until internet is back")
-                    self.services.stop_all_except(self.get_name())
-                    #self.disconnected_at = time.time()
-        if not isFailure:
-            #self.logger.info("Result:[" + str(result) +"]") 
-            self.increment_invoked()
-            if self.disconnected_at != None:
-                self.clear_alarm(constants.CONNECTIVITY_SERVICE_NAME)
-                # Got connection back again'
-                current_time = datetime.datetime.now().strftime('%H:%M')
-                self.connected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
-                self.report_down_time()
-                self.services.start_services()
+#        isFailure = False
+#        for failure_string in self.disconnected_result:
+#            if failure_string in str(result):
+#                isFailure = True
+#                self.increment_errors()        
+#                if self.disconnected_at == None:
+#                    self.logger.error("Lost internet connectivity")
+#                    self.raise_alarm(constants.CONNECTIVITY_SERVICE_NAME, "Warning", "Inget internet")
+#                    current_time = datetime.datetime.now().strftime('%H:%M')
+#                    self.disconnected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
+#                    self.logger.info("Stopp all services until internet is back")
+#                    self.services.stop_all_except(self.get_name())
+#                    #self.disconnected_at = time.time()
+#        if not isFailure:
+#            #self.logger.info("Result:[" + str(result) +"]") 
+#            self.increment_invoked()
+#            if self.disconnected_at != None:
+#                self.clear_alarm(constants.CONNECTIVITY_SERVICE_NAME)
+#                # Got connection back again'
+#                current_time = datetime.datetime.now().strftime('%H:%M')
+#                self.connected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
+#                self.report_down_time()
+#                self.services.start_services()
     
     def report_down_time(self):
         result = "No internet connectivity from ["+ str(self.disconnected_at) +"] to [" + str(self.connected_at) + "]"

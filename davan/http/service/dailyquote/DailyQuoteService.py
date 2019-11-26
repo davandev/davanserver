@@ -46,7 +46,7 @@ class DailyQuoteService(ReoccuringBaseService):
         quote = urllib2.urlopen(self.quote_url).read()
         quote = quote.split("<")[1]
         self.today_quote = quote.split(">")[1]
-        self.get_quest()
+        #self.get_quest()
 
     def get_quest(self):
         self.logger.debug("Fetching quest")
