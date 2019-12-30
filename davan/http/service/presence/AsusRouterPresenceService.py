@@ -7,6 +7,7 @@ import os
 import urllib
 import datetime
 import telnetlib
+import paramiko
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -121,7 +122,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         if (device.type == FAMILY or device.type == GUESTS):
             helper.send_telegram_message(self.config, device.user + " [" + device.active_toString() + "]")
         
-    def fetch_active_devices(self):
+    def fetch_active_devices_telnet(self):
         '''
         Fetch a list of all devices status from router. 
         @return list of found devices
@@ -141,7 +142,24 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         lines = result.split("\n")
     
         return lines
-    
+
+    def fetch_active_devices(self):
+        '''
+        Fetch a list of all devices status from router. 
+        @return list of found devices
+        '''
+        p = paramiko.SSHClient()
+        p.set_missing_host_key_policy(paramiko.AutoAddPolicy())   # This script doesn't work for me unless this line is added!
+        p.connect(self.config['ROUTER_ADRESS'], 
+                  port=22, 
+                  username=self.config['ROUTER_USER'], 
+                  password=self.config['ROUTER_PASSWORD'])
+        
+        stdin, stdout, stderr = p.exec_command(self.list_active_devices_cmd)
+        #p.close()
+        result = stdout.readlines()
+        return result
+   
     def update_presence(self, monitored_devices, active_devices):
         '''
         Determine if any of the active devices in router is also
@@ -151,7 +169,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
             if line.startswith("192."):
                 items = line.split()
                 if items[0] in monitored_devices.keys():
-#                    self.logger.info("Found a monitored device [" + items[0] +"]")
                     self.update_device_status(items, monitored_devices)
 
     def update_device_status(self, status, monitored_devices):
@@ -235,5 +252,5 @@ if __name__ == '__main__':
     config = configuration.create('/home/pi/private_config.py')
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = AsusRouterPresenceService(config)
-    test.timeout()
+    test = AsusRouterPresenceService("",config)
+    test.handle_timeout()

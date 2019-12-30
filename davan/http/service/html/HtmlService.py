@@ -81,15 +81,18 @@ class HtmlService(BaseService):
             column_id = 1
             tot_result = ""
             for name, service in __builtin__.davan_services.services.iteritems():
-                if column_id == 1:
-                    tot_result += '<div id="columns">\n'
-                        
-                tot_result += service.get_html_gui(column_id)
-                column_id += 1
-                if column_id == 4:
-                    tot_result += '<div style="clear: both;"> </div></div>\n' 
-                    column_id = 1
-    
+                try:
+                    if column_id == 1:
+                        tot_result += '<div id="columns">\n'
+                            
+                    tot_result += service.get_html_gui(column_id)
+                    column_id += 1
+                    if column_id == 4:
+                        tot_result += '<div style="clear: both;"> </div></div>\n' 
+                        column_id = 1
+                except :
+                    self.logger.error(traceback.format_exc())        
+        
             tot_result += '<div style="clear: both;"> </div></div>\n' 
             return tot_result 
         except :
