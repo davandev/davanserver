@@ -6,7 +6,7 @@
 import os
 import logging
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import davan.util.application_logger as app_logger
 import davan.config.config_creator as config_creator
@@ -96,8 +96,8 @@ def create_name_announcement():
     try:
         announcement = "Dagens namnsdagsbarn "
         
-        request = urllib2.Request("https://www.dagensnamn.nu/", headers=constants.USER_AGENT_HEADERS)
-        encoded_result = urllib2.urlopen(request).read()
+        request = urllib.request.Request("https://www.dagensnamn.nu/", headers=constants.USER_AGENT_HEADERS)
+        encoded_result = urllib.request.urlopen(request).read()
         start_index = encoded_result.index("</span></div><h1>")
         start_index += 17
         stop_index = encoded_result.index("</h1><div class=")

@@ -4,7 +4,7 @@
 
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import traceback
 
 
@@ -60,7 +60,7 @@ class SonosService(BaseService):
         '''
         try:
             if speaker_id == "2":
-                for _,speaker in self.speakers.items():
+                for _,speaker in list(self.speakers.items()):
                     self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"]")
                     
                     sonos = SoCo(self.speakers[speaker_id].address)

@@ -5,7 +5,7 @@
 
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import time
 
 import davan.config.config_creator as configuration
@@ -30,7 +30,7 @@ class LogReceiverService(BaseService):
     def _parse_request(self,msg):
         self.logger.debug("Parse request:" + msg)
         msg = msg.replace("/LogEntry?text=", "")
-        return urllib.unquote(msg)
+        return urllib.parse.unquote(msg)
                 
     def handle_request(self, msg):
         '''

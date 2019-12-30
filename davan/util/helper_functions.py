@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*- 
 import os
 import logging
-import urllib
-from urllib import quote
+import urllib.request, urllib.parse, urllib.error
+from urllib.parse import quote
 
 global logger
 logger = logging.getLogger(os.path.basename(__file__))
@@ -18,7 +18,7 @@ def debug_formated(obj):
     if isinstance(obj, dict):
         tmpStr = "\n==============================================================================\n"
         for k, v in sorted(obj.items()):
-            tmpStr += u'{0:30} ==> {1:15}'.format(k, v) + "\n"
+            tmpStr += '{0:30} ==> {1:15}'.format(str(k), str(v)) + str("\n")
         tmpStr += "\n==============================================================================\n"
         logger.debug(tmpStr)
 
@@ -29,7 +29,7 @@ def debug_formated(obj):
 
     # Other
     else:
-        print obj
+        print(obj)
         
 def createFibaroUrl(baseurl, vd_id, labelId, value):
     '''
@@ -65,8 +65,8 @@ def send_telegram_message(config, msg):
     '''
     #logger.info("Sending telegram msg[ " + msg + "]")
     for chatid in config['CHATID']:
-        url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.quote_plus(msg)
-        urllib.urlopen(url)
+        url = config['TELEGRAM_PATH'].replace('<CHATID>', chatid) + urllib.parse.quote_plus(msg)
+        urllib.request.urlopen(url)
 
 def encode_message(message,encode_whitespace=True):
     '''

@@ -5,7 +5,7 @@
 
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 from davan.http.service.base_service import BaseService
@@ -81,14 +81,14 @@ class DepartureService(BaseService):
         stop_id, stop_name = self.parse_request(msg)
         self.increment_invoked()
 
-        result = urllib.urlopen(self.url)
+        result = urllib.request.urlopen(self.url)
         res = result.read()
 
         data = json.loads(res)
 
-        for key, value in data.iteritems():
+        for key, value in data.items():
             if key == "ResponseData":
-                for k, v in value.iteritems():
+                for k, v in value.items():
                     if k == "Buses":
                         sorted_timetable = self.parse_time_table(v, stop_id)
 

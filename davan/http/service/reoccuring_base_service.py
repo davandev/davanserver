@@ -56,7 +56,7 @@ class ReoccuringBaseService(BaseService):
                     self.last_timeout = time.strftime("%Y-%m-%d %H:%M", time.localtime())
                        
 
-        Thread(target=loop).start()    
+        Thread(target=loop, name=self.service_name).start()    
         return self.event.set
     
 

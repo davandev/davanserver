@@ -6,7 +6,7 @@ import logging
 import os
 import traceback
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 import davan.config.config_creator as configuration
@@ -78,7 +78,7 @@ class UpsService(BaseService):
         #self.logger.debug(pressButton_url)
         
         # Send HTTP request to notify status change
-        urllib.urlopen(pressButton_url)
+        urllib.request.urlopen(pressButton_url)
 
     def _handle_status_request(self):
         '''

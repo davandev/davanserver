@@ -8,17 +8,17 @@ import time
 import datetime
 #import datetime.datetime.strptime
 #import datetime.datetime
-from BaseHTTPServer import BaseHTTPRequestHandler
-from SocketServer import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler
+from socketserver import ThreadingMixIn
 import socket
-import BaseHTTPServer
-import httplib
+import http.server
+import http.client
 import cgi
 import argparse
 import traceback
 import signal
 import sys
-import __builtin__
+import builtins
 
 
 import davan.util.application_logger as log_manager
@@ -86,8 +86,8 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
             # Another server is started, terminate this one.
             elif self.path.endswith("seppuku"):
                 logger.critical("Received request to shut down server")
-                if __builtin__.davan_services.is_running():
-                    __builtin__.davan_services.stop_services()
+                if builtins.davan_services.is_running():
+                    builtins.davan_services.stop_services()
                     self.send_response(200)
                     self.send_header('Content-type',    'text/html')
                     self.end_headers()
@@ -112,7 +112,7 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-class ApplicationServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
+class ApplicationServer(ThreadingMixIn, http.server.HTTPServer):
     pass
 # Send a request to running server to shutdown.
 def _tear_down_running_server(config):
@@ -124,7 +124,7 @@ def _tear_down_running_server(config):
     logger.debug("Tear down existing server on [" + config["SERVER_ADRESS"] + "]" +
                  " port[" + str(config["SERVER_PORT"]) + "]")
 
-    conn1 = httplib.HTTPConnection(config["SERVER_ADRESS"] + ":" + str(config["SERVER_PORT"]))
+    conn1 = http.client.HTTPConnection(config["SERVER_ADRESS"] + ":" + str(config["SERVER_PORT"]))
     conn1.request("GET", "/seppuku")
     r1 = conn1.getresponse()
     response_msg = r1.read()
@@ -150,17 +150,18 @@ def start_server(configuration):
         services.discover_services()
         services.start_services()
         # ugly way to share services
-        __builtin__.davan_services = services
+        builtins.davan_services = services
         server = ApplicationServer(('', config["SERVER_PORT"]), CustomRequestHandler)
         helper.debug_big("Server started on [" + str(config["SERVER_ADRESS"]) + ":" + str(config["SERVER_PORT"]) + "] ")        
         while 1:
             server.handle_request()
-            if not __builtin__.davan_services.is_running():
+            if not builtins.davan_services.is_running():
                 server.server_close()
                 logger.critical("Stopping server")
                 sys.exit(1)
         
-    except socket.error, (value, message):
+    except socket.error as xxx_todo_changeme:
+        (value, message) = xxx_todo_changeme.args
         if value == 98:  # Address port already in use
             helper.debug_big("Failed to start server with message" +
                          " [" + message + "]")

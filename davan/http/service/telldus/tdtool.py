@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, getopt, httplib, urllib, json, os
+import sys, getopt, http.client, urllib.request, urllib.parse, urllib.error, json, os
 import oauth.oauth as oauth
 import datetime
 from configobj import ConfigObj
@@ -26,7 +26,7 @@ TELLSTICK_DOWN = 256
 SUPPORTED_METHODS = TELLSTICK_TURNON | TELLSTICK_TURNOFF | TELLSTICK_BELL | TELLSTICK_DIM | TELLSTICK_UP | TELLSTICK_DOWN;
 
 def printUsage():
-	print("Usage: %s [ options ]" % sys.argv[0])
+	print(("Usage: %s [ options ]" % sys.argv[0]))
 	print("")
 	print("Options:")
 	print("         -[lnfdbvh] [ --list ] [ --help ]")
@@ -167,8 +167,8 @@ def doRequest(method, params):
 	headers = oauth_request.to_header()
 	headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
-	conn = httplib.HTTPConnection("api.telldus.com:80")
-	conn.request('GET', "/json/" + method + "?" + urllib.urlencode(params, True).replace('+', '%20'), headers=headers)
+	conn = http.client.HTTPConnection("api.telldus.com:80")
+	conn.request('GET', "/json/" + method + "?" + urllib.parse.urlencode(params, True).replace('+', '%20'), headers=headers)
 
 	response = conn.getresponse()
 	try:	
@@ -182,7 +182,7 @@ def requestToken():
 	consumer = oauth.OAuthConsumer(PUBLIC_KEY, PRIVATE_KEY)
 	request = oauth.OAuthRequest.from_consumer_and_token(consumer, http_url='http://api.telldus.com/oauth/requestToken')
 	request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), consumer, None)
-	conn = httplib.HTTPConnection('api.telldus.com:80')
+	conn = http.client.HTTPConnection('api.telldus.com:80')
 	conn.request(request.http_method, '/oauth/requestToken', headers=request.to_header())
 
 	resp = conn.getresponse().read()
@@ -199,7 +199,7 @@ def getAccessToken():
 	token = oauth.OAuthToken(config['requestToken'], config['requestTokenSecret'])
 	request = oauth.OAuthRequest.from_consumer_and_token(consumer, token=token, http_method='GET', http_url='http://api.telldus.com/oauth/accessToken')
 	request.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), consumer, token)
-	conn = httplib.HTTPConnection('api.telldus.com:80')
+	conn = http.client.HTTPConnection('api.telldus.com:80')
 	conn.request(request.http_method, request.to_url(), headers=request.to_header())
 
 	resp = conn.getresponse()

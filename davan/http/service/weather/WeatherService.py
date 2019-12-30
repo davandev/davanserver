@@ -6,8 +6,8 @@
 import logging
 import os
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import traceback
 
 import davan.config.config_creator as configuration
@@ -46,7 +46,7 @@ class WeatherService(ReoccuringBaseService):
         '''
         self.logger.debug("Fetch weather")
         try:
-            self.latest_result = urllib2.urlopen(self.config["WUNDERGROUND_PATH"]).read()
+            self.latest_result = urllib.request.urlopen(self.config["WUNDERGROUND_PATH"]).read()
             self.weather_data = json.loads(self.latest_result)
             self.check_rain()
             self.update_virtual_device()
@@ -72,7 +72,7 @@ class WeatherService(ReoccuringBaseService):
         pressButton_url = pressButton_url.replace("<BUTTONID>", self.config["WEATHER_BUTTON_ID"])
 
         # Send HTTP request to notify status change
-        urllib.urlopen(pressButton_url)
+        urllib.request.urlopen(pressButton_url)
                 
     def check_rain(self):
         '''

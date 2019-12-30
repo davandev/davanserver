@@ -16,7 +16,7 @@ def create_config(secret_config, config):
     # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
     config["LOGLEVEL"]      = 4
     # Root path of server
-    config["ROOT"]          = '/share/davanserver/'
+    config["ROOT"]          = '/home/pi/davanserver/'
     # Log directory path
     config['LOGFILE_PATH']  = config["ROOT"] + "logs"
     config['TEMP_PATH']     = config["ROOT"] + "temp"
@@ -24,7 +24,7 @@ def create_config(secret_config, config):
     config['SERVICE_PATH']  = config["ROOT"] + "davan/http/service/"
     # Server port
     config["SERVER_PORT"]   = 8080
-    config["SERVER_ADRESS"] = "192.168.2.50"
+    config["SERVER_ADRESS"] = "192.168.2.44"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro configuration
@@ -37,7 +37,8 @@ def create_config(secret_config, config):
     # Fibaro path for common functions
     # --------------------------------------------------------------------------------------------
     # Fibaro api access path
-    config['FIBARO_API_ADDRESS'] = "http://" + config['FIBARO_USER_NAME'] + ":" + config['FIBARO_PASSWORD'] + "@" + config['FIBARO_IP_ADDRESS'] + "/api/"
+    #config['FIBARO_API_ADDRESS'] = "http://" + config['FIBARO_USER_NAME'] + ":" + config['FIBARO_PASSWORD'] + "@" + config['FIBARO_IP_ADDRESS'] + "/api/"
+    config['FIBARO_API_ADDRESS'] = "http://" + config['FIBARO_IP_ADDRESS'] + "/api/"
     # Set property in a virtual device
     config['UPDATE_DEVICE'] = config['FIBARO_API_ADDRESS'] + "callAction?deviceID=<DEVICEID>&name=setProperty&arg1=<LABELID>&arg2=<VALUE>"
     # Press button on virtual device
@@ -443,11 +444,11 @@ def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
             modulename = os.path.splitext(filename)[0]
             my_secrets = imp.load_source(modulename, private_config_file)
         except :
-            print "Cannot import file " + private_config_file +" using default"
-            import no_private_config
+            print("Cannot import file " + private_config_file +" using default")
+            from . import no_private_config
             my_secrets = no_private_config
     else:
-        import no_private_config
+        from . import no_private_config
         my_secrets = no_private_config
             
     config = dict()

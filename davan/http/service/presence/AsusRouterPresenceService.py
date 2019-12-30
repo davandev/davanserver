@@ -4,7 +4,7 @@
 
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import datetime
 import telnetlib
 
@@ -46,15 +46,15 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         self.time_to_next_timeout = 300
         self.unknown_devices = []
         self.family_devices = {}
-        for key, value in self.config['FAMILY_DEVICES'].items():
+        for key, value in list(self.config['FAMILY_DEVICES'].items()):
             self.family_devices[key]= AsusRouterDeviceStatus(key, value, FAMILY)
             
         self.guest_devices = {}
-        for key, value in self.config['GUEST_DEVICES'].items():
+        for key, value in list(self.config['GUEST_DEVICES'].items()):
             self.guest_devices[key]= AsusRouterDeviceStatus(key, value, GUESTS)
 
         self.house_devices = {}
-        for key, value in self.config['HOUSE_DEVICES'].items():
+        for key, value in list(self.config['HOUSE_DEVICES'].items()):
             self.house_devices[key]= AsusRouterDeviceStatus(key, value, HOUSE)
     
     def get_next_timeout(self):
@@ -78,11 +78,11 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for line in active_devices:
             if line.startswith("192."):
                 items = line.split()
-                if items[0] in self.family_devices.keys():
+                if items[0] in list(self.family_devices.keys()):
                     continue
-                elif items[0] in self.guest_devices.keys():
+                elif items[0] in list(self.guest_devices.keys()):
                     continue
-                elif items[0] in self.house_devices.keys():
+                elif items[0] in list(self.house_devices.keys()):
                     continue
                 else:
                     if items[0] not in self.unknown_devices:
@@ -96,12 +96,12 @@ class AsusRouterPresenceService(ReoccuringBaseService):
  
     def check_device_group(self, monitored_devices, active_devices):
         # Reset changed state to false for all devices
-        for ip, device in monitored_devices.iteritems():
+        for ip, device in monitored_devices.items():
             monitored_devices[ip].changed = False
         
         self.update_presence(monitored_devices, active_devices)
         
-        for _, device in monitored_devices.items():
+        for _, device in list(monitored_devices.items()):
             if device.changed:
 #                device.toString()
                 self.notify_change(device)
@@ -117,7 +117,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
                                    self.config['FIBARO_VD_PRESENCE_ID'],
                                    self.config['FIBARO_VD_MAPPINGS'][device.user],
                                    device.active_toString())
-            urllib.urlopen(url)        
+            urllib.request.urlopen(url)        
         if (device.type == FAMILY or device.type == GUESTS):
             helper.send_telegram_message(self.config, device.user + " [" + device.active_toString() + "]")
         
@@ -150,7 +150,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for line in active_devices:
             if line.startswith("192."):
                 items = line.split()
-                if items[0] in monitored_devices.keys():
+                if items[0] in list(monitored_devices.keys()):
 #                    self.logger.info("Found a monitored device [" + items[0] +"]")
                     self.update_device_status(items, monitored_devices)
 
@@ -189,7 +189,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         Compile announcement to be read 
         '''
         announcement = ""
-        for _, device in self.family_devices.items():
+        for _, device in list(self.family_devices.items()):
             announcement += device.user + " �r " + device.active_toString()+", "
         
         return helper.encode_message(announcement)
@@ -211,15 +211,15 @@ class AsusRouterPresenceService(ReoccuringBaseService):
          
         htmlresult = ["Family</br>\n"]
         
-        for _,family in self.family_devices.items():
+        for _,family in list(self.family_devices.items()):
             htmlresult.append(family.user  + "["+family.active_toString()+"]</br>\n")
 
         htmlresult += "\nGuests</br>\n"
-        for _,guests in self.guest_devices.items():
+        for _,guests in list(self.guest_devices.items()):
             htmlresult.append(guests.user  + "["+guests.active_toString()+"]</br>\n")
             
         htmlresult += "\nDevices</br>\n"
-        for _,device in self.house_devices.items():
+        for _,device in list(self.house_devices.items()):
             htmlresult.append(device.user  + "["+device.active_toString()+"]</br>\n")
 
         htmlresult += "\nUnknown Devices</br>\n"

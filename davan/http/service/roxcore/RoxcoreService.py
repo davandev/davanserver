@@ -56,7 +56,7 @@ class RoxcoreService(BaseService):
         try:
             self.logger.info("Play in speaker[" + self.speakers[speaker_id].slogan+"]")
             if speaker_id == "2":
-                for _,speaker in self.speakers.items():
+                for _,speaker in list(self.speakers.items()):
                     self.logger.info("Play in:" + speaker.slogan)
                     speaker_address = "http://" + speaker.address + ":" + self.config['ROXCORE_PORT_NR']
                     self._send_to_speaker(speaker_address, msg, speaker.play_announcement)
@@ -101,7 +101,7 @@ class RoxcoreService(BaseService):
         commands.set_play_mode(speaker_address)
 
     def stop_playing(self):
-        for _,speaker in self.speakers.items():
+        for _,speaker in list(self.speakers.items()):
             self.logger.info("Stop playing in speaker: " + speaker.slogan)
             speaker_address = "http://" + speaker.address + ":" + self.config['ROXCORE_PORT_NR']
             commands.stop(speaker_address)
@@ -147,7 +147,7 @@ class RoxcoreService(BaseService):
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
         res = "Speakers:\n"
-        for _,speaker in self.speakers.items():
+        for _,speaker in list(self.speakers.items()):
             res += speaker.slogan + ":" + speaker.address + "\n"
         column  = column.replace("<SERVICE_VALUE>", res)
 

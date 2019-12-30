@@ -5,8 +5,8 @@
 '''
 import logging
 import os
-from urllib import quote
-import urllib
+from urllib.parse import quote
+import urllib.request, urllib.parse, urllib.error
 import datetime
 import traceback
 from threading import Thread,Event
@@ -52,7 +52,7 @@ class TelldusSensorService(ReoccuringBaseService):
         for sensor in response['sensor']:
             name = "%s" % (sensor['name'])
             
-            if self.config["SENSOR_MAP"].has_key(name):
+            if name in self.config["SENSOR_MAP"]:
                 sensorUrl = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                                    self.config["SENSOR_MAP"][name], 
                                                    self.config['LABEL_TEMP'], 
@@ -78,7 +78,7 @@ class TelldusSensorService(ReoccuringBaseService):
         Update fibaro system with sensor values
         @param url, url with sensor values
         '''
-        urllib.urlopen(url)        
+        urllib.request.urlopen(url)        
 
     def maybe_notify_humidity_level(self, sensor_name, humidity_value):
         '''
@@ -88,7 +88,7 @@ class TelldusSensorService(ReoccuringBaseService):
         @param humidity_value, humidity value
         '''
         try:
-            if self.config["SENSOR_HUMIDITY_LIMITS"].has_key(sensor_name):
+            if sensor_name in self.config["SENSOR_HUMIDITY_LIMITS"]:
 #                self.logger.info("Sensor "+ sensor_name +" has humidity limits configured. Current value["+humidity_value+"]")
                 
                 sensor_limit = self.config['SENSOR_HUMIDITY_LIMITS'][sensor_name]

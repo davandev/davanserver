@@ -37,13 +37,13 @@ class ServiceInvoker(object):
         self.logger.info("Discover services")
         for root, _, files in os.walk(self.config['SERVICE_PATH']):
             for service_file in files:
-                if (service_file.endswith(".pyc") and 
+                if (service_file.endswith(".py") and 
                     not service_file.endswith("__init__.pyc") and 
-                    not service_file.endswith("base_service.pyc")):
-                        module_name = service_file.replace(".pyc","")
-                        mod = imp.load_compiled(module_name,os.path.join(root, service_file))
-
-#                        self.logger.debug("ModuleName:"+module_name)
+                    not service_file.endswith("base_service.py")):
+                        module_name = service_file.replace(".py","")
+                        #mod = imp.load_compiled(module_name,os.path.join(root, service_file))
+                        mod = imp.load_source(module_name, os.path.join(root, service_file))
+                        self.logger.debug("ModuleName:"+module_name)
 
                         try:    
                             attributes = getattr(mod, module_name)
@@ -59,7 +59,7 @@ class ServiceInvoker(object):
         Start all services that are enabled in configuration
         """
         self.logger.info("Starting services")
-        for name, service in self.services.iteritems():
+        for name, service in self.services.items():
             if service.is_enabled() and not service.is_service_running():
                 service.start_service()
             else:
@@ -74,7 +74,7 @@ class ServiceInvoker(object):
         """
         result = self.expression.findall(service)[0]
         
-        if self.services.has_key(result):
+        if result in self.services:
 #            self.logger.debug("Invoking service: ["+ result+"]")
             return self.services[result]
         elif service.endswith(constants.MP3_EXTENSION) or service.endswith(constants.MP3_EXTENSION1):
@@ -95,7 +95,7 @@ class ServiceInvoker(object):
     def stop_all_except(self, service_name):
         self.logger.info("Stopping all services")
 
-        for service in self.services.itervalues():
+        for service in self.services.values():
             #self.logger.debug("Stopping: " + str(service.get_name()))
             if service.service_name == service_name:
                 continue
@@ -109,7 +109,7 @@ class ServiceInvoker(object):
         """
         self.logger.info("Stopping all services")
 
-        for service in self.services.itervalues():
+        for service in self.services.values():
             #self.logger.debug("Stopping: " + str(service.get_name()))
             service.stop_service()
         self.running = False

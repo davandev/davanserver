@@ -5,7 +5,7 @@
 import logging
 import os
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -118,7 +118,7 @@ class LightSchemaService(ReoccuringBaseService):
         
         # update status label of virtual device    
         self.update_virtual_device(event.virtual_device_id, "6", message)
-        urllib.urlopen(url)        
+        urllib.request.urlopen(url)        
             
     def schedule_events(self):
         '''
@@ -215,7 +215,13 @@ class LightSchemaService(ReoccuringBaseService):
                                 self.config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
                                 message)
             #self.logger.info("URL:"+url)
-            urllib.urlopen(url)                
+            
+            passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+            passman.add_password(None, url, self.config['FIBARO_USER_NAME'], self.config['FIBARO_PASSWORD'])
+            auth_handler = urllib.request.HTTPBasicAuthHandler(passman)
+            opener = urllib.request.build_opener(auth_handler)
+            urllib.request.install_opener(opener)            
+            urllib.request.urlopen(url)                
                     
     def has_html_gui(self):
         """

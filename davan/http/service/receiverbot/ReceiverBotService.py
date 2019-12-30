@@ -12,7 +12,7 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.keyboardbutton import KeyboardButton
 
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import re
 
 from threading import Thread,Event
@@ -25,7 +25,7 @@ from davan.http.service.base_service import BaseService
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT, LOG , SERVICESTATUS= range(8)
+COMMAND, SPEAKER, TTS, SERVICES, TV, TVTEXT, LOG , SERVICESTATUS= list(range(8))
 
 class ReceiverBotService(BaseService):
     '''
@@ -82,7 +82,7 @@ class ReceiverBotService(BaseService):
         text = update.message.text.replace("/tv ", "")
         encoded_message = helper_functions.encode_message(text.encode('utf-8'))
         url = 'http://192.168.2.173:80/web/message?text=%s&type=1&timeout=5' %encoded_message
-        result = urllib.urlopen(url)
+        result = urllib.request.urlopen(url)
         res = result.read()
         self.increment_invoked()
         update.message.reply_text("Text message displayed on tv")
@@ -119,7 +119,7 @@ class ReceiverBotService(BaseService):
         Start a telegram-bot and register command and message handlers.
         '''
         self.logger.debug("Starting telegram conversation bot")
-        self.bot = Updater(token=self.config["RECEIVER_BOT_TOKEN"])
+        self.bot = Updater(token=self.config["RECEIVER_BOT_TOKEN"],use_context=True)
         self.bot.dispatcher.add_handler(MessageHandler(Filters.voice, self.audio))
         # Get the dispatcher to register handlers
         dp = self.bot.dispatcher
@@ -211,7 +211,7 @@ class ReceiverBotService(BaseService):
         Generate the service menu to display
         '''
         button_list = []
-        for name, service in self.services.services.iteritems():
+        for name, service in self.services.services.items():
             if service.is_enabled():
                 button_list.append(KeyboardButton(name))
             
@@ -270,7 +270,7 @@ class ReceiverBotService(BaseService):
         
         logger.info("Status of service [%s]" % (self.selected_service))
         if update.message.text == "Status":
-            for name, service in self.services.services.iteritems():
+            for name, service in self.services.services.items():
                 if name == self.selected_service:
                     item = self.services.get_service(name)
                     text = item.get_html_gui("")   

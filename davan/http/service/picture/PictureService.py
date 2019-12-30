@@ -87,7 +87,7 @@ class PictureService(BaseService):
         @param camera: camera name 
         '''
         self.logger.info("Take picture from camera [" + camera + "]")
-        if self.config["CAMERAS"].has_key(camera):
+        if camera in self.config["CAMERAS"]:
             cam_picture_url = self.config["CAMERAS"][camera]
             cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] +
                                  " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
@@ -112,7 +112,7 @@ class PictureService(BaseService):
         
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        column = column.replace("<SERVICE_VALUE>", "<li>Cameras: " + str(self.config["CAMERAS"].keys()) + " </li>\n")
+        column = column.replace("<SERVICE_VALUE>", "<li>Cameras: " + str(list(self.config["CAMERAS"].keys())) + " </li>\n")
         return column
             
 if __name__ == '__main__':

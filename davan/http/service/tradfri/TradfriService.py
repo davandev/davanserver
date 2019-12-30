@@ -102,7 +102,7 @@ class TradfriService(BaseService):
             return self.STATES["on"]
         except Exception as e:
             self.logger.debug("Caught exception: " + str(e))
-            raise Exception("Misslyckades att hämta status för "+ device_name)
+            raise Exception("Misslyckades att hamta status for "+ device_name)
             
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        

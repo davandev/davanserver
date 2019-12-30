@@ -5,7 +5,7 @@
 
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from davan.http.service.base_service import BaseService
 import davan.util.constants as constants
@@ -25,7 +25,7 @@ class DishWashService(BaseService):
     def _parse_request(self,msg):
         self.logger.debug("Parse request:" + msg)
         msg = msg.replace("/DishWashService?status=finished", "")
-        return urllib.unquote(msg)
+        return urllib.parse.unquote(msg)
                 
     def handle_request(self, msg):
         '''

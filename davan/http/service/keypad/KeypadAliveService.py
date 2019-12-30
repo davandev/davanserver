@@ -4,8 +4,8 @@
 
 import logging
 import os
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import traceback
 
 from datetime import datetime
@@ -48,7 +48,7 @@ class KeypadAliveService(ReoccuringBaseService):
         self.keypads= []
         self.time_to_next_timeout = 600
         try:
-            for name, ip in self.config['KEYPAD_IP_ADDRESSES'].iteritems():
+            for name, ip in self.config['KEYPAD_IP_ADDRESSES'].items():
                 keypad = KeypadEvent(name, ip)
                 self.logger.info(keypad.toString())
                 self.keypads.append(keypad)
@@ -69,7 +69,7 @@ class KeypadAliveService(ReoccuringBaseService):
         for keypad in self.keypads:
             try:
                 self.logger.debug("Sending ping to keypad[" + keypad.name + "]")
-                urllib.urlopen(self.config['KEYPAD_PING_URL'].replace('%IP%',keypad.ip))
+                urllib.request.urlopen(self.config['KEYPAD_PING_URL'].replace('%IP%',keypad.ip))
                 self.maybe_send_update(keypad, True)
             except:
                 self.logger.warning("Failed to connect to keypad[" + keypad.name + "]")
@@ -80,7 +80,7 @@ class KeypadAliveService(ReoccuringBaseService):
     def get_log(self):
         self.logger.info("Fetch keypad logfile")
         try:
-            log_file = urllib2.urlopen(self.config['KEYPAD_LOG_URL']).read()
+            log_file = urllib.request.urlopen(self.config['KEYPAD_LOG_URL']).read()
             log_file = log_file.replace("<br>","\n")
             if os.path.exists(self.config["KEYPAD_LOG_FILE"]):
                 os.remove(self.config["KEYPAD_LOG_FILE"])

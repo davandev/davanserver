@@ -3,7 +3,7 @@
 '''
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import datetime
 from threading import Thread,Event
 import davan.config.config_creator as configuration
@@ -99,7 +99,7 @@ class PresenceMgrService(BaseService):
         tn.write("/usr/sbin/ip neigh | grep REACHABLE\n")
         tn.write("exit\n")
         
-        print tn.read_all()
+        print(tn.read_all())
 
     def timeout(self):
         for user in self.monitored_devices:
@@ -116,7 +116,7 @@ class PresenceMgrService(BaseService):
                     user.phone_status = True
                     user.status_changed = True
                     home_url = url_util.getUserHomeUrl(self.config, user.user)
-                    urllib.urlopen(home_url)
+                    urllib.request.urlopen(home_url)
             
             elif (not user.reporting_status and 
                   not user.wifi_status): 
@@ -124,7 +124,7 @@ class PresenceMgrService(BaseService):
                     user.phone_status = False
                     user.status_changed = True
                     away_url = url_util.getUserAwayUrl(self.config, user.user)
-                    urllib.urlopen(away_url)
+                    urllib.request.urlopen(away_url)
 
             user.toString()
         self.logger.info("-------------------------------------------------")

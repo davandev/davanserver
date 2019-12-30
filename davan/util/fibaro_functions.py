@@ -3,7 +3,7 @@ Created on 1 maj 2017
 
 @author: Wilma
 '''
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 def is_alarm_armed(config):
@@ -11,7 +11,7 @@ def is_alarm_armed(config):
     Check if alarm is armed
     @return True if alarm is armed, False otherwise
     '''
-    result = urllib.urlopen(config['FIBARO_API_ADDRESS'] + "globalVariables")
+    result = urllib.request.urlopen(config['FIBARO_API_ADDRESS'] + "globalVariables")
     res = result.read()
     data = json.loads(res)
     

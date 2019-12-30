@@ -6,7 +6,7 @@
 import logging
 import os
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -43,14 +43,14 @@ class DailyQuoteService(ReoccuringBaseService):
         Fetch quote from dagenscitat.nu 
         '''
         self.logger.debug("Fetching quote")
-        quote = urllib2.urlopen(self.quote_url).read()
+        quote = urllib.request.urlopen(self.quote_url).read()
         quote = quote.split("<")[1]
         self.today_quote = quote.split(">")[1]
         #self.get_quest()
 
     def get_quest(self):
         self.logger.debug("Fetching quest")
-        quest = urllib2.urlopen(self.quest_url).read()
+        quest = urllib.request.urlopen(self.quest_url).read()
         quest = quest.split(">\\")[1]
         answer = quest.split("</div>")[1]
         quest = quest.split("</div>")[0]

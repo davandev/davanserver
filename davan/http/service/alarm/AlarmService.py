@@ -30,7 +30,7 @@ class AlarmService(BaseService):
     def clear_alarm(self, alarm):
         alarmkey = hashlib.md5(alarm).hexdigest()
         self.logger.info("Clear alarm [" + alarmkey + "]")
-        if self.alarms.has_key(alarmkey):
+        if alarmkey in self.alarms:
             self.alarms.pop(alarmkey)
 
     def get_alarms(self, Alarm):
@@ -48,7 +48,7 @@ class AlarmService(BaseService):
         """
         
         result = "Active alarms:</br>\n"
-        for value in self.alarms.itervalues():
+        for value in list(self.alarms.values()):
             result += value.toString() + "</br>\n"
          
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))

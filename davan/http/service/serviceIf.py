@@ -4,11 +4,10 @@
 
 import abc
 
-class ServiceIf(object):
+class ServiceIf(object, metaclass=abc.ABCMeta):
     '''
     Interface for services
     '''
-    __metaclass__ = abc.ABCMeta
     
     @abc.abstractmethod
     def handle_request(self, input):

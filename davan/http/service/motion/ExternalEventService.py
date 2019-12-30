@@ -8,7 +8,7 @@ import logging
 import os
 import traceback
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 import davan.config.config_creator as configuration

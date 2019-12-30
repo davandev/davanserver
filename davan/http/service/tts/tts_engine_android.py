@@ -4,7 +4,7 @@
 
 import logging 
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import davan.util.cmd_executor as executor
 import shutil
 import traceback
@@ -25,7 +25,7 @@ class TtsEngineAndroid():
         encoded_msg = msg.replace("_", "%20")
 #        self.logger.debug("Encoded string [" + encoded_msg + "]")
         try:
-            result = urllib2.urlopen(self.config["TTS_GENERATOR_CREATE_URL"] + "="+encoded_msg).read()
+            result = urllib.request.urlopen(self.config["TTS_GENERATOR_CREATE_URL"] + "="+encoded_msg).read()
         except:
             self.logger.error(traceback.format_exc())
             helper_functions.send_telegram_message(
@@ -41,7 +41,7 @@ class TtsEngineAndroid():
         @param filename name of the file to download should get
         '''
         self.logger.info("Downloading tts file ["+filename+"]") 
-        result = urllib2.urlopen(self.config["TTS_GENERATOR_FETCH_URL"]).read()
+        result = urllib.request.urlopen(self.config["TTS_GENERATOR_FETCH_URL"]).read()
         wav_file = self.config['TEMP_PATH'] + "/tmp.wav"
 
         if (not os.path.exists(self.config['TEMP_PATH'])):

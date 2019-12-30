@@ -5,7 +5,7 @@
 import logging
 import os
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import traceback
 from threading import Thread,Event
 
@@ -45,7 +45,7 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
                 scene_url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
                 self.logger.debug("Check state of " + scene)
 
-                result = urllib.urlopen(scene_url)
+                result = urllib.request.urlopen(scene_url)
                 res = result.read()
 
                 data = json.loads(res)
@@ -57,7 +57,7 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
                     scene_url = self.config['START_SCENE_URL'].replace("<ID>",scene)
                     self.logger.info("Starting scene " + scene_url)
                     self.restarts += 1
-                    result = urllib.urlopen(scene_url)        
+                    result = urllib.request.urlopen(scene_url)        
         except Exception:
             self.logger.error(traceback.format_exc())
             self.increment_errors()

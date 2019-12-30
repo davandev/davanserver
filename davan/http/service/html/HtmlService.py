@@ -3,7 +3,7 @@
 @author: davandev
 '''
 
-import __builtin__
+import builtins
 import logging
 import os
 import time
@@ -80,7 +80,7 @@ class HtmlService(BaseService):
         try:
             column_id = 1
             tot_result = ""
-            for name, service in __builtin__.davan_services.services.iteritems():
+            for name, service in builtins.davan_services.services.items():
                 if column_id == 1:
                     tot_result += '<div id="columns">\n'
                         
@@ -118,7 +118,7 @@ class HtmlService(BaseService):
         f = open(self.config["HTML_STATISTICS_FILE"])
         content = f.read()
         stat= constants.HTML_TABLE_START
-        for key, value in __builtin__.davan_services.services.iteritems():
+        for key, value in builtins.davan_services.services.items():
             service = self.expression.findall(str(value))[0]
             service_name = service.split(".")[0]
             success, error = value.get_counters()
@@ -138,7 +138,7 @@ class HtmlService(BaseService):
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
         content = content.replace('<DISK_VALUE>', result[4] + " ( Free " + result[3] + " )")
         result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
-        content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(__builtin__.davan_services.services.items()))) 
+        content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(list(builtins.davan_services.services.items())))) 
         return content
     
     def get_status(self):
@@ -154,7 +154,7 @@ class HtmlService(BaseService):
         result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
         memory_used = result[0]
         memory_free = result[1]
-        services = len(__builtin__.davan_services.services.keys())
+        services = len(list(builtins.davan_services.services.keys()))
         json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+diskusage+'", "Memory":"'+memory_used+'/'+memory_free+'",  "Services":"'+str(services)+'"}'
         return json_string
     

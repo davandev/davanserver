@@ -6,7 +6,7 @@
 import logging
 import os
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import davan.util.cmd_executor as executor
 import davan.util.constants as constants
@@ -144,7 +144,7 @@ class TvService(ReoccuringBaseService):
         '''
         Check status of vu stb.
         '''
-        result = urllib.urlopen(self.vu_status_cmd)
+        result = urllib.request.urlopen(self.vu_status_cmd)
         res = result.read()
         jres = json.loads(res)
         self.standby = jres['inStandby']

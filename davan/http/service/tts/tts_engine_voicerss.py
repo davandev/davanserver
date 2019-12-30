@@ -4,7 +4,7 @@
 
 import logging 
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 class TtsVoiceRssFactory():
     def __init__(self, config):
@@ -24,5 +24,5 @@ class TtsVoiceRssFactory():
         url = self.config['VOICERSS_URL'].replace("REPLACE_WITH_MESSAGE", encoded_msg)
         self.logger.debug("Url: ["+ url + "]")
         
-        urllib.urlretrieve(url, mp3_file )
+        urllib.request.urlretrieve(url, mp3_file )
         return False

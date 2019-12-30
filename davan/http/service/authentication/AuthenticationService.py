@@ -4,7 +4,7 @@
 
 import logging
 import os
-import urllib2, base64
+import urllib.request, urllib.error, urllib.parse, base64
 import re
 
 import davan.config.config_creator as configuration
@@ -78,7 +78,7 @@ class AuthenticationService(BaseService):
         @return the name of the user matching the pin code
         
         '''
-        if self.config['USER_PIN'].has_key(pin):
+        if pin in self.config['USER_PIN']:
             return self.config['USER_PIN'][pin]
         return None
         
@@ -90,11 +90,11 @@ class AuthenticationService(BaseService):
         
         if action in self.config:
             self.logger.debug("Action:" + self.config[action])
-            request = urllib2.Request(self.config[action])
+            request = urllib.request.Request(self.config[action])
             base64string = base64.encodestring(self.config["FIBARO_USER_NAME"] + ":" + 
                                                self.config["FIBARO_PASSWORD"])
             request.add_header("Authorization", "Basic %s" % base64string)   
-            result = urllib2.urlopen(request)    
+            result = urllib.request.urlopen(request)    
             self.logger.info("Result: " + str(result) )
         
 if __name__ == '__main__':

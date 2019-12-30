@@ -5,7 +5,7 @@
 import logging
 import os
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import traceback
 
 import davan.config.config_creator as configuration
@@ -55,7 +55,7 @@ class FibaroService(ReoccuringBaseService):
         '''
         Fetch and parse diagnostics from Fibaro system
         '''
-        result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics")
+        result = urllib.request.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics")
         res = result.read()
         data = json.loads(res)
             
@@ -63,12 +63,12 @@ class FibaroService(ReoccuringBaseService):
         '''
         Fetch and parse alarm status
         '''
-        result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['FibaroVirtualDeviceId'])
+        result = urllib.request.urlopen(self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['FibaroVirtualDeviceId'])
         res = result.read()
         data = json.loads(res)
-        for key, value in data.iteritems():
+        for key, value in data.items():
             if key == "properties":
-                for k, v in value.iteritems():
+                for k, v in value.items():
                     if k  == "ui.Label1.value":
                         self.alarmStatus["Skalskydd"] = str(v)
                     elif k == "ui.Label2.value":
@@ -77,7 +77,7 @@ class FibaroService(ReoccuringBaseService):
                         self.alarmStatus["Garden"] = str(v)
 
     def check_status(self):
-        for alarmType, alarmStatus in self.alarmStatus.iteritems():
+        for alarmType, alarmStatus in self.alarmStatus.items():
             if self.DISARMING in alarmStatus:
                 
                 helper.send_telegram_message(self.config, alarmType + " is in state " + alarmStatus)
