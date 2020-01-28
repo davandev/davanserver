@@ -290,21 +290,24 @@ def create_config(secret_config, config):
 
     #---------------------------------------------------------------------------------------------
     # LightSchema Service configuration
+    # deviceType 0=Onoff, 1=dimmer, 2=virtualdevice
     # Room, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
     #---------------------------------------------------------------------------------------------
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
-        #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
-        'Kitchen, 06:15,  08:30, weekdays,     10,        65,         1,        15,        194,            0',
-        'Kitchen, 16:15,  23:45, week,         10,        65,         2,        1,         194,            0',
-        'Uterum,  sunset,  23:45, week,        -1,        192,        1,        10,        195,            0',
-        'Outdoor, sunset, 23:40, week,         -1,        191,        1,        20,        196,            0',
-        'Farstukvist, sunset, 23:55, week,     -1,        226,        1,        1,         227,            0',
-        'Wilma,   06:30,  07:15, weekdays,      20,       173,        1,        20,        197,            1',
-        'Wilma,   sunset,  22:00, week,         20,       173,        2,        20,        197,            1',
-        'Viggo,   06:30,  07:15, weekdays,      10,       177,        1,        15,        198,            1',
-        'Viggo,   sunset,  21:00, week,         10,       177,        1,        15,        198,            1',
-        'Parkering, sunset, 23:55, week,       -1,        276,        1,        1,         281,            0',
+        #Room   | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
+        'Kitchen, 06:15,  08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
+        'Kitchen, 16:15,  23:45, week,         1,           10,        65,         2,        1,         194,            0',
+        'Uterum,  sunset,  23:45, week,        0,           -1,        192,        1,        10,        195,            0',
+        'Outdoor, sunset, 23:40, week,         0,           -1,        191,        1,        20,        196,            0',
+        'Farstukvist, sunset, 23:55, week,     0,           -1,        226,        1,        1,         227,            0',
+        'Wilma,   06:30,  07:15, weekdays,     1,           20,        173,        1,        20,        197,            1',
+        'Wilma,   sunset,  22:00, week,        1,           20,        173,        2,        20,        197,            1',
+        'Viggo,   06:30,  07:15, weekdays,     1,           10,        177,        1,        15,        198,            1',
+        'Viggo,   sunset,  21:00, week,        1,           10,        177,        1,        15,        198,            1',
+        'Parkering, sunset, 23:55, week,       0,           -1,        276,        1,        1,         281,            0',
+        'Datarum, 06:15,  08:30, week,         2,            1,        182,        1,        0,         304,            0',        
+        'Datarum, 16:15,  23:42,  week,        2,            1,        182,        1,        0,         304,            0',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 
@@ -433,7 +436,11 @@ def create_config(secret_config, config):
               'ViggoWindow'  :  '65539',
               'ViggoShelf'   :  '65540',
               'WilmaWindow'  :  '65541',
-              'WilmaSlinga'  :  '65542'
+              'WilmaSlinga'  :  '65542',
+              'Datarum'      :  '65544',
+              'Extra1'       :  '65545',
+              'Extra2'       :  '65546',
+              'Extra3'       :  '65547'    
     }
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):

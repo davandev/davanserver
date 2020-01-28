@@ -93,7 +93,7 @@ class TradfriService(BaseService):
         
         try:
             device_id = self.config['TRADFRI_DEVICES'][device_name]
-            current_state = commands.get_state(self.config, device_id)
+            current_state = commands.get_device_status(self.config, device_id)
             
             self.logger.debug("State of " + str(device_name) + " = " + str(current_state))
             
@@ -112,7 +112,9 @@ class TradfriService(BaseService):
         List all devices configured in Tradfri Live
         '''
         self.logger.info("List all Tradfri devices")
-        commands.get_status(self.config)
+        devices = commands.get_status(self.config)
+        self.logger.info("Found devices : " + str(devices))
+        return devices
 
 
         
@@ -123,6 +125,8 @@ if __name__ == '__main__':
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = TradfriService("",config)
-    test.get_toggle_device_state("KITCHEN")
-    test.list_all_devices()
-    test.perform("KITCHEN","1")
+    #test.get_toggle_device_state("KITCHEN")
+    devices = test.list_all_devices()
+    for device in devices:
+        commands.get_device_status(config, device)
+    #test.perform("KITCHEN","1")
