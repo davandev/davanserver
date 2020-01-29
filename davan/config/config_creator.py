@@ -231,7 +231,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # UPS Virtual device configuration
     #---------------------------------------------------------------------------------------------
-    config["UpsEnabled"] = True
+    config["UpsEnabled"] = False
     # UPS virtual id on fibaro system
     config["UPS_VD_ID"] = "156"
     # 
@@ -312,7 +312,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # ReceiverBot configuration
     #---------------------------------------------------------------------------------------------
-    config["ReceiverBotServiceEnabled"] = True
+    config["ReceiverBotServiceEnabled"] = False
     config["RECEIVER_BOT_TOKEN"] = secret_config.RECEIVER_BOT_TOKEN
 
     #---------------------------------------------------------------------------------------------
@@ -392,7 +392,7 @@ def create_config(secret_config, config):
     # Fibaro service
     # Monitor Fibaro system alarm state.
     #---------------------------------------------------------------------------------------------
-    config['FibaroServiceEnabled'] = True
+    config['FibaroServiceEnabled'] = False
     config['FibaroTimeout'] = 300
     config['FibaroVirtualDeviceId'] = "69"
 
@@ -408,12 +408,7 @@ def create_config(secret_config, config):
     config['DepartureServiceEnabled'] = True
     config['DEPARTURE_SETTING'] = secret_config.SL_API_KEYS
 
-    #---------------------------------------------------------------------------------------------
-    # AlarmService
-    # Keep a list of active alarms
-    #---------------------------------------------------------------------------------------------
-    config["AlarmServiceEnabled"] = True
-    
+   
     #---------------------------------------------------------------------------------------------
     # PowerUsageService
     # Measure usage time of certain devices with a Fibaro power plug. 
@@ -436,6 +431,13 @@ def create_config(secret_config, config):
               'WilmaWindow'  :  '65541',
               'WilmaSlinga'  :  '65542'
     }
+
+    #---------------------------------------------------------------------------------------------
+    # Common services
+    # 
+    #---------------------------------------------------------------------------------------------
+    config["AlarmServiceEnabled"] = True
+    config["DatabaseServiceEnabled"] = True
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

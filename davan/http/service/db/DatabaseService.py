@@ -1,0 +1,109 @@
+'''
+@author: davandev
+'''
+
+import logging
+import os
+
+import davan.config.config_creator as configuration
+import davan.util.constants as constants
+from davan.util import application_logger as log_manager
+from davan.http.service.base_service import BaseService
+
+import sqlite3
+import hashlib
+       
+class DatabaseService(BaseService):
+    '''
+    '''
+    def __init__(self, service_provider, config):
+        '''
+        Constructor
+        '''
+        BaseService.__init__(self, constants.DATABASE_SERVICE_NAME, service_provider, config)
+        self.logger = logging.getLogger(os.path.basename(__file__))
+        self.db_path = '/home/pi/davanserver/db/davan.db'
+
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return False
+
+    def maybe_create_table(self):
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+                    
+        #get the count of tables with the name
+        c.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='StatusTable' ''')
+
+        #if the count is 1, then table exists
+        if c.fetchone()[0]==1 :
+            print('Table exists.')
+            return False
+        else:
+            c.execute('''CREATE TABLE StatusTable
+             (tdate DATE, ttime TIME, name TEXT, status TEXT, enabled TEXT, success NUMERIC, failure NUMERIC, misc TEXT)''')
+			
+        
+        #commit the changes to db			
+        conn.commit()
+        #close the connection
+        conn.close()
+        return True
+
+    def services_started(self):
+        self.logger.debug("All services started")
+        if self.maybe_create_table():
+            conn=sqlite3.connect(self.db_path)
+
+            curs=conn.cursor()
+
+            status ="initial"
+            enabled="False"
+            success=0
+            fail=0
+            misc="initial"
+            for name, _ in self.services.services.items():
+                curs.execute("""INSERT INTO StatusTable values(date('now'),
+                time('now','localtime'), (?), (?), (?), (?), (?), (?))""", (name, status, enabled, success, fail, misc))
+
+            #commit the changes to db			
+            conn.commit()
+            #close the connection
+            conn.close()
+
+        #self.update_status(name,"initial", "initial")
+
+    def update_status(self, service_name, misc):
+        conn=sqlite3.connect(self.db_path)
+
+        curs=conn.cursor()
+
+        service_handle = self.services.get_service(service_name)
+        success, fail = service_handle.get_counters()
+        name = service_handle.get_name()
+        enabled = service_handle.is_service_running()
+        status = service_handle.get_status()
+#        curs.execute("""INSERT INTO StatusTable values(date('now'),
+ #           time('now'), (?), (?), (?), (?), (?), (?))""", (name, status, enabled, success, fail, misc))
+        curs.execute("""UPDATE StatusTable set 
+            tdate = date('now'),
+            ttime = time('now'), 
+            name = (?), 
+            status = (?), 
+            enabled = (?), 
+            success = (?), 
+            failure = (?), 
+            misc = (?) WHERE name==(?)""", (name, status, enabled, success, fail, misc, name))
+
+        # commit the changes
+        conn.commit()
+        conn.close()        
+        
+if __name__ == '__main__':
+    config = configuration.create()
+    log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
+    test = DatabaseService(None, config)
+    test.update_status("test","mystatis",",mymisc")

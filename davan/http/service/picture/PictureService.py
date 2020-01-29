@@ -40,7 +40,6 @@ class PictureService(BaseService):
             self.take_picture(camera)
             self.send_picture(camera)
             self.delete_picture()
-
         except:
             self.logger.error(traceback.format_exc())
             self.increment_errors()

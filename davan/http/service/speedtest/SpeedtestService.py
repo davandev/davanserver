@@ -56,7 +56,7 @@ class SpeedtestService(ReoccuringBaseService):
         self.upload = "0"
         
         try:
-            result = cmd.execute_block(self.command, "speedtest", True)
+            result = str(cmd.execute_block(self.command, "speedtest", True))
             match = self.ping_exp.search(result)
             if match:
                 self.ping = match.group(1).strip()
@@ -71,9 +71,13 @@ class SpeedtestService(ReoccuringBaseService):
             self.logger.warning("Caught exception when fetching internet speed")
                     
         self.encoded_string = json.JSONEncoder().encode({"Upload_Mbit":self.upload,"Download_Mbit":self.download,"Ping_ms": self.ping,"Date":str(self.measure_time)})
-        #self.logger.info("Encoded String:" + self.encoded_string)
 
-    
+    def get_status(self):
+        """
+        Return latest status of the service  
+        """
+        return self.encoded_string
+
     def get_next_timeout(self):
         '''
         Return time to next speed measuring
@@ -113,3 +117,4 @@ if __name__ == '__main__':
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
     test = SpeedtestService(config)
+    test.handle_timeout()

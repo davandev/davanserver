@@ -72,12 +72,15 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
             service = services.get_service(self.path)
             if not service == None:
                 result_code, mime_type, result = service.handle_request(self.path)
+                db = services.get_service(constants.DATABASE_SERVICE_NAME)
+                db.update_status(self.get_name(),"","")
+
                 self.send_response(result_code)    
                 self.send_header('Content-type',    mime_type)
                 if result is not None:
                     self.send_header('Content-Length', len(result))
                     self.end_headers()
-                    self.wfile.write(result)
+                    self.wfile.write(result.encode())
                 else:
                     self.end_headers()
 

@@ -55,7 +55,6 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_SELECT_LOGFILE"])
             content = f.read()
             f.close()
-        
         elif (msg == "/style.css"):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
@@ -81,15 +80,18 @@ class HtmlService(BaseService):
             column_id = 1
             tot_result = ""
             for name, service in builtins.davan_services.services.items():
-                if column_id == 1:
-                    tot_result += '<div id="columns">\n'
-                        
-                tot_result += service.get_html_gui(column_id)
-                column_id += 1
-                if column_id == 4:
-                    tot_result += '<div style="clear: both;"> </div></div>\n' 
-                    column_id = 1
-    
+                try:
+                    if column_id == 1:
+                        tot_result += '<div id="columns">\n'
+                            
+                    tot_result += service.get_html_gui(column_id)
+                    column_id += 1
+                    if column_id == 4:
+                        tot_result += '<div style="clear: both;"> </div></div>\n' 
+                        column_id = 1
+                except :
+                    self.logger.error(traceback.format_exc())        
+        
             tot_result += '<div style="clear: both;"> </div></div>\n' 
             return tot_result 
         except :
@@ -133,10 +135,10 @@ class HtmlService(BaseService):
         '''
         content = content.replace('<SERVER_STARTED_VALUE>', self.start_date)
         result = (cmd.execute_block("uptime", "uptime", True)).split()
-        content = content.replace('<UPTIME>', result[2] + " " + result[3])
-        content = content.replace('<CPU_VALUE>', result[9])
+        content = content.replace('<UPTIME>', str(result[2]) + " " + str(result[3]))
+        content = content.replace('<CPU_VALUE>', str(result[9]))
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
-        content = content.replace('<DISK_VALUE>', result[4] + " ( Free " + result[3] + " )")
+        content = content.replace('<DISK_VALUE>', str(result[4]) + " ( Free " + str(result[3]) + " )")
         result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
         content = content.replace('<RUNNING_SERVICES_VALUE>', str(len(list(builtins.davan_services.services.items())))) 
         return content
@@ -147,13 +149,13 @@ class HtmlService(BaseService):
         @return: status json formatted
         '''
         result = (cmd.execute_block("uptime", "uptime", True)).split()
-        uptime = result[2] + " " + result[3]
-        cpuload = result[9]
+        uptime = str(result[2]) + " " + str(result[3])
+        cpuload = str(result[9])
         result = (cmd.execute_block("df -hl | grep root", "memory usage", True)).split()
-        diskusage = result[4] + " ( Free " + result[3] + " )"
+        diskusage = str(result[4]) + " ( Free " + str(result[3]) + " )"
         result = (cmd.execute_block("free -h  | grep Mem | awk '{print $3,$4}'", "memory usage", True)).split()
-        memory_used = result[0]
-        memory_free = result[1]
+        memory_used = str(result[0])
+        memory_free = str(result[1])
         services = len(list(builtins.davan_services.services.keys()))
         json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+diskusage+'", "Memory":"'+memory_used+'/'+memory_free+'",  "Services":"'+str(services)+'"}'
         return json_string

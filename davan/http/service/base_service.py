@@ -111,3 +111,13 @@ class BaseService(ServiceIf):
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", "<li>Enabled: " + str(self.config[self.service_name+"Enabled"]) + " </li>\n")
         return column
+
+    def get_service(self, service_name):
+        if service_name in self.services.services:
+            return self.services.get_service(service_name)
+        return None
+
+    def services_started(self):
+        pass
+    def get_status(self):
+        return ""

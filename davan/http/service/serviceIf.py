@@ -21,6 +21,14 @@ class ServiceIf(object, metaclass=abc.ABCMeta):
         Abstract method returns name of the service  
         """
         return ""
+
+    @abc.abstractmethod
+    def get_status(self):
+        """
+        Abstract method returns status of the service  
+        """
+        return ""
+    
     
     @abc.abstractmethod
     def stop_service(self):
@@ -33,6 +41,13 @@ class ServiceIf(object, metaclass=abc.ABCMeta):
     def start_service(self):
         '''
         Abstract method to start service
+        '''
+        pass
+    
+    @abc.abstractmethod
+    def services_started(self):
+        '''
+        Abstract method indicate all services started
         '''
         pass
     

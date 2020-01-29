@@ -38,7 +38,8 @@ class ServiceInvoker(object):
         for root, _, files in os.walk(self.config['SERVICE_PATH']):
             for service_file in files:
                 if (service_file.endswith(".py") and 
-                    not service_file.endswith("__init__.pyc") and 
+                    not service_file.endswith("__init__.py") and 
+                    not service_file.endswith("serviceIf.py") and
                     not service_file.endswith("base_service.py")):
                         module_name = service_file.replace(".py","")
                         #mod = imp.load_compiled(module_name,os.path.join(root, service_file))
@@ -65,8 +66,22 @@ class ServiceInvoker(object):
             else:
                 self.logger.debug("Service " + name + " is disabled")
         self.running = True 
-        self.logger.info("All configured services started")
-            
+        self.logger.info("All configured services initialized")
+
+        while True:
+            wait_for_service = False
+            for name, service in self.services.items():
+                if service.is_enabled() and not service.is_service_running():
+                    self.logger.info("waiting for " +name )
+                    wait_for_service = True
+            if wait_for_service:
+                time.sleep(2)
+            else:
+                break
+
+        for name, service in self.services.items():
+            service.services_started()
+
     def get_service(self, service):
         """
         @param service, name of selected service
