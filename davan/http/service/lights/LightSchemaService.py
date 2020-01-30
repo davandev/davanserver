@@ -15,12 +15,12 @@ import davan.util.fibaro_functions as fibaro_functions
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 import datetime
 
-class TimeEvent():
-    def __init__(self, room, time, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
+def __init__(self, room, time, device_type, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
         self.logger = logging.getLogger(os.path.basename(__file__))
 
         self.room = room.strip()
         self.time = time.strip()
+        self.device_type = device_type.strip()
         self.light_level = light_level.strip()
         self.device_id = device_id.strip()
         self.label_id = label_id.strip()
@@ -37,6 +37,7 @@ class TimeEvent():
             "VD[ "+self.virtual_device_id+" ] "\
             "Action[ "+self.onoff+" ] "\
             "DeviceId[ "+self.device_id+" ] "\
+            "DeviceType[ "+self.device_type+" ] "\
             "DimmerValue[ "+self.light_level+" ] "\
             "ButtonId[ "+str(self.label_id)+" ] "\
             "Enabled_when_armed[ "+str(self.enabled_when_armed)+" ]"
@@ -101,23 +102,33 @@ class LightSchemaService(ReoccuringBaseService):
             return
             
         self.logger.info("Invoking event:" + event.toString())
-        if event.light_level != "-1" and event.onoff == "turnOn": # Lightlevel configured
+        if event.device_type == "1" and event.onoff == "turnOn": # Lightlevel configured
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_WITH_ARG_URL'], 
                     event.device_id, 
                     event.light_level)
+        elif event.device_type =="2": #Virtualdevice
+            button_id = int(event.light_level)
+            if event.onoff == "turnOff":
+                button_id +=1
+            url = helper.create_fibaro_url_press_button(
+                    self.config['VD_PRESS_BUTTON_URL'],
+                    event.device_id,
+                    button_id)
         else: # Just on/off switch
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_URL'], 
                     event.device_id, 
                     event.onoff)
-        
+                
         message = "Light is turned on"
         if event.onoff == "turnOff":
             message = "Light is turned off"
         
         # update status label of virtual device    
         self.update_virtual_device(event.virtual_device_id, "6", message)
+        self.logger.debug("URL:"+url)
+
         urllib.request.urlopen(url)        
             
     def schedule_events(self):
@@ -141,25 +152,27 @@ class LightSchemaService(ReoccuringBaseService):
             
             self.todays_events.append(TimeEvent(items[0].strip(),  # Room name
                                                 starttime, # Start time
-                                                items[4].strip(),  # Light level
-                                                items[5].strip(),  # Device id
-                                                items[6].strip(),  # labelid
-                                                items[8].strip(),  # virtualdevice id
+                                                items[4].strip(),  # Device type
+                                                items[5].strip(),  # Light level
+                                                items[6].strip(),  # Device id
+                                                items[7].strip(),  # labelid
+                                                items[9].strip(),  # virtualdevice id
                                                 constants.TURN_ON,
-                                                items[9].strip()))
+                                                items[10].strip()))
             
             stoptime = timer_functions.add_random_time(items[2].strip(),int(items[7].strip()))
             self.todays_events.append(TimeEvent(items[0].strip(),
                                                 stoptime,
                                                 items[4].strip(),
                                                 items[5].strip(),
-                                                items[6].strip(), 
-                                                items[8].strip(),
+                                                items[6].strip(),
+                                                items[7].strip(), 
+                                                items[9].strip(),
                                                 constants.TURN_OFF,
-                                                items[9].strip()))
+                                                items[10].strip()))
             
-            self.update_virtual_device(items[8].strip(),
-                                       items[6].strip(),
+            self.update_virtual_device(items[9].strip(),
+                                       items[7].strip(),
                                        str(starttime+ " => " + stoptime))
         
     def detemine_todays_events(self):
@@ -214,7 +227,7 @@ class LightSchemaService(ReoccuringBaseService):
                                 virtualdevice, 
                                 self.config['LABEL_SCHEDULE'].replace("<BID>",labelid), 
                                 message)
-            #self.logger.info("URL:"+url)
+            self.logger.debug("URL:"+url)
             
             passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             passman.add_password(None, url, self.config['FIBARO_USER_NAME'], self.config['FIBARO_PASSWORD'])

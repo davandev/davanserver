@@ -58,6 +58,11 @@ def create_fibaro_url_set_device_value(baseurl, vd_id, value):
     baseurl = baseurl.replace('<VALUE>', tempValue)
     return baseurl
 
+def create_fibaro_url_press_button(baseurl, vd_id, button_id):
+    baseurl = baseurl.replace("<ID>", vd_id)
+    baseurl = baseurl.replace("<BUTTONID>", str(button_id))
+    return baseurl    
+
 def send_telegram_message(config, msg):
     '''
     Send telegram message to all configured receivers

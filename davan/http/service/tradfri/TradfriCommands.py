@@ -7,7 +7,7 @@ import re
 from davan.util import cmd_executor as cmd_executor
 LOGGER = logging.getLogger(os.path.basename(__file__))
 
-def get_status(config, device):
+def get_device_status(config, device):
     LOGGER.debug("get_status")
     id = config["TRADFRI_ID"]
     id_key = config["TRADFRI_ID_KEY"]
@@ -18,6 +18,17 @@ def get_status(config, device):
     
     return cmd_executor.execute_block(cmd, "tradfri")
 
+def get_status(config):
+    LOGGER.debug("get_status")
+    id = config["TRADFRI_ID"]
+    id_key = config["TRADFRI_ID_KEY"]
+    ip = config["TRADFRI_GATEWAY_IP"]
+    cmd = "coap-client -v 0 -m get -u " + id + " -k " + id_key + " coaps://" + ip + ":5684/15001/"
+    LOGGER.debug("Cmd["+cmd+"]")
+    
+    return cmd_executor.execute_block(cmd, "tradfri", return_output=True)
+
+    
 def set_state(config, device, state):
     LOGGER.debug("set_state")
     id = config["TRADFRI_ID"]
