@@ -17,11 +17,12 @@ from davan.http.service.presence.AsusRouterDeviceStatus import AsusRouterDeviceS
     FAMILY, GUESTS, HOUSE
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
+
 '''
 '''
 class AsusRouterPresenceService(ReoccuringBaseService):
     '''
-    This service is tested on an Asus router and relies on Telnet being enabled in the router.
+    This service is tested on an Asus router and relies on Telnet/ssh being enabled in the router.
     It is enabled in the router configuration.
     The presence of the monitored devices are determined on whether the device is 
     connected on the wifi network.
@@ -40,7 +41,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         '''
         ReoccuringBaseService.__init__(self, constants.DEVICE_PRESENCE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        
+        logging.getLogger('paramiko.transport').setLevel(logging.CRITICAL)
+
         # Command to run on router to list available devices
         self.list_active_devices_cmd = "/usr/sbin/ip neigh"
         # Check status every 5th minute

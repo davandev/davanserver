@@ -54,7 +54,7 @@ DISHWASH_SERVICE_NAME = "DishWashService"
 DEPARTURE_SERVICE_NAME = "DepartureService"
 ALARM_SERVICE_NAME = "AlarmService"
 POWER_USAGE_SERVICE_NAME = "PowerUsageService"
-
+MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
 UPS_STATUS_REQ = "Status"

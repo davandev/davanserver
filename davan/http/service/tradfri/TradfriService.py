@@ -17,9 +17,53 @@ from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
 import davan.http.service.tradfri.TradfriCommands as commands
 
+class Device():
+    def __init__(self, name, id, type_name, type_id, type_id2, off, on):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+        self.name = name
+        self.device_id = id 
+        self.type_name = type_name
+        self.type_id = type_id
+        self.type_id2 = type_id2
+        self.off_value = off
+        self.on_value = on
+        self.logger.info(self.toString())
+
+    def get_value(self,action):
+	if action == 'on':
+	   return self.on_value
+        return self.off_value
+
+    def toString(self):
+        return "Name[ " + self.name + " ] "\
+            "DeviceId[ " + self.device_id + " ] "\
+            "DeviceTypeName[ " + self.type_name + " ] "\
+            "DeviceTypeId[ " + self.type_id + " ] "\
+            "Id[ " + self.type_id2 + " ] "\
+            "Off[ " + self.off_value + " ] "\
+            "On[ " + self.on_value + " ] "
+    
+class DeviceType():
+    def __init__(self, name, id, id2, off, on, ):
+        self.logger = logging.getLogger(os.path.basename(__file__))
+        self.name = name
+        self.id = id 
+        self.id2=id2
+        self.off_value = off
+        self.on_value = on
+        self.logger.info(self.toString())
+
+    def toString(self):
+        return "Name[ "+self.name+" ] "\
+            "DeviceId[ "+self.id+" ] "\
+            "Id[ "+self.id2+" ] "\
+            "Off[ "+self.off_value+" ] "\
+            "On[ "+self.on_value+" ] "
+
 class TradfriService(BaseService):
     '''
     classdocs
+    coap-client -m put -u tradfri-pi-bash -k GfInzH6JGn06qbab -B 30 coaps://192.168.2.4:5684/15001/65549 -e '{ "15015" : [{ "5536" : 10 }] }'
     '''
 
     def __init__(self, service_provider, config):
@@ -29,6 +73,8 @@ class TradfriService(BaseService):
         BaseService.__init__(self,constants.TRADFRI_SERVICE_NAME, service_provider, config)                    
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.STATES = {"off":0 , "on":1 }
+        self.devices = {}
+        self.get_devices_from_config()
         
     def parse_request(self, msg):
         '''
@@ -45,16 +91,21 @@ class TradfriService(BaseService):
         '''
         try:
             device_name, action_str = self.parse_request(msg)
+
+            if device_name not in self.devices.keys():
+                self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
+                return
             self.increment_invoked()
+            device = self.devices[device_name]
             
             if device_name == "all":
                 action = self.STATES[action_str]
                 self.toggle_all_device_states(action)
                 return
             elif action_str == "toggle":
-                action = self.get_toggled_device_state(device_name)
+                action = self.get_toggled_device_state(device)
             else:
-                action = self.STATES[action_str]
+		action = device.get_value(action_str)
             
             self.logger.info("Device[" +device_name+ "] Action[" + str(action_str)+"]")
             self.set_state(device_name, action)
@@ -73,33 +124,29 @@ class TradfriService(BaseService):
         @param device_name, name of device
         @param state, the wanted state
         '''
-        if device_name not in self.config['TRADFRI_DEVICES'].keys():
+        if device_name not in self.devices.keys():
             self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
             return
         
-        device_id = self.config['TRADFRI_DEVICES'][device_name]
-        self.logger.debug("Change state of device " + device_name + "[" + device_id + "]")
-        commands.set_state(self.config, device_id, state)
+        device = self.devices[device_name]
+        self.logger.debug("Change state of device " + device_name +"  New state["+str(state)+"]")
+        commands.set_state(self.config, device, state)
 
         
-    def get_toggled_device_state(self, device_name):
+    def get_toggled_device_state(self, device):
         '''
         Determine the state of the device, then return the opposite state
         @param device_name, name of device
         '''
-        if device_name not in self.config['TRADFRI_DEVICES'].keys():
-            self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
-            return
         
         try:
-            device_id = self.config['TRADFRI_DEVICES'][device_name]
-            current_state = commands.get_device_status(self.config, device_id)
+            current_state = commands.get_state(self.config, device)
             
-            self.logger.debug("State of " + str(device_name) + " = " + str(current_state))
+            self.logger.debug("State of " + device.name + " = " + str(current_state))
             
-            if current_state == str(self.STATES["on"]):
-                return self.STATES["off"]
-            return self.STATES["on"]
+            if current_state == str(device.off_value) or current_state == False:
+                return device.on_value
+            return device.off_value
         except Exception as e:
             self.logger.debug("Caught exception: " + str(e))
             raise Exception("Misslyckades att hämta status för "+ device_name)
@@ -116,7 +163,36 @@ class TradfriService(BaseService):
         self.logger.info("Found devices : " + str(devices))
         return devices
 
-
+    def get_devices_from_config(self):
+            '''
+            Parse all configured tradfri devices
+            '''
+            
+            device_types = {}
+            types = self.config['TRADFRI_DEVICE_TYPES']
+            for types in types:
+                items = types.split(",")          
+                device_types[items[0]]=DeviceType(items[0].strip(), items[1].strip(), items[2].strip(), items[3].strip(), items[4].strip())
+                
+            configuration = self.config['TRADFRI_DEVICES']
+            for device in configuration:
+                items = device.split(",")          
+                type = device_types[items[2].strip()]
+                
+                self.devices[items[0].strip()] = Device(items[0].strip(), # DeviceName
+                                                        items[1].strip(), # DeviceId,
+                                                        type.name,        # DeviceTypeName
+                                                        type.id,     # DeviceTypeId
+                                                        type.id2,     # DeviceTypeId
+                                                        type.off_value,   # Off value 
+                                                        type.on_value)    # On value 
+                    
+    def log_devices(self):
+        device_string = ""
+        for _,device in self.devices.items():
+            device_string += device.toString() + "\n"
+        
+        self.logger.debug(device_string)
         
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger
@@ -127,6 +203,7 @@ if __name__ == '__main__':
     test = TradfriService("",config)
     #test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
-    for device in devices:
-        commands.get_device_status(config, device)
+    test.handle_request("TradfriService?Datarum=toggle")
+    #for device in devices:
+    #    commands.get_device_status(config, device)
     #test.perform("KITCHEN","1")
