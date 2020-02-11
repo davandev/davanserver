@@ -17,7 +17,9 @@ from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
 import davan.http.service.tradfri.TradfriCommands as commands
 
+
 class Device():
+
     def __init__(self, name, id, type_name, type_id, type_id2, off, on):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.name = name
@@ -29,7 +31,8 @@ class Device():
         self.on_value = on
         self.logger.info(self.toString())
 
-    def get_value(self,action):
+    def get_value(self, action):
+
 	if action == 'on':
 	   return self.on_value
         return self.off_value
@@ -42,23 +45,26 @@ class Device():
             "Id[ " + self.type_id2 + " ] "\
             "Off[ " + self.off_value + " ] "\
             "On[ " + self.on_value + " ] "
+
     
 class DeviceType():
-    def __init__(self, name, id, id2, off, on, ):
+
+    def __init__(self, name, id, id2, off, on,):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.name = name
         self.id = id 
-        self.id2=id2
+        self.id2 = id2
         self.off_value = off
         self.on_value = on
         self.logger.info(self.toString())
 
     def toString(self):
-        return "Name[ "+self.name+" ] "\
-            "DeviceId[ "+self.id+" ] "\
-            "Id[ "+self.id2+" ] "\
-            "Off[ "+self.off_value+" ] "\
-            "On[ "+self.on_value+" ] "
+        return "Name[ " + self.name + " ] "\
+            "DeviceId[ " + self.id + " ] "\
+            "Id[ " + self.id2 + " ] "\
+            "Off[ " + self.off_value + " ] "\
+            "On[ " + self.on_value + " ] "
+
 
 class TradfriService(BaseService):
     '''
@@ -70,7 +76,7 @@ class TradfriService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self,constants.TRADFRI_SERVICE_NAME, service_provider, config)                    
+        BaseService.__init__(self, constants.TRADFRI_SERVICE_NAME, service_provider, config)                    
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.STATES = {"off":0 , "on":1 }
         self.devices = {}
@@ -91,7 +97,8 @@ class TradfriService(BaseService):
         '''
         try:
             device_name, action_str = self.parse_request(msg)
-
+            self.logger.info("Action:" +action_str)
+             
             if device_name not in self.devices.keys():
                 self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
                 return
@@ -104,10 +111,15 @@ class TradfriService(BaseService):
                 return
             elif action_str == "toggle":
                 action = self.get_toggled_device_state(device)
-            else:
-		action = device.get_value(action_str)
             
-            self.logger.info("Device[" +device_name+ "] Action[" + str(action_str)+"]")
+            elif action_str.startswith("setvalue"):
+                res = action_str.split('+')
+                action = res[1]
+                
+            else:
+		        action = device.get_value(action_str)
+            
+            self.logger.info("Device[" + device_name + "] Action[" + str(action_str) + "]")
             self.set_state(device_name, action)
         
         except Exception as e:
@@ -129,9 +141,8 @@ class TradfriService(BaseService):
             return
         
         device = self.devices[device_name]
-        self.logger.debug("Change state of device " + device_name +"  New state["+str(state)+"]")
+        self.logger.debug("Change state of device " + device_name + "  New state[" + str(state) + "]")
         commands.set_state(self.config, device, state)
-
         
     def get_toggled_device_state(self, device):
         '''
@@ -149,7 +160,7 @@ class TradfriService(BaseService):
             return device.off_value
         except Exception as e:
             self.logger.debug("Caught exception: " + str(e))
-            raise Exception("Misslyckades att hämta status för "+ device_name)
+            raise Exception("Misslyckades att hämta status för " + device_name)
             
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        
@@ -172,38 +183,39 @@ class TradfriService(BaseService):
             types = self.config['TRADFRI_DEVICE_TYPES']
             for types in types:
                 items = types.split(",")          
-                device_types[items[0]]=DeviceType(items[0].strip(), items[1].strip(), items[2].strip(), items[3].strip(), items[4].strip())
+                device_types[items[0]] = DeviceType(items[0].strip(), items[1].strip(), items[2].strip(), items[3].strip(), items[4].strip())
                 
             configuration = self.config['TRADFRI_DEVICES']
             for device in configuration:
                 items = device.split(",")          
                 type = device_types[items[2].strip()]
                 
-                self.devices[items[0].strip()] = Device(items[0].strip(), # DeviceName
-                                                        items[1].strip(), # DeviceId,
-                                                        type.name,        # DeviceTypeName
-                                                        type.id,     # DeviceTypeId
-                                                        type.id2,     # DeviceTypeId
-                                                        type.off_value,   # Off value 
-                                                        type.on_value)    # On value 
+                self.devices[items[0].strip()] = Device(items[0].strip(),  # DeviceName
+                                                        items[1].strip(),  # DeviceId,
+                                                        type.name,  # DeviceTypeName
+                                                        type.id,  # DeviceTypeId
+                                                        type.id2,  # DeviceTypeId
+                                                        type.off_value,  # Off value 
+                                                        type.on_value)  # On value 
                     
     def log_devices(self):
         device_string = ""
-        for _,device in self.devices.items():
+        for _, device in self.devices.items():
             device_string += device.toString() + "\n"
         
         self.logger.debug(device_string)
+
         
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger
     config = configuration.create()
     
-    app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
+    app_logger.start_logging(config['LOGFILE_PATH'], loglevel=4)
     
-    test = TradfriService("",config)
-    #test.get_toggle_device_state("KITCHEN")
+    test = TradfriService("", config)
+    # test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
     test.handle_request("TradfriService?Datarum=toggle")
-    #for device in devices:
+    # for device in devices:
     #    commands.get_device_status(config, device)
-    #test.perform("KITCHEN","1")
+    # test.perform("KITCHEN","1")

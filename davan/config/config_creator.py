@@ -304,16 +304,22 @@ def create_config(secret_config, config):
         'WilmaTak,    06:30,   08:15, weekdays,     1,           20,        173,        1,        20,        197,            1',
         'WilmaTak,    sunset,  22:00, week,         1,           20,        173,        2,        20,        197,            1',
         'WilmaFonster,06:30,   08:10, week,         1,           10,        180,        3,        3,         197,            0',
+        'WilmaFonster,sunset,  22:15, weekdays,     1,           10,        180,        3,        3,         197,            0',
+        'WilmaFonster,sunset,  23:15, weekend,      1,           10,        180,        3,        3,         197,            0',
         'ViggoTak,    06:30,   07:15, weekdays,     1,           10,        177,        1,        15,        198,            1',
         'ViggoTak ,   sunset,  21:00, week,         1,           10,        177,        2,        15,        198,            1',
         'ViggoFonster,06:30,   08:00, weekdays,     2,           13,        181,        3,        3,         198,            0',
         'ViggoFonster,sunset,  21:30, weekdays,     2,           13,        181,        3,        3,         198,            0',
+        'ViggoFonster,sunset,  23:00, weekend,      2,           13,        181,        3,        3,         198,            0',
         'ViggoBlinds ,07:30,   21:00, weekdays,     2,           10,        181,        3,        3,         198,            0',
         'ViggoBlinds ,10:00,   22:30, weekend,      2,           10,        181,        3,        3,         198,            0',
         'Parkering,   sunset,  23:55, week,         0,           -1,        276,        1,        1,         281,            0',
         'Datarum,     06:15,   08:30, week,         2,            1,        182,        1,        0,         304,            0',        
         'Datarum,     16:15,   23:42, week,         2,            1,        182,        1,        0,         304,            0',
         'LjusTrad,    17:15,   23:30, week,         2,           14,        184,        1,        5,         307,            0',
+        'Sovrum,      09:15,   10:30, weekend,      2,            1,        185,        1,        5,         308,            0',
+        'Sovrum,      06:15,   08:15, weekdays,     2,            1,        185,        1,        5,         308,            0',
+        'Sovrum,      17:15,   23:30, week,         2,            1,        185,        1,        5,         308,            0',
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
 
@@ -452,8 +458,8 @@ def create_config(secret_config, config):
               'WilmaSlinga,     65542,       SocketController',
               'Datarum,         65544,       SocketController',
               'Keypad,          65545,       SocketController',
-              'LjusTrad,        65546,       SocketController',
-              'Extra3,          65547,       SocketController'
+              'LjusTrad,        65547,       SocketController',
+              'Sovrum,          65546,       SocketController'
     ]
 
 
