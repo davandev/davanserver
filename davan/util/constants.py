@@ -55,6 +55,7 @@ DEPARTURE_SERVICE_NAME = "DepartureService"
 ALARM_SERVICE_NAME = "AlarmService"
 POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 DATABASE_SERVICE_NAME = "DatabaseService"
+TUYA_SERVICE_NAME ="TuyaService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
