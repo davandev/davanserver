@@ -57,6 +57,7 @@ POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 DATABASE_SERVICE_NAME = "DatabaseService"
 TUYA_SERVICE_NAME ="TuyaService"
 
+MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"
 UPS_STATUS_REQ = "Status"
