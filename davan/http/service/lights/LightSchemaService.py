@@ -174,7 +174,7 @@ class LightSchemaService(ReoccuringBaseService):
             
             self.update_virtual_device(items[9].strip(),
                                        items[7].strip(),
-                                       str(starttime+ " => " + stoptime))
+                                       str(items[0].strip() +" "+starttime+ " => " + stoptime))
         
     def detemine_todays_events(self):
         '''
