@@ -57,4 +57,17 @@ class ServiceIf(object, metaclass=abc.ABCMeta):
         Abstract method to determine if service is running
         '''
         pass
+    @abc.abstractmethod
+    def do_self_test(self):
+        '''
+        Abstract method, service should if applicable perform self test 
+        and report any errors
+        '''
+        pass
     
+    @abc.abstractmethod
+    def init_service(self):
+        '''
+        Abstract method to initialize service
+        '''
+        pass

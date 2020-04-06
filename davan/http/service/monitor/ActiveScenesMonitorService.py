@@ -11,6 +11,7 @@ from threading import Thread,Event
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
+import davan.util.helper_functions as helper
 
 from davan.util import application_logger as log_manager
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
@@ -42,10 +43,9 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
         '''
         try:
             for scene in self.config['MONITOR_SCENES']:
-                scene_url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
+                url = self.config['GET_STATE_SCENE_URL'].replace("<ID>",scene)
                 self.logger.debug("Check state of " + scene)
-
-                result = urllib.request.urlopen(scene_url)
+                result = helper.send_auth_request(url, self.config)
                 res = result.read()
 
                 data = json.loads(res)
@@ -82,8 +82,3 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
         result += "Nr of restarts[" +str(self.restarts)+"]</br>\n" 
         column = column.replace("<SERVICE_VALUE>", str(result))
         return column
-        
-if __name__ == '__main__':
-    config = configuration.create()
-    log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
-    test = ActiveScenesMonitorService()

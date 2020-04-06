@@ -15,22 +15,23 @@ import davan.util.fibaro_functions as fibaro_functions
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 import datetime
 
-def __init__(self, room, time, device_type, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
-        self.logger = logging.getLogger(os.path.basename(__file__))
+class TimeEvent():
+    def __init__(self, room, time, device_type, light_level ,device_id, label_id, virtual_device_id, onoff, enabled_when_armed):
+            self.logger = logging.getLogger(os.path.basename(__file__))
 
-        self.room = room.strip()
-        self.time = time.strip()
-        self.device_type = device_type.strip()
-        self.light_level = light_level.strip()
-        self.device_id = device_id.strip()
-        self.label_id = label_id.strip()
-        self.virtual_device_id = virtual_device_id.strip()
-        self.onoff = onoff.strip()
-        if enabled_when_armed == "1":
-            self.enabled_when_armed = True
-        else:
-            self.enabled_when_armed = False
-        
+            self.room = room.strip()
+            self.time = time.strip()
+            self.device_type = device_type.strip()
+            self.light_level = light_level.strip()
+            self.device_id = device_id.strip()
+            self.label_id = label_id.strip()
+            self.virtual_device_id = virtual_device_id.strip()
+            self.onoff = onoff.strip()
+            if enabled_when_armed == "1":
+                self.enabled_when_armed = True
+            else:
+                self.enabled_when_armed = False
+            
 
     def toString(self):
         return "Room[ "+self.room+" ] "\
@@ -147,7 +148,7 @@ class LightSchemaService(ReoccuringBaseService):
             starttime = items[1].strip()
             if starttime == "sunset":
                 starttime = self.services.get_service(constants.SUN_SERVICE_NAME).get_sunset()
-                self.logger.debug("Sunset configured: " + starttime)
+                self.logger.debug("Sunset configured: " + str(starttime))
             starttime = timer_functions.add_random_time(starttime,int(items[7].strip()))
             
             self.todays_events.append(TimeEvent(items[0].strip(),  # Room name
@@ -229,12 +230,7 @@ class LightSchemaService(ReoccuringBaseService):
                                 message)
             self.logger.debug("URL:"+url)
             
-            passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-            passman.add_password(None, url, self.config['FIBARO_USER_NAME'], self.config['FIBARO_PASSWORD'])
-            auth_handler = urllib.request.HTTPBasicAuthHandler(passman)
-            opener = urllib.request.build_opener(auth_handler)
-            urllib.request.install_opener(opener)            
-            urllib.request.urlopen(url)                
+            helper.send_auth_request(url,self.config)
                     
     def has_html_gui(self):
         """

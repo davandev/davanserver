@@ -47,6 +47,8 @@ class KeypadAliveService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.keypads= []
         self.time_to_next_timeout = 600
+
+    def init_service(self):
         try:
             for name, ip in self.config['KEYPAD_IP_ADDRESSES'].items():
                 keypad = KeypadEvent(name, ip)
@@ -54,12 +56,28 @@ class KeypadAliveService(ReoccuringBaseService):
                 self.keypads.append(keypad)
         except:
             self.logger.error(traceback.format_exc())
+            str = constants.CONFIGURATION_FAULT.replace("%", keypad.name)
+            self.raise_alarm(str,"error",str)
             
+
+    def do_self_test(self):
+        '''
+        Perform selftest
+        '''            
+        for keypad in self.keypads:
+            try:
+                urllib.request.urlopen(self.config['KEYPAD_PING_URL'].replace('%IP%',keypad.ip))
+            except:
+                self.logger.warning("Self test failed")
+                str = constants.KEYPAD_NOT_ANSWERING.replace("%", keypad.name)
+                self.raise_alarm(str,"Warning",str)
+
     def get_next_timeout(self):
         '''
         Return time to next timeout
         '''
         return self.time_to_next_timeout
+        
     
     def handle_timeout(self):
         '''
@@ -147,14 +165,3 @@ class KeypadAliveService(ReoccuringBaseService):
             html += "<li>Disconnected at: " + str(keypad.disconnected_at) + " </li>\n"
         column = column.replace("<SERVICE_VALUE>", html)
         return column
-    
-if __name__ == '__main__':
-    from davan.util import application_logger as log_config
-    import time
-    
-    config = configuration.create()
-    log_config.start_logging(config['LOGFILE_PATH'],loglevel=3)
-    
-    test = KeypadAliveService()
-    time.sleep(10)
-    test.stop_service()

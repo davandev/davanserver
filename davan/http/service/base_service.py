@@ -121,3 +121,14 @@ class BaseService(ServiceIf):
         pass
     def get_status(self):
         return ""
+    
+    def do_self_test(self):
+        '''
+        '''
+        pass
+    
+    
+    def init_service(self):
+        '''
+        '''
+        pass

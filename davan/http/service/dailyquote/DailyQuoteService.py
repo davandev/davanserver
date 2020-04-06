@@ -7,7 +7,7 @@ import logging
 import os
 import time
 import urllib.request, urllib.error, urllib.parse
-
+import traceback
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.timer_functions as timer_functions
@@ -37,7 +37,22 @@ class DailyQuoteService(ReoccuringBaseService):
         self.today_quote = None
         self.today_quest = None
         self.today_answer = None
-                            
+
+    def do_self_test(self):
+        try:
+            quote = str(urllib.request.urlopen(self.quote_url).read())
+            quote = quote.split(">")[1]
+            self.today_quote = quote.split("<")[0]
+            if(not self.today_quote):
+                raise Exception("")
+        except:
+            self.logger.error(traceback.format_exc())
+
+            self.logger.warning("Self test failed")
+            msg = "Failed to fetch daily quote"
+            self.raise_alarm(msg,"Warning",msg)
+
+                       
     def handle_timeout(self):
         '''
         Fetch quote from dagenscitat.nu 

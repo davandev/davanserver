@@ -330,7 +330,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # ReceiverBot configuration
     #---------------------------------------------------------------------------------------------
-    config["ReceiverBotServiceEnabled"] = False
+    config["ReceiverBotServiceEnabled"] = True
     config["RECEIVER_BOT_TOKEN"] = secret_config.RECEIVER_BOT_TOKEN
 
     #---------------------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ def create_config(secret_config, config):
     # Fibaro service
     # Monitor Fibaro system alarm state.
     #---------------------------------------------------------------------------------------------
-    config['FibaroServiceEnabled'] = False
+    config['FibaroServiceEnabled'] = True
     config['FibaroTimeout'] = 300
     config['FibaroVirtualDeviceId'] = "69"
 
@@ -482,7 +482,15 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["AlarmServiceEnabled"] = True
     config["DatabaseServiceEnabled"] = True
+    #---------------------------------------------------------------------------------------------
+    # Tuya service
+    #---------------------------------------------------------------------------------------------
     config["TuyaServiceEnabled"] = True
+    config["TuyaUsername"] = secret_config.TUYA_USER 
+    config["TuyaPassword"] = secret_config.TUYA_PWD
+    config["TuyaCountryCode"] = '46'
+    config["TuyaBizType"] = 'smart_life'
+    config["TuyaDevices"] = ['Stair_Color', 'Stair_sc', 'Stair_sc_1', 'Stair_sc_2','Stair_sc_3', 'Stair_sc_4','Stair_off'] 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

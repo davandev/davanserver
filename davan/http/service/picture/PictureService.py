@@ -13,6 +13,7 @@ import davan.util.constants as constants
 
 from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
+from urllib.parse import urlparse
 
 class PictureService(BaseService):
     '''
@@ -27,6 +28,25 @@ class PictureService(BaseService):
         BaseService.__init__(self, "TakePicture", service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
     
+    def do_self_test(self):
+        ping_cmd = "ping -c 1 "
+
+        for camera in self.config["CAMERAS"]:
+            try:
+                url = self.config["CAMERAS"][camera]
+                parsed = urlparse(url)
+                result = cmd_executor.execute_block(ping_cmd + parsed.hostname , "ConnectivityTest", True)
+                if "Destination Host Unreachable" in str(result):
+                    self.logger.info("results: " + str(result))
+                    raise Exception("Failed to connect")          
+            except:
+                self.logger.error(traceback.format_exc())
+
+                msg = "Self test failed, No connection to " +self.config["CAMERAS"][camera]
+                self.logger.error(msg)
+                self.raise_alarm(msg,"Warning",msg)
+
+
     def handle_request(self, msg):
         '''
         Handle received request, 

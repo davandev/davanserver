@@ -51,7 +51,21 @@ class CalendarService(ReoccuringBaseService):
         self.time_to_next_event = 30
         # Todays calendar events
         self.todays_events = None
-                                                 
+    
+    def do_self_test(self):
+        credentials = self.get_credentials()
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('calendar', 'v3', http=http,cache_discovery=False)
+        calendar_list = service.calendarList().list(pageToken=None).execute()
+        for calendar_list_entry in calendar_list['items']:
+            if calendar_list_entry['summary'] =='David':
+                return
+
+        self.logger.error("Self test failed")
+        msg = "Failed to fetch calendar"
+        self.raise_alarm(msg,"Warning",msg)
+
+
     def handle_timeout(self):
         '''
         Fetch todays calendar events

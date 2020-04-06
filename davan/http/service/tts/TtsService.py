@@ -11,6 +11,8 @@ from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
 from davan.http.service.tts.tts_engine_voicerss import TtsVoiceRssFactory 
 from davan.http.service.tts.tts_engine_android import TtsEngineAndroid
+import traceback
+from davan.util import helper_functions, constants
 
 class TtsService(BaseService):
     '''
@@ -63,7 +65,15 @@ class TtsService(BaseService):
             self.logger.debug("Using cached mp3 file")
         else:   
             self.logger.debug("Generate mp3 for [" + msg+"]")
-            isAsync = self.tts_engine.generate_mp3(msg, mp3_file)
+            try:
+                isAsync = self.tts_engine.generate_mp3(msg, mp3_file)
+            except:
+                self.logger.error(traceback.format_exc())
+                helper_functions.send_telegram_message(
+                                       self.config, 
+                                       constants.FAILED_TO_GENERATE_TTS)
+                self.increment_errors()
+
         
         if not isAsync:
             self.play_file(mp3_file)
@@ -107,9 +117,10 @@ class TtsService(BaseService):
         """
         Create the file name based on a md5 hash of the message
         """
+        msg = msg.encode('utf-8')
         md5 = hashlib.md5()
         md5.update(msg)
         result = md5.hexdigest()
         mp3_file = result + ".mp3"
-        self.logger.debug("Checksum of ["+msg+"] = " + result)        
+        self.logger.debug("Checksum of ["+str(msg)+"] = " + result)        
         return mp3_file

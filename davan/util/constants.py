@@ -14,6 +14,7 @@ TURN_OFF ="turnOff"
 
 FAILED_TO_GENERATE_TTS = "Misslyckades att generera text-till-tal."
 HUMIDITY_HIGH = "Fuktigt i badrummet, var god ventilera!"
+CONFIGURATION_FAULT = "Fel i konfigurationen Keypad[%]"
 KEYPAD_NOT_ANSWERING = "Alarm Keypad[%] har slutat svara"
 KEYPAD_ANSWERING = "Alarm Keypad[%] har startats"
 RAIN_STARTED = "Det har startat att regna"

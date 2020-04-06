@@ -47,8 +47,9 @@ class SonosService(BaseService):
         BaseService.__init__(self, constants.SONOS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.speakers = {}
+    
+    def init_service(self):        
         self.get_speakers_from_config()
-        
         
     def _parse_request(self, msg):
         return self.start(msg.split('=')[1])

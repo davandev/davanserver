@@ -55,8 +55,3 @@ class AlarmService(BaseService):
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", result)
         return column
-        
-if __name__ == '__main__':
-    config = configuration.create()
-    log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
-    test = AlarmService()

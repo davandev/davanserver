@@ -23,6 +23,7 @@ class DatabaseService(BaseService):
         BaseService.__init__(self, constants.DATABASE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.db_path = '/home/pi/davanserver/db/davan.db'
+        self.table_exist = False
 
     def has_html_gui(self):
         """
@@ -30,7 +31,7 @@ class DatabaseService(BaseService):
         """
         return False
 
-    def maybe_create_table(self):
+    def init_service(self):
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -40,22 +41,21 @@ class DatabaseService(BaseService):
 
         #if the count is 1, then table exists
         if c.fetchone()[0]==1 :
-            print('Table exists.')
-            return False
+            self.logger.debug('Database already exists.')
+            self.table_exist = True
         else:
             c.execute('''CREATE TABLE StatusTable
              (tdate DATE, ttime TIME, name TEXT, status TEXT, enabled TEXT, success NUMERIC, failure NUMERIC, misc TEXT)''')
 			
-        
-        #commit the changes to db			
-        conn.commit()
-        #close the connection
-        conn.close()
-        return True
+            
+            #commit the changes to db			
+            conn.commit()
+            #close the connection
+            conn.close()
 
     def services_started(self):
         self.logger.debug("All services started")
-        if self.maybe_create_table():
+        if not self.table_exist:
             conn=sqlite3.connect(self.db_path)
 
             curs=conn.cursor()

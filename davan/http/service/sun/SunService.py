@@ -33,27 +33,41 @@ class SunService(ReoccuringBaseService):
         self.set=None
         
         self.time_to_next_event = 0
-        
+
+    def do_self_test(self):
+        try:
+            self.calculate_sun_movements()
+        except:
+            self.logger.error(traceback.format_exc())
+
+            msg = "Self test failed"
+            self.logger.error(msg)
+            self.raise_alarm(msg,"Warning",msg)
+
+
     def handle_timeout(self):
         '''
         Calculate sun movements 
         '''
         try:
-            self.logger.debug("Calculating sun movements")
-            city_name = 'Stockholm'
-            a = Astral()
-            a.solar_depression = 'civil'
-            city = a[city_name]
-            sun = city.sun(date=datetime.now(), local=True)
-        
-            self.dawn = self.get_hour_and_minute(str(sun['dawn']))
-            self.rise = self.get_hour_and_minute(str(sun['sunrise']))
-            self.set = self.get_hour_and_minute(str(sun['sunset']))
-            self.dusk = self.get_hour_and_minute(str(sun['dusk']))
+            self.calculate_sun_movements()
         except:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
-            
+
+    def calculate_sun_movements(self):
+        self.logger.debug("Calculating sun movements")
+        city_name = 'Stockholm'
+        a = Astral()
+        a.solar_depression = 'civil'
+        city = a[city_name]
+        sun = city.sun(date=datetime.now(), local=True)
+    
+        self.dawn = self.get_hour_and_minute(str(sun['dawn']))
+        self.rise = self.get_hour_and_minute(str(sun['sunrise']))
+        self.set = self.get_hour_and_minute(str(sun['sunset']))
+        self.dusk = self.get_hour_and_minute(str(sun['dusk']))
+
     def get_sunset(self):
         return self.set
     

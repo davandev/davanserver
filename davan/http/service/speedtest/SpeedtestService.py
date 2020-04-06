@@ -107,14 +107,3 @@ class SpeedtestService(ReoccuringBaseService):
         column = column.replace("<SERVICE_VALUE>", htmlresult)
         
         return column
-
-
-if __name__ == '__main__':
-    from davan.util import application_logger as log_config
-    import time
-    
-    config = configuration.create()
-    log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    
-    test = SpeedtestService(config)
-    test.handle_timeout()

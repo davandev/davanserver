@@ -7,6 +7,7 @@ import logging
 import imp
 import time
 import re
+import traceback
 
 import davan.config.config_creator as app_config
 import davan.util.application_logger as app_logger
@@ -51,7 +52,7 @@ class ServiceInvoker(object):
                             service = attributes(self, self.config)
                             self.services[service.get_name()] = service
                         except :
-                            continue
+                            self.logger.error(traceback.format_exc())
                         self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
         return self.services
     
@@ -59,15 +60,43 @@ class ServiceInvoker(object):
         """
         Start all services that are enabled in configuration
         """
+        self._init_services()
+        self._test_services()
+        self._start_services()
+        self._wait_for_start()
+        self._notify_services_started()
+        
+
+    def _notify_services_started(self):    
+        self.logger.info("Notify service started")
+        for _, service in self.services.items():
+            service.services_started()
+
+    def _test_services(self):    
+        self.logger.info("Test services")
+        for _, service in self.services.items():
+            if service.is_enabled():
+                service.do_self_test()
+
+    def _init_services(self):
+        self.logger.info("Initializing services")
+        for name, service in self.services.items():
+            if service.is_enabled():
+                service.init_service()
+            else:
+                self.logger.debug("Service " + name + " is disabled")
+        self.logger.debug("All configured services initialized")
+    
+    def _start_services(self):
         self.logger.info("Starting services")
         for name, service in self.services.items():
             if service.is_enabled() and not service.is_service_running():
                 service.start_service()
             else:
                 self.logger.debug("Service " + name + " is disabled")
-        self.running = True 
-        self.logger.info("All configured services initialized")
+        self.logger.debug("All configured services started")
 
+    def _wait_for_start(self):
         while True:
             wait_for_service = False
             for name, service in self.services.items():
@@ -78,9 +107,8 @@ class ServiceInvoker(object):
                 time.sleep(2)
             else:
                 break
+        self.running = True 
 
-        for name, service in self.services.items():
-            service.services_started()
 
     def get_service(self, service):
         """
@@ -134,10 +162,10 @@ if __name__ == '__main__':
     config = app_config.create()
     app_logger.start_logging(config['LOGFILE_PATH'],loglevel=4)
     
-    test = ServiceInvoker()
-    test.invoke_services()
-    test.get_service("/tts=234?")
-    test.get_service("/presence?name=david")
-    time.sleep(10)
-    test.logger.info("Stopping thread")
-    test.stop_services()
+    # test = ServiceInvoker()
+    # test.invoke_services()
+    # test.get_service("/tts=234?")
+    # test.get_service("/presence?name=david")
+    # time.sleep(10)
+    # test.logger.info("Stopping thread")
+    # test.stop_services()

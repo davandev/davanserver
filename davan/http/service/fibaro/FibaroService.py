@@ -17,9 +17,6 @@ from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 class FibaroService(ReoccuringBaseService):
     '''
-    Monitor active scenes on Fibaro system, in some cases
-    scenes that should always be running are stopped.
-    Check status of each active scene and start it if stopped. 
     '''
 
     def __init__(self, service_provider, config):
@@ -34,7 +31,17 @@ class FibaroService(ReoccuringBaseService):
         self.storage = {'System':"-",'Recovery':'-'}
         self.DISARMING = "Disarming"
         self.faulty_state = ""
-        
+    
+    def do_self_test(self):
+        try:
+            helper.send_auth_request(self.config['FIBARO_API_ADDRESS'] + "diagnostics",self.config)
+        except:
+            self.logger.error(traceback.format_exc())
+
+            msg = "Self test failed"
+            self.logger.error(msg)
+            self.raise_alarm(msg,"Warning",msg)
+
     def get_next_timeout(self):
         return self.config['FibaroTimeout']
                                              
@@ -45,7 +52,7 @@ class FibaroService(ReoccuringBaseService):
         '''
         try:
             self.fetch_alarm_status()
-#            self.check_status()
+            self.check_status()
         except Exception:
             helper.send_telegram_message(self.config, "Ingen kontakt med HC2 Fibaro")
             self.logger.error(traceback.format_exc())
@@ -55,7 +62,10 @@ class FibaroService(ReoccuringBaseService):
         '''
         Fetch and parse diagnostics from Fibaro system
         '''
-        result = urllib.request.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics")
+        result = helper.send_auth_request(
+            urllib.request.urlopen(self.config['FIBARO_API_ADDRESS'] + "diagnostics"),
+            self.config)
+
         res = result.read()
         data = json.loads(res)
             
@@ -63,7 +73,10 @@ class FibaroService(ReoccuringBaseService):
         '''
         Fetch and parse alarm status
         '''
-        result = urllib.request.urlopen(self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['FibaroVirtualDeviceId'])
+        result = helper.send_auth_request(
+            self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['FibaroVirtualDeviceId'],
+            self.config)
+
         res = result.read()
         data = json.loads(res)
         for key, value in data.items():
@@ -82,7 +95,7 @@ class FibaroService(ReoccuringBaseService):
                 
                 helper.send_telegram_message(self.config, alarmType + " is in state " + alarmStatus)
                 self.faulty_state = alarmType
-                
+    
     def print_status(self):
         self.logger.info(str(self.alarmStatus))
         
@@ -107,8 +120,3 @@ class FibaroService(ReoccuringBaseService):
         column = column.replace("<SERVICE_NAME>", self.service_name)
         column = column.replace("<SERVICE_VALUE>", result)
         return column
-        
-if __name__ == '__main__':
-    config = configuration.create()
-    log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
-    test = FibaroService()

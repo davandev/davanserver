@@ -78,6 +78,7 @@ def encode_message(message,encode_whitespace=True):
     Encode the quote
     '''
     logger.debug("Encoding message")
+    message = str(message)
     if encode_whitespace:
         message = message.replace(" ","%20") 
     
@@ -95,3 +96,11 @@ def encode_message(message,encode_whitespace=True):
         
     logger.debug("Encoded message:" + message)
     return message
+
+def send_auth_request(url, config):
+    passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    passman.add_password(None, url, config['FIBARO_USER_NAME'], config['FIBARO_PASSWORD'])
+    auth_handler = urllib.request.HTTPBasicAuthHandler(passman)
+    opener = urllib.request.build_opener(auth_handler)
+    urllib.request.install_opener(opener)            
+    return urllib.request.urlopen(url)                

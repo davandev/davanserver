@@ -31,11 +31,13 @@ class ConnectivityService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.command = "ping -c 1 www.google.com"
         self.time_to_next_timeout = 60
+    
+    def init_service(self):
         current_time = datetime.datetime.now().strftime('%H:%M')
         self.connected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
         self.disconnected_at = None
         self.disconnected_result =[" 100% packet loss", "Temporary failure in name resolution"]
-        
+
     def handle_request(self, msg):
         '''
         Received request for the latest speedtest measurements.

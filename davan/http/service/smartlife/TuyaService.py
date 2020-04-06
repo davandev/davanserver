@@ -41,11 +41,12 @@ class TuyaService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.session = TuyaUtil.TuyaSession()
 
-        self.session.username = 'david.haraldsson@gmail.com'
-        self.session.password = '200322Woox'
-        self.session.countryCode = '46'
-        self.session.bizType = 'smart_life'
-        self.config_devices = ['Stair_Color', 'Stair_sc', 'Stair_sc_1', 'Stair_sc_2','Stair_sc_3', 'Stair_sc_4','Stair_off'] 
+    def init_service(self):
+        self.session.username = self.config['TuyaUsername']
+        self.session.password = self.config['TuyaPassword']
+        self.session.countryCode = self.config['TuyaCountryCode']
+        self.session.bizType = self.config['TuyaBizType']
+        self.config_devices =  self.config['TuyaDevices']
 
         TuyaUtil.get_access_token(self.session)
         TuyaUtil.discover_devices(self.session)

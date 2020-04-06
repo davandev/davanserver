@@ -46,7 +46,12 @@ class RoxcoreService(BaseService):
         self.state_exp = re.compile(r'<CurrentTransportState>(.+?)<\/CurrentTransportState>')
         self.uri_exp = re.compile(r'<TrackURI>(.+?)<\/TrackURI>')
         self.speakers = {}
+
+    def init_service(self):
         self.get_speakers_from_config()
+
+    def do_self_test(self):
+        pass
 
     def handle_request(self, msg, speaker_id="0"):
         '''

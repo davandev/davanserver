@@ -51,12 +51,3 @@ class Mp3ProviderService(BaseService):
             return constants.MIME_TYPE_WAV
         else: 
             return constants.MIME_TYPE_MP3
-        
-if __name__ == '__main__':
-    from davan.util import application_logger as log_config
-
-    config = configuration.create()
-    log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
-    
-    test = Mp3ProviderService()
-    test.handle_request("msg")

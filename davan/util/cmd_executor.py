@@ -52,7 +52,7 @@ def execute(command, process_debug_name=""):
 def _read_process_output(process, process_debug_name):
         out = ""
         while True:
-            out += process.stderr.readline()
+            out += process.stderr.readline().decode()
             sys.stderr.flush()
             if out == '' and process.poll() != None:
                 break

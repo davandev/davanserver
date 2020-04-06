@@ -8,6 +8,7 @@ import urllib.request, urllib.parse, urllib.error
 import datetime
 import telnetlib
 import paramiko
+import traceback
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
@@ -48,6 +49,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         self.time_to_next_timeout = 300
         self.unknown_devices = []
         self.family_devices = {}
+    
+    def init_service(self):
         for key, value in list(self.config['FAMILY_DEVICES'].items()):
             self.family_devices[key]= AsusRouterDeviceStatus(key, value, FAMILY)
             
@@ -59,6 +62,16 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for key, value in list(self.config['HOUSE_DEVICES'].items()):
             self.house_devices[key]= AsusRouterDeviceStatus(key, value, HOUSE)
     
+    def do_self_test(self):
+        try:
+            self.fetch_active_devices()
+        except e:
+            self.logger.error(traceback.format_exc())
+
+            msg = "Self test failed, failed to connect to router"
+            self.logger.error(msg)
+            self.raise_alarm(msg,"Warning",msg)
+
     def get_next_timeout(self):
         return self.time_to_next_timeout
     
@@ -123,27 +136,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         if (device.type == FAMILY or device.type == GUESTS):
             helper.send_telegram_message(self.config, device.user + " [" + device.active_toString() + "]")
         
-    def fetch_active_devices_telnet(self):
-        '''
-        Fetch a list of all devices status from router. 
-        @return list of found devices
-        '''
-#        self.logger.info("Fetch active devices from router")
-        tn = telnetlib.Telnet(self.config['ROUTER_ADRESS'])
-        
-        tn.read_until("login: ")
-        tn.write(self.config['ROUTER_USER'] + "\n")
-        tn.read_until("Password: ")
-        tn.write(self.config['ROUTER_PASSWORD'] + "\n")
-        
-        tn.write(self.list_active_devices_cmd + "\n")
-        tn.write("exit\n")
-        
-        result = tn.read_all()
-        lines = result.split("\n")
-    
-        return lines
-
     def fetch_active_devices(self):
         '''
         Fetch a list of all devices status from router. 

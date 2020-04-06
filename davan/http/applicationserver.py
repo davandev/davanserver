@@ -24,6 +24,7 @@ import builtins
 import davan.util.application_logger as log_manager
 import davan.config.config_creator as config_factory
 import davan.util.helper_functions as helper
+import davan.util.constants as constants
 
 from davan.http.ServiceInvoker import ServiceInvoker
 global services
@@ -73,7 +74,7 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
             if not service == None:
                 result_code, mime_type, result = service.handle_request(self.path)
                 db = services.get_service(constants.DATABASE_SERVICE_NAME)
-                db.update_status(self.get_name(),"","")
+                db.update_status(service.get_name(),"")
 
                 self.send_response(result_code)    
                 self.send_header('Content-type',    mime_type)

@@ -19,7 +19,6 @@ import davan.http.service.tradfri.TradfriCommands as commands
 
 
 class Device():
-
     def __init__(self, name, id, type_name, type_id, type_id2, off, on):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.name = name
@@ -32,9 +31,8 @@ class Device():
         self.logger.info(self.toString())
 
     def get_value(self, action):
-
-	if action == 'on':
-	   return self.on_value
+        if action == 'on':
+            return self.on_value
         return self.off_value
 
     def toString(self):
@@ -117,7 +115,7 @@ class TradfriService(BaseService):
                 action = res[1]
                 
             else:
-		        action = device.get_value(action_str)
+                action = device.get_value(action_str)
             
             self.logger.info("Device[" + device_name + "] Action[" + str(action_str) + "]")
             self.set_state(device_name, action)
@@ -160,11 +158,7 @@ class TradfriService(BaseService):
             return device.off_value
         except Exception as e:
             self.logger.debug("Caught exception: " + str(e))
-<<<<<<< HEAD
             raise Exception("Misslyckades att hamta status for "+ device_name)
-=======
-            raise Exception("Misslyckades att hämta status för " + device_name)
->>>>>>> master
             
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        
