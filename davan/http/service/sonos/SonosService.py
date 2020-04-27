@@ -81,7 +81,7 @@ class SonosService(BaseService):
         except:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
     
     
     def _send_to_speaker(self, speaker_address, msg, play_announcement):

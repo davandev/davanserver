@@ -65,7 +65,7 @@ class PictureService(BaseService):
             self.increment_errors()
             self.logger.error("Failed to handle picture request")
             return constants.RESPONSE_NOT_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_FAILED_TO_TAKE_PICTURE
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
     def parse_request(self, msg):
         '''

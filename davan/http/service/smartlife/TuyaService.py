@@ -56,7 +56,8 @@ class TuyaService(BaseService):
         @param msg, received request
         '''
         msg = msg.split('?')
-        return msg[1]
+        res = msg[1].split('=')
+        return res[0], res[1]
 
     def handle_request(self, msg):
         '''
@@ -64,18 +65,27 @@ class TuyaService(BaseService):
         forward to Tradfri gateway.
         '''
         try:
-            scene_name = self.parse_request(msg)
+            scene_name, action = self.parse_request(msg)
             self.increment_invoked()
-            if scene_name in self.config_devices:
+            if scene_name not in self.config_devices:
+                return
+            if action =="Toggle":
+                TuyaUtil.poll_devices_update(self.session)
                 device = TuyaUtil.get_device_by_name(self.session, scene_name)
-                device.turn_on()
-                device.turn_on()
-        
+                if device.data['state'] == 'true':
+                    scene_name = scene_name.replace("Light","off")
+                else:    
+                    scene_name = scene_name.replace("Light","Color")
+
+            device = TuyaUtil.get_device_by_name(self.session, scene_name)
+            device.turn_on()
+            device.turn_on()
+ 
         except Exception as e:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
             #helper.send_telegram_message(self.config, str(e)) 
             self.raise_alarm(constants.TRADFRI_NOT_ANSWERING, "Warning", constants.TRADFRI_NOT_ANSWERING)
 
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
             

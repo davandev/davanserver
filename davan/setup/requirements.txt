@@ -5,7 +5,8 @@ pychromecast
 soco==0.12
 google-api-python-client
 speedtest-cli
-pyharmony
 nokia
 oauth
 configobj
+aioharmony
+tellduslive

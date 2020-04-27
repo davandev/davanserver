@@ -78,6 +78,8 @@ class TradfriService(BaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.STATES = {"off":0 , "on":1 }
         self.devices = {}
+    
+    def init_service(self):
         self.get_devices_from_config()
         
     def parse_request(self, msg):
@@ -126,7 +128,7 @@ class TradfriService(BaseService):
             helper.send_telegram_message(self.config, str(e)) 
             self.raise_alarm(constants.TRADFRI_NOT_ANSWERING, "Warning", constants.TRADFRI_NOT_ANSWERING)
 
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
     
     def set_state(self, device_name, state):
         '''
@@ -158,7 +160,7 @@ class TradfriService(BaseService):
             return device.off_value
         except Exception as e:
             self.logger.debug("Caught exception: " + str(e))
-            raise Exception("Misslyckades att hamta status for "+ device_name)
+            raise Exception("Misslyckades att hamta status for "+ str(device.name))
             
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        

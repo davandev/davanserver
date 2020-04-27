@@ -68,7 +68,7 @@ class PowerUsageService(ReoccuringBaseService):
             self.increment_errors()
             self.logger.error("Failed to handle power usage request")
             return constants.RESPONSE_NOT_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_FAILED_TO_PARSE_REQUEST
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
     def start_count_down(self):
         

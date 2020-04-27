@@ -28,9 +28,9 @@ def execute_block(command, process_debug_name="",return_output=False):
     out, err = p.communicate()
 
     if return_output:
-        return out
+        return str(out)
 
-    logger.debug(out + " Error:" + err)
+    logger.debug(str(out) + "Error:" + str(err))
     
     if p.returncode == 1:
         return False

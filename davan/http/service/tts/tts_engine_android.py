@@ -43,7 +43,7 @@ class TtsEngineAndroid():
         if (os.path.exists(wav_file)):
             os.remove(wav_file)
             
-        fd = open(wav_file, 'w')
+        fd = open(wav_file, 'wb')
         fd.write(result)
         fd.close()
         

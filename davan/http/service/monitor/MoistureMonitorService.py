@@ -29,6 +29,7 @@ class MoistureMonitorService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.humidity_value = 0
                 
+        
     def get_next_timeout(self):
         return self.config['MoistureMonitorTimeout']
                                              
@@ -57,7 +58,10 @@ class MoistureMonitorService(ReoccuringBaseService):
         '''
         Fetch and parse alarm status
         '''
-        result = urllib.urlopen(self.config['FIBARO_API_ADDRESS'] + "devices?id=" + self.config['MoistureVdId'])
+        result = helper.send_auth_request(
+            self.config['FIBARO_API_ADDRESS'] +"devices?id=" + self.config['MoistureVdId'],
+            self.config)
+
         res = result.read()
         data = json.loads(res)
 

@@ -96,7 +96,7 @@ class DepartureService(BaseService):
         
         enc_msg = helper_functions.encode_message(msg)
         self.services.get_service(constants.TTS_SERVICE_NAME).start(enc_msg,constants.SPEAKER_HALLWAY)
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
     
     def create_message(self, timetable, bus_stop_name):
         '''

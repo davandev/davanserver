@@ -56,7 +56,7 @@ class CalendarService(ReoccuringBaseService):
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http,cache_discovery=False)
-        calendar_list = service.calendarList().list(pageToken=None).execute()
+        calendar_list =service.calendarList().list(pageToken=None).execute()
         for calendar_list_entry in calendar_list['items']:
             if calendar_list_entry['summary'] =='David':
                 return
@@ -171,7 +171,12 @@ class CalendarService(ReoccuringBaseService):
         htmlresult = ""
         if self.todays_events != None and len(self.todays_events) >0:
             for event in self.todays_events:
-                htmlresult += "<li>" + event.calendar.encode("utf-8") + " " + event.event.encode("utf-8") + "</li>\n"
+                htmlresult += "<li>" 
+                htmlresult += str(event.calendar.encode("utf-8")) 
+                htmlresult += " " 
+                htmlresult += str(event.event.encode("utf-8")) 
+                htmlresult += "</li>\n"
+                
         else:
             htmlresult += "<li>No more scheduled events today</li>\n"            
         

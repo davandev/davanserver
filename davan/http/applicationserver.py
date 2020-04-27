@@ -11,7 +11,7 @@ import datetime
 from http.server import BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 import socket
-import http.server
+import http.server#
 import http.client
 import cgi
 import argparse
@@ -81,7 +81,8 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
                 if result is not None:
                     self.send_header('Content-Length', len(result))
                     self.end_headers()
-                    self.wfile.write(result.encode())
+                    #self.wfile.write(result.encode())
+                    self.wfile.write(result)
                 else:
                     self.end_headers()
 
@@ -95,12 +96,12 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.send_header('Content-type',    'text/html')
                     self.end_headers()
-                    self.wfile.write("hai")
+                    self.wfile.write(b"hai")
                 else:
                     self.send_response(200)
                     self.send_header('Content-type',    'text/html')
                     self.end_headers()
-                    self.wfile.write("hai")
+                    self.wfile.write(b"hai")
                     self.server.socket.close()
             else:
                 self.send_error(404, 'File Not Found: %s' % self.path)

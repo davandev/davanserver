@@ -24,12 +24,12 @@ def get_status(config):
     id_key = config["TRADFRI_ID_KEY"]
     ip = config["TRADFRI_GATEWAY_IP"]
     cmd = "coap-client -v 0 -m get -u " + id + " -k " + id_key + " coaps://" + ip + ":5684/15001/"
-    LOGGER.debug("Cmd["+cmd+"]")
+    LOGGER.debug("Cmd["+str(cmd)+"]")
     
     result = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
-    LOGGER.debug(result)
+    LOGGER.debug(str(result))
     reg_exp = re.compile(r'[65536,(.+?)]')
-    match = reg_exp.search(result)
+    match = reg_exp.search(str(result))
     if match:
         LOGGER.debug("Matching:" + str(match.group(0)))
         return match.group(0)
@@ -42,7 +42,7 @@ def set_state(config, device, state):
     ip = config["TRADFRI_GATEWAY_IP"]
 
     cmd = 'coap-client -m put -u ' + id + ' -k ' + id_key +  ' -B 30 coaps://' + ip + ':5684/15001/' + device.device_id +' -e \'{ "'+device.type_id+'" : [{ "'+device.type_id2+'" : '+ str(state) +' }] }\''
-    LOGGER.debug("Cmd["+cmd+"]")
+    LOGGER.debug("Cmd["+str(cmd)+"]")
     
     return cmd_executor.execute_block(cmd, "tradfri")
 
@@ -53,12 +53,12 @@ def get_state(config, device):
     ip = config["TRADFRI_GATEWAY_IP"]
 
     cmd = 'coap-client -m get -u ' + id + ' -k ' + id_key +  ' -B 30 coaps://' + ip + ':5684/15001/' + device.device_id
-    LOGGER.debug("Cmd["+cmd+"]")
+    LOGGER.debug("Cmd["+str(cmd)+"]")
     
     rsp = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
-    LOGGER.debug("RSP["+rsp+"]")
+    LOGGER.debug("RSP[" + str(rsp) + "]")
     reg_exp = re.compile(r'5850\":(.+?),\"5851')
-    match = reg_exp.search(rsp)
+    match = reg_exp.search(str(rsp))
     if match:
         LOGGER.debug("Matching:" + str(match.group(1)))
         return match.group(1)

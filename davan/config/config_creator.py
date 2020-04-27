@@ -140,6 +140,9 @@ def create_config(secret_config, config):
     config["TELLDUS_PUBLIC_KEY"] = secret_config.TELLDUS_PUBLIC_KEY
     # Telldus private key
     config["TELLDUS_PRIVATE_KEY"] =  secret_config.TELLDUS_PRIVATE_KEY
+    config["TELLDUS_TOKEN"] =  secret_config.TELLDUS_TOKEN
+    config["TELLDUS_TOKEN_SECRET"] =  secret_config.TELLDUS_TOKEN_SECRET
+    
     # Dict holding name of room and virtual device id
     config['SENSOR_MAP'] = {
                # Room name : HC2 Virtualdevice ID 
@@ -478,10 +481,15 @@ def create_config(secret_config, config):
 
     #---------------------------------------------------------------------------------------------
     # Common services
-    # 
     #---------------------------------------------------------------------------------------------
     config["AlarmServiceEnabled"] = True
     config["DatabaseServiceEnabled"] = True
+
+    #---------------------------------------------------------------------------------------------
+    # ExternalEvent service
+    #---------------------------------------------------------------------------------------------
+    config["ExternalEventServiceEnabled"] = True
+
     #---------------------------------------------------------------------------------------------
     # Tuya service
     #---------------------------------------------------------------------------------------------
@@ -490,7 +498,10 @@ def create_config(secret_config, config):
     config["TuyaPassword"] = secret_config.TUYA_PWD
     config["TuyaCountryCode"] = '46'
     config["TuyaBizType"] = 'smart_life'
-    config["TuyaDevices"] = ['Stair_Color', 'Stair_sc', 'Stair_sc_1', 'Stair_sc_2','Stair_sc_3', 'Stair_sc_4','Stair_off'] 
+    config["TuyaDevices"] = [
+        'Stair_Light','Stair_Color', 'Stair_sc', 'Stair_sc_1', 'Stair_sc_2','Stair_sc_3', 'Stair_sc_4','Stair_off',
+        'Tv_Light','Tv_Color', 'Tv_sc', 'Tv_sc_1', 'Tv_sc_2','Tv_sc_3', 'Tv_sc_4','Tv_off'
+        ] 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

@@ -52,7 +52,7 @@ class KeypadAliveService(ReoccuringBaseService):
         try:
             for name, ip in self.config['KEYPAD_IP_ADDRESSES'].items():
                 keypad = KeypadEvent(name, ip)
-                self.logger.info(keypad.toString())
+                self.logger.debug(keypad.toString())
                 self.keypads.append(keypad)
         except:
             self.logger.error(traceback.format_exc())

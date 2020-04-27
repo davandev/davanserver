@@ -42,8 +42,7 @@ class TtsService(BaseService):
         else:
             self.start(msg.split('=')[1],"1")
 
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
-    
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")    
     def start(self, msg, speakers, cache=False):
         '''
         Recevied request from Fibaro system to speak message.

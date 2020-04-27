@@ -40,9 +40,9 @@ class ReceiverBotService(BaseService):
         '''
         BaseService.__init__(self,constants.RECEIVER_BOT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
- #       logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
- #       logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
- #       logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
+        logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
+        logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
+        logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
         self.current_speaker = "0"
         self.selected_service = None
         self.TAG_RE = re.compile(r'<[^>]+>')
@@ -65,7 +65,7 @@ class ReceiverBotService(BaseService):
         
         if command == "start":
             self.start_service()
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
     
     def tts(self, update, context):
         text = str(update.message.text.replace("/tts ", ""))

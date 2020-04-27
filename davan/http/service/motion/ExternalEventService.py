@@ -98,7 +98,7 @@ class ExternalEventService(BaseService):
         """
         Override if service has gui
         """
-        return True
+        return False
     
     def get_html_gui(self, column_id):
         """

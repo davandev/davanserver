@@ -65,7 +65,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
     def do_self_test(self):
         try:
             self.fetch_active_devices()
-        except e:
+        except Exception as e:
             self.logger.error(traceback.format_exc())
 
             msg = "Self test failed, failed to connect to router"
@@ -132,7 +132,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
                                    self.config['FIBARO_VD_PRESENCE_ID'],
                                    self.config['FIBARO_VD_MAPPINGS'][device.user],
                                    device.active_toString())
-            urllib.request.urlopen(url)        
+            helper.send_auth_request(url,self.config)
         if (device.type == FAMILY or device.type == GUESTS):
             helper.send_telegram_message(self.config, device.user + " [" + device.active_toString() + "]")
         

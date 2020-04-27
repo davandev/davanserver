@@ -5,6 +5,7 @@
 
 import logging
 import os
+import traceback
 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -32,11 +33,16 @@ class Mp3ProviderService(BaseService):
             self.increment_invoked()
             self.logger.info("Received service request for file[" + msg + "]")
             res = msg.split('=')
-            f = open(self.config['MP3_ROOT_FOLDER'] + res[1])
+            #with open(self.config['MP3_ROOT_FOLDER'] + res[1], encoding="utf8", errors='ignore') as f:
+
+            f = open(self.config['MP3_ROOT_FOLDER'] + res[1], 'rb')
             content = f.read()
             f.close()
             return constants.RESPONSE_OK, self.get_content_type(res[1]), content
-        except:
+        except Exception as e:
+            self.logger.error(str(e))
+            self.logger.error(traceback.format_exc())
+
             self.increment_errors()
             self.logger.warning("Failed to open file: " + self.config['MP3_ROOT_FOLDER'] + res[1])
             return constants.RESPONSE_NOT_OK, constants.RESPONSE_FILE_NOT_FOUND

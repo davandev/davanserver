@@ -17,9 +17,9 @@ class TvService(ReoccuringBaseService):
     '''
     classdocs
     sys.setdefaultencoding('latin-1')
-     harmony --harmony_ip 192.168.2.143 start_activity --activity 26681450
-     harmony --harmony_ip 192.168.2.143 power_off
-     harmony --harmony_ip 192.168.2.143 show_config
+     aioharmony --harmony_ip 192.168.2.143 start_activity --activity 26681450
+     aioharmony --harmony_ip 192.168.2.143 power_off
+     aioharmony --harmony_ip 192.168.2.143 show_config
      http://192.168.2.173/api/statusinfo
     '''
 
@@ -30,7 +30,7 @@ class TvService(ReoccuringBaseService):
         ReoccuringBaseService.__init__(self, constants.TV_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         
-        self.base_cmd = "harmony --harmony_ip "
+        self.base_cmd = "aioharmony --harmony_ip "
         self.start_activity_cmd = ' start_activity --activity '
         self.stop_activity_cmd = ' power_off'
         self.current_activity_cmd = ' show_current_activity'
@@ -59,11 +59,11 @@ class TvService(ReoccuringBaseService):
         if action == "off":
             self.enable(False)
         else:
-            self.enabled(True)
+            self.enable(True)
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
             
     def handle_timeout(self):
         '''
-        Calculate sun movements 
         '''
         self.check_tv_status()
         if self.status == "On":
@@ -130,9 +130,9 @@ class TvService(ReoccuringBaseService):
         cmd += self.current_activity_cmd
         result = executor.execute_block(cmd, 'Harmony', True).strip()
 
-        if result == 'PowerOff':
+        if 'PowerOff' in result:
             self.status = 'Off'
-        elif result == 'Watch TV':
+        elif 'Watch TV' in result:
             self.status = 'On'
         else:
             self.logger.warning("Unknown activity")
@@ -179,5 +179,6 @@ if __name__ == '__main__':
     config = configuration.create()
     log_manager.start_logging(config['LOGFILE_PATH'],loglevel=3)
     test = TvService("", config)
+    test.enable(True)
  #   test.get_html_gui("0")
  

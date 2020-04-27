@@ -57,6 +57,7 @@ ALARM_SERVICE_NAME = "AlarmService"
 POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 DATABASE_SERVICE_NAME = "DatabaseService"
 TUYA_SERVICE_NAME ="TuyaService"
+EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"
 
 MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"
 UPS_BATTERY_MODE = "BatteryMode"

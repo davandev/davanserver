@@ -50,7 +50,7 @@ class LogReceiverService(BaseService):
         fd = open(logfile,writemode)
         fd.write(log_entry + "\n")
 
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
         
             
