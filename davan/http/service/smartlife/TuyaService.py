@@ -62,7 +62,7 @@ class TuyaService(BaseService):
     def handle_request(self, msg):
         '''
         Light on/off request received from Fibaro system,
-        forward to Tradfri gateway.
+        forward to Tuya ledstrips.
         '''
         try:
             scene_name, action = self.parse_request(msg)
@@ -84,8 +84,7 @@ class TuyaService(BaseService):
         except Exception as e:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
-            #helper.send_telegram_message(self.config, str(e)) 
-            self.raise_alarm(constants.TRADFRI_NOT_ANSWERING, "Warning", constants.TRADFRI_NOT_ANSWERING)
+            self.raise_alarm(constants.TUYA_NOT_ANSWERING, "Warning", constants.TUYA_NOT_ANSWERING)
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
             

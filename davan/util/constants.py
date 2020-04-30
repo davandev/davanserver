@@ -21,6 +21,8 @@ RAIN_STARTED = "Det har startat att regna"
 RAIN_STOPPED = "Det har slutat att regna"
 TELLDUS_NOT_ANSWERING = "Telldus svarar inte"
 TRADFRI_NOT_ANSWERING = "Tradfri svarar inte"
+TUYA_NOT_ANSWERING = "Tuya svarar inte"
+ROBOMOW_FAILURE = "Fel vid hantering av request "
 
 UPS_SERVICE_NAME = "Ups"
 TRADFRI_SERVICE_NAME = "TradfriService"
@@ -57,6 +59,8 @@ ALARM_SERVICE_NAME = "AlarmService"
 POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 DATABASE_SERVICE_NAME = "DatabaseService"
 TUYA_SERVICE_NAME ="TuyaService"
+ROBOMOW_SERVICE_NAME ="RobomowService"
+
 EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"
 
 MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"

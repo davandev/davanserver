@@ -503,6 +503,18 @@ def create_config(secret_config, config):
         'Tv_Light','Tv_Color', 'Tv_sc', 'Tv_sc_1', 'Tv_sc_2','Tv_sc_3', 'Tv_sc_4','Tv_off'
         ] 
 
+
+    #---------------------------------------------------------------------------------------------
+    # Robomow service
+    #---------------------------------------------------------------------------------------------
+    config["RobomowServiceEnabled"] = True
+    config['FIBARO_VD_ROBOMOW_ID'] = "340"
+    # Mappings of users and the label in the presense virtual device
+    config['FIBARO_VD_ROBOMOW_MAPPINGS'] = {
+      # User    : HC2 Virtualdevice ID
+        'State' : 'ui.Label1.value',
+        'Changed' : 'ui.Label2.value'}
+
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):
         try:
