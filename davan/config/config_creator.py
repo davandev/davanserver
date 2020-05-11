@@ -455,7 +455,7 @@ def create_config(secret_config, config):
               # Name        |    ID,      |      DeviceType
               'ViggoWindow,     65539,       SocketController',
               'ViggoShelf,      65540,       SocketController',
-              'ViggoBlind,      65549,       BlindController',                 
+              'ViggoBlind,      65559,       BlindController',                 
               'WilmaWindow,     65541,       SocketController',
               'WilmaSlinga,     65542,       SocketController',
               'WilmaBlindRight, 65552,       BlindController',                 
