@@ -26,6 +26,7 @@ class RobomowService(BaseService):
             'Standby':8, 
             'Off':0.0, 
             'Unknown':-1}
+        self.transition_time =300 
             
         # Hold the current state, assume start in standby
         self.current_state = "Standby"
@@ -53,6 +54,8 @@ class RobomowService(BaseService):
             self.increment_invoked()
             new_state = self.get_state_name(power)
             self.logger.info("Received power usage["+str(power)+"] NewState["+new_state+"] CurrentState["+self.current_state+"]")
+            if not self.is_enabled():
+                return
 
             if new_state == self.current_state:
                 self.logger.info("No change in current state["+self.current_state+"], Reset Next["+self.next_state+"] -> [] ")
@@ -115,8 +118,8 @@ class RobomowService(BaseService):
         def countdown():
             try:                    
                 self.increment_invoked()
-                # Wait 120 seconds before actually changing state
-                while not self.local_event.wait(120):
+                # Wait x seconds before actually changing state
+                while not self.local_event.wait(self.transition_time):
                     self.change_state()
             except:
                 self.logger.error(traceback.format_exc())

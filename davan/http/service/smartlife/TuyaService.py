@@ -65,9 +65,12 @@ class TuyaService(BaseService):
         forward to Tuya ledstrips.
         '''
         try:
+
             scene_name, action = self.parse_request(msg)
             self.increment_invoked()
+            self.logger.info("Received request Scene["+scene_name+"] Action["+action+"]")
             if scene_name not in self.config_devices:
+                self.logger.warning("Scene["+scene_name+"] not found!")
                 return
             if action =="Toggle":
                 TuyaUtil.poll_devices_update(self.session)

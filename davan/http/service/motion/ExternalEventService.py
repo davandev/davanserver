@@ -86,8 +86,11 @@ class ExternalEventService(BaseService):
                     self.services.get_service(
                         constants.PICTURE_SERVICE_NAME).take_and_send_picture("SsundFramsida")
             result =""
-            return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result
-  
+
+            return constants.RESPONSE_OK, \
+                constants.MIME_TYPE_HTML, \
+                constants.RESPONSE_EMPTY_MSG.encode("utf-8")
+
         except:
             self.logger.info("Failed to carry out ups request")
             self.increment_errors()
