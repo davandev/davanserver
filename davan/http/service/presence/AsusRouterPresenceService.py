@@ -150,6 +150,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         stdin, stdout, stderr = p.exec_command(self.list_active_devices_cmd)
         result = stdout.readlines()
+        p.close()
         return result
 
     def update_presence(self, monitored_devices, active_devices):

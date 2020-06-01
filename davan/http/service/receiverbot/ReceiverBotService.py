@@ -131,11 +131,11 @@ class ReceiverBotService(BaseService):
             states={
                 COMMAND: [MessageHandler(Filters.regex('^(Services|Log|Speakers|TTS|Tv|Status)$'), self.handle_command)],
                 SPEAKER: [MessageHandler(Filters.regex('^(Hallway|Kitchen|All|Menu)$'), self.handle_speaker)],
-                SERVICES: [RegexHandler('^(.*)$', self.handle_service)],
-                SERVICESTATUS: [RegexHandler('^(Status|Enable|Disable|Services)$', self.handle_service_status)],
-                TV: [RegexHandler('^(On|Off|Text|Menu)$', self.handle_tv)],
+                SERVICES: [MessageHandler(Filters.regex('^(.*)$'), self.handle_service)],
+                SERVICESTATUS: [MessageHandler(Filters.regex('^(Status|Enable|Disable|Services)$'), self.handle_service_status)],
+                TV: [MessageHandler(Filters.regex('^(On|Off|Text|Menu)$'), self.handle_tv)],
                 TTS: [MessageHandler(Filters.text, self.tts)],
-                LOG: [RegexHandler('^(INFO|DEBUG|Logfile|Keypad log|Menu)$', self.handle_log)],
+                LOG: [MessageHandler(Filters.regex('^(INFO|DEBUG|Logfile|Keypad log|Menu)$'), self.handle_log)],
                 TVTEXT: [MessageHandler(Filters.text, self.tv)]
             },
      

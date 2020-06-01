@@ -70,7 +70,7 @@ class HtmlService(BaseService):
         elif (msg == "/status.html"):
             content = self.get_status()
            
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, content
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, content.encode("utf-8")
     
     def generate_service_fragment(self):
         '''

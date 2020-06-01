@@ -507,7 +507,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Robomow service
     #---------------------------------------------------------------------------------------------
-    config["RobomowServiceEnabled"] = False
+    config["RobomowServiceEnabled"] = True
     config['FIBARO_VD_ROBOMOW_ID'] = "340"
     # Mappings of users and the label in the presense virtual device
     config['FIBARO_VD_ROBOMOW_MAPPINGS'] = {
