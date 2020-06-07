@@ -143,6 +143,9 @@ class LightSchemaService(ReoccuringBaseService):
             if not timer_functions.enabled_this_day(self.current_day,
                                                     self.current_time,
                                                     items[3].strip()):
+                self.update_virtual_device(items[9].strip(),
+                                       items[7].strip(),
+                                       "")
                 self.logger.debug("Event Timer ["+items[0].strip()+"] not configured this day")
                 continue
             starttime = items[1].strip()

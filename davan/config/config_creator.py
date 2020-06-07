@@ -301,6 +301,9 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room        | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,  06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
+        'Robomow,     07:30,   18:00, Monday,       0,           -1,        267,        2,        0,         196,            0',
+        'Robomow,     07:30,   18:00, Friday,       0,           -1,        267,        2,        0,         196,            0',
+        'Robomow,     07:30,   18:00, Wednesday,    0,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,  16:15,   23:45, week,         1,           10,        65,         2,        1,         194,            0',
         'Uterum,      sunset,  23:45, week,         0,           -1,        192,        1,        10,        195,            0',
         'Outdoor,     sunset,  23:40, week,         0,           -1,        191,        1,        20,        196,            0',

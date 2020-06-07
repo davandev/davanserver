@@ -7,7 +7,7 @@ Created on 1 maj 2017
 import time
 
 import datetime
-
+import calendar
 from datetime import date
 #from datetime import *
 import logging
@@ -91,7 +91,9 @@ def enabled_this_day(current_day, current_date, configured_interval):
         return True
     elif configured_interval == "week": 
         return True
-    elif current_date == configured_interval:
+    elif current_date == configured_interval:# example 15/2
+        return True
+    elif get_currrent_day_name() == configured_interval: # example Tuesday
         return True
     return False
 
@@ -108,3 +110,8 @@ def get_time_and_day_and_date():
     current_day = wd
     #logger.debug("Day["+str(wd)+"]" + " Time["+str(current_time)+"] Date["+current_date+"]")
     return current_time, current_day, current_date
+
+def get_currrent_day_name():
+    n = datetime.datetime.now()
+    return calendar.day_name[n.weekday()]
+    
