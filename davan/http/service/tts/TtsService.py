@@ -11,6 +11,7 @@ from davan.http.service.base_service import BaseService
 import davan.util.constants as constants 
 from davan.http.service.tts.tts_engine_voicerss import TtsVoiceRssFactory 
 from davan.http.service.tts.tts_engine_android import TtsEngineAndroid
+from davan.http.service.tts.tts_engine_gtts import TtsVoiceGoogleTtsFactory
 import traceback
 from davan.util import helper_functions, constants
 
@@ -27,7 +28,7 @@ class TtsService(BaseService):
         '''
         BaseService.__init__(self, constants.TTS_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.tts_engine = TtsEngineAndroid(config)
+        self.tts_engine = TtsVoiceGoogleTtsFactory(config)
         self.async_filename = None
         self.speakers=[0,1,2] #all, roxcore, rpi
         self.play_in_speakers = 0
