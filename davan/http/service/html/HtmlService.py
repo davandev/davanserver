@@ -35,7 +35,7 @@ class HtmlService(BaseService):
         '''
         Received html request.
         '''
-        self.logger.debug("Received html request: [" + msg + "}")
+        self.logger.debug("Received html request: [" + msg + "]")
         self.increment_invoked()
 
         if ("applicationserver.log" in msg):
@@ -59,7 +59,7 @@ class HtmlService(BaseService):
             f = open(self.config["HTML_STYLE_FILE"])
             content = f.read()
             f.close()
-            return constants.RESPONSE_OK, constants.MIME_TYPE_CSS, content
+            return constants.RESPONSE_OK, constants.MIME_TYPE_CSS, content.encode("utf-8")
 
         elif (msg == "/logfiles.html"):
             content = self.get_logfiles()

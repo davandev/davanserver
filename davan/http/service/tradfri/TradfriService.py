@@ -169,9 +169,9 @@ class TradfriService(BaseService):
         '''
         List all devices configured in Tradfri Live
         '''
-        self.logger.info("List all Tradfri devices")
-#        devices = commands.get_status(self.config)
-#        self.logger.info("Found devices : " + str(devices))
+        self.logger.info("List all Tradfri devices 1")
+        devices = commands.get_status(self.config)
+        self.logger.info("Found devices : " + str(devices))
 
     def get_devices_from_config(self):
             '''
@@ -214,7 +214,8 @@ if __name__ == '__main__':
     test = TradfriService("", config)
     # test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
-    dev = ["65540","65544","65546","65541","65542","65539","65547","65549","65553","65550","65536","65543","65538","65537","65548","65545","65554","65552","65555"]
+    dev = ["65550","65553","65558","65554","65537","65539","65546","65542","65545","65547","65544","65541","65540","65555","65552","65557","65559","65536","65543","65538"]
+    #dev = ["65540","65544","65546","65541","65542","65539","65547","65549","65553","65550","65536","65543","65538","65537","65548","65545","65554","65552","65555"]
     #test.handle_request("TradfriService?Datarum=toggle")
     for device in dev:
         commands.get_device_status(config, device)

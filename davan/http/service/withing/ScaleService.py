@@ -60,11 +60,11 @@ class ScaleService(ReoccuringBaseService):
     
             elif float(measures[0].weight) > float(self.last_measure):
     
-                msg = helper_functions.encode_message("David, din lilla gris, du har ingen karaktär")
+                msg = "David, din lilla gris, du har ingen karaktär"
                 self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
             
             elif  float(measures[0].weight) <= float(self.last_measure):
-                msg = helper_functions.encode_message("David, bra jobbat, fortsätt så")
+                msg = "David, bra jobbat, fortsätt så"
                 self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
     
             self.previous_measure = self.last_measure
@@ -128,4 +128,4 @@ class ScaleService(ReoccuringBaseService):
         except:
             self.logger.error(traceback.format_exc())
 
-        return helper_functions.encode_message(announcement)
+        return announcement

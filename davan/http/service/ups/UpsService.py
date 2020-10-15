@@ -58,7 +58,7 @@ class UpsService(BaseService):
             if constants.UPS_STATUS_REQ in service:
                 result = self._handle_status_request()
             
-            return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result
+            return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result.encode("utf-8")
   
         except:
             self.logger.info("Failed to carry out ups request")

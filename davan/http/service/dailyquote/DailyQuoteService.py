@@ -118,7 +118,7 @@ class DailyQuoteService(ReoccuringBaseService):
         result = "Dagens citat. "
         result += self.today_quote +"."
         
-        return helper_functions.encode_message(result)
+        return result
 
     def get_quest_announcement(self):
         '''
@@ -128,7 +128,7 @@ class DailyQuoteService(ReoccuringBaseService):
         result = "Dagens gåta. "
         result += self.today_quest
     
-        return helper_functions.encode_message(result)
+        return result
 
 if __name__ == '__main__':
     config = configuration.create()

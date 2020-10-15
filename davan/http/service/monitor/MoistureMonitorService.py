@@ -51,7 +51,7 @@ class MoistureMonitorService(ReoccuringBaseService):
         if self.humidity_value >= self.config['MoistureMaxLimit']:
             self.logger.info("Humidity value higher exceeds limit, send notifications")
             helper.send_telegram_message(self.config, "Luftfuktigheten i badrummet["+str(self.humidity_value)+"], var god och ventilera")
-            msg = helper.encode_message("Det är "+str(self.humidity_value)+" procents luftfuktighet i badrummet, sätt på fläkten")
+            msg = "Det är "+str(self.humidity_value)+" procents luftfuktighet i badrummet, sätt på fläkten"
             self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
                         
     def fetch_moisture_value(self):

@@ -40,7 +40,7 @@ def create_morning_announcement():
     announcement += str(weekdays[current_day]) + ' den '
     announcement += date[d] + " " + str(months[m]) + '. '
     
-    return helper_functions.encode_message(announcement)
+    return announcement
 
 def create_night_announcement(name):
     '''
@@ -48,7 +48,7 @@ def create_night_announcement(name):
     logger.info("Create night announcement")
     announcement = name + " nu är det dags att gå och lägga sig. God natt och sov gott"
     
-    return helper_functions.encode_message(announcement)
+    return announcement
     
 def create_water_announcement():
     '''
@@ -57,7 +57,7 @@ def create_water_announcement():
     logger.info("Create water announcement")
     announcement = "Kom ihåg att vattna blommorna och häcken"
     
-    return helper_functions.encode_message(announcement)
+    return announcement
 
 def create_sunset_sunrise_announcement():
     announcement = ""
@@ -83,7 +83,7 @@ def create_sunset_sunrise_announcement():
         announcement += "Skymning klockan " + dusk + "."
     except:
         logger.error(traceback.format_exc())
-    return helper_functions.encode_message(announcement)
+    return announcement
 
 def get_hour_and_minute(dateitem):    
     dateitem = dateitem.split(" ")[1]
@@ -97,7 +97,7 @@ def create_name_announcement():
         announcement = "Dagens namnsdagsbarn "
         
         request = urllib.request.Request("https://www.dagensnamn.nu/", headers=constants.USER_AGENT_HEADERS)
-        encoded_result = urllib.request.urlopen(request).read()
+        encoded_result = str(urllib.request.urlopen(request).read())
         start_index = encoded_result.index("</span></div><h1>")
         start_index += 17
         stop_index = encoded_result.index("</h1><div class=")
@@ -106,8 +106,9 @@ def create_name_announcement():
     
     except:
         logger.error(traceback.format_exc())
+        logger.error("Failed to parse page: "+ str(encoded_result))
         
-    return helper_functions.encode_message(announcement + ".")
+    return announcement + "."
     
 def create_menu_announcement(config):
     '''
@@ -139,7 +140,7 @@ def create_menu_announcement(config):
     except:
         logger.error(traceback.format_exc())
 
-    return helper_functions.encode_message(menu)
+    return menu
 
 def create_random_idiom(config):
     '''
@@ -158,7 +159,7 @@ def create_random_idiom(config):
     except:
         logger.error(traceback.format_exc())
 
-    return helper_functions.encode_message(menu)
+    return menu
 
 def update_idiom_file(config, line):
     logger.debug("Update idiom announcement")
@@ -209,7 +210,7 @@ def create_theme_day_announcement(config):
     except:
         logger.error(traceback.format_exc())
 
-    return helper_functions.encode_message(result)
+    return result
                 
 if __name__ == '__main__':
     config = config_creator.create()

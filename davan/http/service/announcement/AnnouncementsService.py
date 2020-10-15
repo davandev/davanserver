@@ -148,7 +148,7 @@ class AnnouncementsService(ReoccuringBaseService):
             elif event.announcement_id == "pig":
                 result = "pig"
             elif event.announcement_id == "status":
-                result = helper_functions.encode_message("Status uppdatering. ")
+                result = "Status uppdatering. "
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
                 result += self.services.get_service(constants.CALENDAR_SERVICE_NAME).get_announcement()
                 result += self.services.get_service(constants.DEVICE_PRESENCE_SERVICE_NAME).get_announcement()

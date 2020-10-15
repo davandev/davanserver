@@ -33,7 +33,7 @@ class DishWashService(BaseService):
         '''
         self.increment_invoked()
         self.logger.debug("Received DishWashStatus ["+ msg + "]")
-        msg = helper_functions.encode_message("Tvättmaskinen är färdig")
+        msg = "Tvättmaskinen är färdig"
         self.services.get_service(constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
 
         return constants.RESPONSE_OK, \

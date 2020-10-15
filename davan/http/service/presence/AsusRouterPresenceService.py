@@ -144,7 +144,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         p = paramiko.SSHClient()
         p.set_missing_host_key_policy(paramiko.AutoAddPolicy())   # This script doesn't work for me unless this line is added!
         p.connect(self.config['ROUTER_ADRESS'], 
-                  port=22, 
+                  port=1025, 
                   username=self.config['ROUTER_USER'], 
                   password=self.config['ROUTER_PASSWORD'])
         
@@ -203,7 +203,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         for _, device in list(self.family_devices.items()):
             announcement += device.user + " �r " + device.active_toString()+", "
         
-        return helper.encode_message(announcement)
+        return announcement
     
     def has_html_gui(self):
         """

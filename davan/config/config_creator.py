@@ -234,7 +234,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # UPS Virtual device configuration
     #---------------------------------------------------------------------------------------------
-    config["UpsEnabled"] = False
+    config["UpsEnabled"] = True
     # UPS virtual id on fibaro system
     config["UPS_VD_ID"] = "156"
     # 
@@ -294,40 +294,39 @@ def create_config(secret_config, config):
 
     #---------------------------------------------------------------------------------------------
     # LightSchema Service configuration
-    # deviceType 0=Onoff, 1=dimmer, 2=virtualdevice
+    # deviceType 0=Onoff, 1=dimmer, 2=virtualdevice, 3=serviceNotification
     # Room, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
     #---------------------------------------------------------------------------------------------
     config["LightSchemaServiceEnabled"] = True 
     config['LIGHT_SCHEMA'] = [
         #Room        | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,  06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
-        'Robomow,     07:30,   18:00, Monday,       0,           -1,        267,        2,        0,         196,            0',
-        'Robomow,     07:30,   18:00, Friday,       0,           -1,        267,        2,        0,         196,            0',
-        'Robomow,     07:30,   18:00, Wednesday,    0,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,     08:25,   16:30, Tuesdat,       3,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,     08:25,   16:30, Friday,       3,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,  16:15,   23:45, week,         1,           10,        65,         2,        1,         194,            0',
-        'Uterum,      sunset,  23:45, week,         0,           -1,        192,        1,        10,        195,            0',
-        'Outdoor,     sunset,  23:40, week,         0,           -1,        191,        1,        20,        196,            0',
+        'Uterum,      sunset,  23:45, week,         0,           -1,        360,        1,        10,        195,            0',
+        'Outdoor,     sunset,  23:40, week,         0,           -1,        359,        1,        20,        196,            0',
         'Farstukvist, sunset,  23:55, week,         0,           -1,        226,        1,        1,         227,            0',
-        #'WilmaFonster,06:30,   08:10, week,         2,           10,        180,        1,        3,         197,            0',
+        'WilmaFonster,06:30,   08:10, week,         2,           10,        180,        1,        3,         197,            0',
         'WilmaFonster,sunset,  22:15, weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,sunset,  23:15, weekend,      2,           10,        180,        2,        3,         197,            0',
         'WilmaBlinds, 07:30,   22:45, weekdays,     2,           14,        180,        3,        3,         197,            0',
-        'WilmaBlinds, 10:00,   22:55, weekend,      2,           14,        180,        3,        3,         197,            0',
-        'WilmaTak,    06:30,   08:15, weekdays,     1,           20,        173,        4,        20,        197,            1',
+        'WilmaBlinds, 10:00,   22:55, week,      2,           14,        180,        3,        3,         197,            0',
+        #'WilmaTak,    06:30,   08:15, weekdays,     1,           20,        173,        4,        20,        197,            1',
         'WilmaTak,    sunset,  22:00, week,         1,           20,        173,        5,        20,        197,            1',
-        #'ViggoFonster,06:30,   08:00, weekdays,     2,           10,        181,        1,        3,         198,            0',
+        'ViggoFonster,06:30,   08:00, weekdays,     2,           10,        181,        1,        3,         198,            0',
         'ViggoFonster,sunset,  21:30, weekdays,     2,           10,        181,        2,        3,         198,            0',
         'ViggoFonster,sunset,  23:00, weekend,      2,           10,        181,        2,        3,         198,            0',
-        'ViggoBlinds, 07:30,   21:30, weekdays,     2,           14,        181,        3,        3,         198,            0',
-        'ViggoBlinds, 10:00,   22:30, weekend,      2,           14,        181,        3,        3,         198,            0',
-        'ViggoTak,    06:30,   07:15, weekdays,     1,           10,        177,        4,        15,        198,            1',
+        'ViggoBlinds, 07:30,   22:00, weekdays,     2,           14,        181,        3,        3,         198,            0',
+        'ViggoBlinds, 10:00,   22:30, week,      2,           14,        181,        3,        3,         198,            0',
+        #'ViggoTak,    06:30,   07:15, weekdays,     1,           10,        177,        4,        15,        198,            1',
         'ViggoTak ,   sunset,  21:00, week,         1,           10,        177,        5,        15,        198,            1',
         'Parkering,   sunset,  23:55, week,         0,           -1,        276,        1,        1,         281,            0',
         #'Datarum,     06:15,   08:30, week,         2,            1,        182,        1,        0,         304,            0',        
         'Datarum,     sunset,  23:42, week,         2,            1,        182,        2,        0,         304,            0',
         'LjusTrad,    17:15,   23:30, week,         2,           14,        184,        1,        5,         307,            0',
         'Sovrum,      09:15,   10:30, weekend,      2,            1,        185,        1,        5,         308,            0',
-        'Sovrum,      06:15,   08:15, weekdays,     2,            1,        185,        2,        5,         308,            0',
+        'Sovrum,      06:30,   08:15, weekdays,     2,            1,        185,        2,        5,         308,            0',
         'Sovrum,      17:15,   23:30, week,         2,            1,        185,        3,        5,         308,            0',
 
    ]
@@ -363,14 +362,14 @@ def create_config(secret_config, config):
         'SleepTime,        23:02,   weekdays,       night,           0,          Mia',
         'SleepTimeViggo,   20:30,   weekdays,       night,           0,          Viggo',
         'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
-        'Morning,          06:30,   weekdays,       morning,         0,          -',
+        'Morning,          06:45,   weekdays,       morning,         0,          -',
         'MorningWeekend,   09:00,   weekend,        morning,         0,          -',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        0,          -',
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
         'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
         'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
-        #        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
+        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
 
@@ -401,7 +400,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # TV service
     #---------------------------------------------------------------------------------------------
-    config['TvServiceEnabled'] = True
+    config['TvServiceEnabled'] = False
     config['TvServiceTimeout'] = 300
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
     config['WATCH_TV_ACTIVITY'] = '26681450'
@@ -444,7 +443,7 @@ def create_config(secret_config, config):
     # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
     config["TradfriServiceEnabled"] = True
-    config['TRADFRI_GATEWAY_IP'] = "192.168.2.4"
+    config['TRADFRI_GATEWAY_IP'] = "192.168.2.6"
     config['TRADFRI_ID'] = "tradfri-pi-bash" 
     config['TRADFRI_ID_KEY'] = secret_config.TRADFRI_KEYS
 
@@ -503,7 +502,8 @@ def create_config(secret_config, config):
     config["TuyaBizType"] = 'smart_life'
     config["TuyaDevices"] = [
         'Stair_Light','Stair_Color', 'Stair_sc', 'Stair_sc_1', 'Stair_sc_2','Stair_sc_3', 'Stair_sc_4','Stair_off',
-        'Tv_Light','Tv_Color', 'Tv_sc', 'Tv_sc_1', 'Tv_sc_2','Tv_sc_3', 'Tv_sc_4','Tv_off'
+        'Tv_Light','Tv_Color', 'Tv_sc', 'Tv_sc_1', 'Tv_sc_2','Tv_sc_3', 'Tv_sc_4','Tv_off',
+        'Upstairs_Light', 'Upstairs_Color','Upstairs_Off',
         ] 
 
 

@@ -122,5 +122,5 @@ class SunService(ReoccuringBaseService):
         announcement += "Soluppgång klockan " + self.rise + "."
         announcement += "Solnedgång klockan " + self.set + "."
         announcement += "Skymning klockan " + self.dusk + "."
-        return helper_functions.encode_message(announcement)
+        return announcement
     

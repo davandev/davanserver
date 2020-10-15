@@ -35,6 +35,7 @@ class RobomowService(BaseService):
         # Determine if powersocket should be turned off while not scheduled for mowing
         self.turn_off_power_on_schedule = False
         self.local_event = Event()
+        self.isTimeToLawn = False
 
     def init_service(self):
         pass
@@ -43,35 +44,50 @@ class RobomowService(BaseService):
         '''
         msg = msg.split('?')
         res = msg[1].split('=')
-        return float(res[1])
+        return res[0],res[1]
 
     def handle_request(self, msg):
         '''
         Request with current power consumption received from power socket via Fibaro server, 
         '''
         try:
-            power = self.parse_request(msg)
+            reqType,value = self.parse_request(msg)
+            self.logger.debug("Request[" + msg +"] ReqType["+reqType+"] Value["+value+"]")
             self.increment_invoked()
-            new_state = self.get_state_name(power)
-            self.logger.info("Received power usage["+str(power)+"] NewState["+new_state+"] CurrentState["+self.current_state+"]")
-            if not self.is_enabled():
-                return
-
-            if new_state == self.current_state:
-                self.logger.info("No change in current state["+self.current_state+"], Reset Next["+self.next_state+"] -> [] ")
-                if self.next_state:
-                    self.stop_timer()
-                    self.next_state =""
-            else: # new_state != self.current_state
-                if new_state == self.next_state:
-                    self.logger.info("No change in transition state ["+self.next_state+"]")
+            if reqType =="service":
+                if value == constants.TURN_ON:
+                    self.isTimeToLawn = True
+                    self.logger.debug("Start reporting power changes")                                          
                 else:
-                    self.logger.info("Change in transition state Next["+self.next_state+"] -> ["+new_state+"]")
-                    if self.next_state:
-                        self.stop_timer()
-                    self.next_state = new_state
-                    self.start_transition_timer()
- 
+                     self.isTimeToLawn = False
+                     self.next_state = "Off"
+                     self.logger.debug("Stop reporting power changes")                                          
+                
+            else:
+                if self.isTimeToLawn:
+                    new_state = self.get_state_name(float(value))
+                    self.logger.info("Received power usage["+str(value)+"] NewState["+new_state+"] CurrentState["+self.current_state+"]")
+                    if not self.is_enabled():
+                        return
+
+                    if new_state == self.current_state:
+                        self.logger.info("No change in current state["+self.current_state+"], Reset Next["+self.next_state+"] -> [] ")
+                        if self.next_state:
+                            self.stop_timer()
+                            self.next_state =""
+                    else: # new_state != self.current_state
+                        if new_state == self.next_state:
+                            self.logger.info("No change in transition state ["+self.next_state+"]")
+                        else:
+                            self.logger.info("Change in transition state Next["+self.next_state+"] -> ["+new_state+"]")
+                            if self.next_state:
+                                self.stop_timer()
+                            self.next_state = new_state
+                            self.start_transition_timer()
+                else:
+                    self.logger.debug("Not scheduled to lawn, skip report")
+
+
         except Exception as e:
             self.logger.error(traceback.format_exc())
             self.increment_errors()

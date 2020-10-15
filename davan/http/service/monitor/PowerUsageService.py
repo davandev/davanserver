@@ -122,9 +122,7 @@ class PowerUsageService(ReoccuringBaseService):
         
         helper.send_telegram_message(self.config, msg)
         self.services.get_service(
-            constants.TTS_SERVICE_NAME).start(
-                helper.encode_message(
-                    msg),constants.SPEAKER_KITCHEN)
+            constants.TTS_SERVICE_NAME).start(msg,constants.SPEAKER_KITCHEN)
 
         
     def parse_request(self, msg):
@@ -168,7 +166,7 @@ class PowerUsageService(ReoccuringBaseService):
         announcement = " och du har spelat totalt"
         announcement += str(self.timeleft/60) 
         announcement += " minuter idag "
-        return helper.encode_message(announcement)
+        return announcement
 
 if __name__ == '__main__':
     import time

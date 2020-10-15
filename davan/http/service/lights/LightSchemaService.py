@@ -1,3 +1,4 @@
+
 '''
 @author: davandev
 '''
@@ -116,6 +117,11 @@ class LightSchemaService(ReoccuringBaseService):
                     self.config['VD_PRESS_BUTTON_URL'],
                     event.device_id,
                     button_id)
+        elif event.device_type =="3": # Notify Service
+            self.logger.info("Invoking scheduled service " + event.room)
+            service = self.services.get_service(event.room)
+            service.handle_request(event.room + "?service=" + event.onoff )
+            url = ""
         else: # Just on/off switch
             url = helper.create_fibaro_url_set_device_value(
                     self.config['DEVICE_SET_VALUE_URL'], 
@@ -129,8 +135,8 @@ class LightSchemaService(ReoccuringBaseService):
         # update status label of virtual device    
         self.update_virtual_device(event.virtual_device_id, "6", message)
         self.logger.debug("URL:"+url)
-
-        urllib.request.urlopen(url)        
+        if url != "":
+            urllib.request.urlopen(url)        
             
     def schedule_events(self):
         '''

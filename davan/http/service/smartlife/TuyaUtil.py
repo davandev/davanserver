@@ -87,12 +87,16 @@ def poll_devices_update(session):
 
 def discovery(session):
     response = _request(session,"Discovery", "discovery")
+    _LOGGER.debug(str(response))
+
     if response and response["header"]["code"] == "SUCCESS":
         return response["payload"]["devices"]
     return None
 
 def discover_devices(session):
     devices = discovery(session)
+    _LOGGER.debug(str(devices))
+    
     if not devices:
         return None
     session.devices = []
@@ -119,6 +123,8 @@ def get_device_by_name(session, name):
     for device in session.devices:
         if device.name() == name:
             return device
+
+    _LOGGER.debug("Cannot find device: [" + name + "] in  list " + str(session.devices) )
     return None
 
 def device_control(session, devId, action, param=None, namespace="control"):

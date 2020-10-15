@@ -50,6 +50,7 @@ class TuyaService(BaseService):
 
         TuyaUtil.get_access_token(self.session)
         TuyaUtil.discover_devices(self.session)
+        TuyaUtil.poll_devices_update(self.session)
 
     def parse_request(self, msg):
         '''
@@ -73,7 +74,6 @@ class TuyaService(BaseService):
                 self.logger.warning("Scene["+scene_name+"] not found!")
                 return
             if action =="Toggle":
-                TuyaUtil.poll_devices_update(self.session)
                 device = TuyaUtil.get_device_by_name(self.session, scene_name)
                 if device.data['state'] == 'true':
                     scene_name = scene_name.replace("Light","off")

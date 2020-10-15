@@ -170,7 +170,7 @@ class TvService(ReoccuringBaseService):
         Compile and return announcment.
         @return html encoded result
         '''
-        return helper_functions.encode_message("Tv status " + self.status)
+        return "Tv status " + self.status
     
 if __name__ == '__main__':
     import davan.config.config_creator as configuration

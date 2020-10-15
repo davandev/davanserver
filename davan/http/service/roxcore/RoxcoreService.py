@@ -133,7 +133,7 @@ class RoxcoreService(BaseService):
                 if match:
                     current_uri = match.group(1).strip()
                     self.logger.debug("currently playing "+current_uri)
-        self.logger.info(str(result.text))
+        self.logger.debug(str(result.text))
         return current_uri
 
     def has_html_gui(self):

@@ -69,9 +69,8 @@ class ReceiverBotService(BaseService):
     
     def tts(self, update, context):
         text = str(update.message.text.replace("/tts ", ""))
-        encoded_message = helper_functions.encode_message(text.encode('utf-8'))
         tts_service = self.services.get_service(constants.TTS_SERVICE_NAME)
-        tts_service.start(encoded_message, self.current_speaker)
+        tts_service.start(text, self.current_speaker)
         self.increment_invoked()
         update.message.reply_text("Text message played in speaker "+ str(self.current_speaker))
         self.build_start_menu(update, None)

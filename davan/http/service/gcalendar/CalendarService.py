@@ -147,11 +147,12 @@ class CalendarService(ReoccuringBaseService):
         else:
             announcement = "Dagens schema. "
             for calendar_event in self.todays_events:
-            # announcement += str(""+calendar_event.event)
-                source = calendar_event.event.encode("utf-8")
-                announcement += helper_functions.encode_message(source + ". ")
+                announcement += str(""+calendar_event.event)
+                announcement += ". "
+                #source = calendar_event.event.encode("utf-8")
+                #announcement += source + ". "
         
-        return helper_functions.encode_message(announcement)
+        return announcement
 
     def has_html_gui(self):
         """

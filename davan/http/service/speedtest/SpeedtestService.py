@@ -46,7 +46,7 @@ class SpeedtestService(ReoccuringBaseService):
         '''
         self.increment_invoked()
         #self.logger.debug("SpeedTest content: " + self.encoded_string)
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string.encode("utf-8")
 
     def handle_timeout(self):
         self.logger.debug("Measure internet speed")

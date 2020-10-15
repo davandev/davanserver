@@ -156,7 +156,7 @@ class WeatherService(ReoccuringBaseService):
         #self.forecast = self.forecast.replace('°', '')
         #self.logger.info("Dagens prognos: "+ self.forecast)
         #announcement += "Dagens prognos." +self.forecast
-        return helper.encode_message(announcement)
+        return announcement
                 
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
