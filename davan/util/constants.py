@@ -60,6 +60,8 @@ POWER_USAGE_SERVICE_NAME = "PowerUsageService"
 DATABASE_SERVICE_NAME = "DatabaseService"
 TUYA_SERVICE_NAME ="TuyaService"
 ROBOMOW_SERVICE_NAME ="RobomowService"
+DOORBELL_SERVICE_NAME ="DoorbellService"
+PICTURE_SERVICE_NAME="TakePicture"
 
 EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"
 

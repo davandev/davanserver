@@ -25,7 +25,7 @@ class PictureService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "TakePicture", service_provider, config)
+        BaseService.__init__(self, constants.PICTURE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
     
     def do_self_test(self):
@@ -46,7 +46,19 @@ class PictureService(BaseService):
                 self.logger.error(msg)
                 self.raise_alarm(msg,"Warning",msg)
 
+    def take_and_send_picture(self, camera_name):
+        try:
+            self.increment_invoked()
+            self.take_picture(camera_name)
+            self.send_picture(camera_name)
+            self.delete_picture()
+        except:
+            self.logger.error(traceback.format_exc())
+            self.increment_errors()
+            self.logger.error("Failed to handle picture request")
+            raise Exception("Failed to handle picture request")
 
+        
     def handle_request(self, msg):
         '''
         Handle received request, 
@@ -55,15 +67,10 @@ class PictureService(BaseService):
         - Delete pictures.
         '''
         try:
-            self.increment_invoked()
             camera = self.parse_request(msg)
-            self.take_picture(camera)
-            self.send_picture(camera)
-            self.delete_picture()
+            self.take_and_send_picture(camera)
         except:
             self.logger.error(traceback.format_exc())
-            self.increment_errors()
-            self.logger.error("Failed to handle picture request")
             return constants.RESPONSE_NOT_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_FAILED_TO_TAKE_PICTURE
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
