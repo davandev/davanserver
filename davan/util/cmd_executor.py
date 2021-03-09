@@ -24,7 +24,8 @@ def execute_block(command, process_debug_name="",return_output=False):
                          shell=True,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+                         stderr=subprocess.PIPE,
+                         encoding="utf-8" )
     out, err = p.communicate()
 
     if return_output:

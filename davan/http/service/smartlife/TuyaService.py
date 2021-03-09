@@ -77,8 +77,10 @@ class TuyaService(BaseService):
                 device = TuyaUtil.get_device_by_name(self.session, scene_name)
                 if device.data['state'] == 'true':
                     scene_name = scene_name.replace("Light","off")
+                    device.data['state'] = 'false'
                 else:    
                     scene_name = scene_name.replace("Light","Color")
+                    device.data['state'] = 'true'
 
             device = TuyaUtil.get_device_by_name(self.session, scene_name)
             device.turn_on()

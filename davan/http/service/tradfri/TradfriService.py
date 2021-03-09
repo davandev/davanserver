@@ -9,6 +9,7 @@ import traceback
 import sys
 import urllib
 import json
+import time
 
 import davan.util.helper_functions as helper
 import davan.config.config_creator as configuration
@@ -47,7 +48,7 @@ class Device():
     
 class DeviceType():
 
-    def __init__(self, name, id, id2, off, on,):
+    def __init__(self, name, id, id2, off, on):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.name = name
         self.id = id 
@@ -103,24 +104,24 @@ class TradfriService(BaseService):
                 self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
                 return
             self.increment_invoked()
+
             device = self.devices[device_name]
             
-            if device_name == "all":
-                action = self.STATES[action_str]
-                self.toggle_all_device_states(action)
-                return
-            elif action_str == "toggle":
-                action = self.get_toggled_device_state(device)
-            
-            elif action_str.startswith("setvalue"):
-                res = action_str.split('+')
-                action = res[1]
-                
+            if device.type_name == "GroupController":
+                self.logger.info('Handle groups')
+                ids = device.device_id
+                ids = ids.replace("[","")
+                ids = ids.replace("]","")
+                for name in ids.split(' '):
+                    self.logger.info("Id:" + name)
+                    item = self.devices[name]
+                    new_state = self.get_toggled_device_state(item)
+                    self.logger.info("Device ["+device_name+"] NewState:" + str(new_state))
+                    self.set_state(name, new_state)
+                    #self.performAction(item,action_str)
+                    #time.sleep(1000)
             else:
-                action = device.get_value(action_str)
-            
-            self.logger.info("Device[" + device_name + "] Action[" + str(action_str) + "]")
-            self.set_state(device_name, action)
+                self.performAction(device,action_str)
         
         except Exception as e:
             self.logger.error(traceback.format_exc())
@@ -129,7 +130,29 @@ class TradfriService(BaseService):
             self.raise_alarm(constants.TRADFRI_NOT_ANSWERING, "Warning", constants.TRADFRI_NOT_ANSWERING)
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
-    
+
+    def performAction(self, device, action_str):
+        # if device_name == "all":
+        #     action = self.STATES[action_str]
+        #     self.toggle_all_device_states(action)
+        #     return
+        if action_str == "toggle":
+            action = self.get_toggled_device_state(device)
+
+        elif action_str.startswith("toggleDimmer"):
+            action = self.get_toggled_dimmer_state(device)
+            self.logger.info("Dimmer state:" + action)
+
+        elif action_str.startswith("setvalue"):
+            res = action_str.split('+')
+            action = res[1]
+            
+        else:
+            action = device.get_value(action_str)
+        
+        self.logger.info("Device[" + device.name + "] Action[" + str(action_str) + "]")
+        self.set_state(device.name, action)
+
     def set_state(self, device_name, state):
         '''
         Set the state of the device
@@ -162,6 +185,24 @@ class TradfriService(BaseService):
             self.logger.debug("Caught exception: " + str(e))
             raise Exception("Misslyckades att hamta status for "+ str(device.name))
             
+    def get_toggled_dimmer_state(self, device):
+        '''
+        Determine the dimmer state of the device, then return the opposite configured min/max
+        @param device_name, name of device
+        '''
+        
+        try:
+            current_state = commands.get_dimmer_state(self.config, device)
+            
+            self.logger.debug("State of " + device.name + " = " + str(current_state))
+            
+            if int(current_state) < int(device.on_value) :
+                return device.on_value
+            return device.off_value
+        except Exception as e:
+            self.logger.debug("Caught exception: " + str(e))
+            raise Exception("Misslyckades att hamta status for "+ str(device.name))
+
     def toggle_all_device_states(self, state):
         self.logger.debug("Toggle all device states[" + str(state) + "]")        
     
@@ -195,7 +236,7 @@ class TradfriService(BaseService):
                                                         type.id,  # DeviceTypeId
                                                         type.id2,  # DeviceTypeId
                                                         type.off_value,  # Off value 
-                                                        type.on_value)  # On value 
+                                                        type.on_value)
                     
     def log_devices(self):
         device_string = ""
@@ -214,9 +255,9 @@ if __name__ == '__main__':
     test = TradfriService("", config)
     # test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
-    dev = ["65550","65553","65558","65554","65537","65539","65546","65542","65545","65547","65544","65541","65540","65555","65552","65557","65559","65536","65543","65538"]
-    #dev = ["65540","65544","65546","65541","65542","65539","65547","65549","65553","65550","65536","65543","65538","65537","65548","65545","65554","65552","65555"]
-    #test.handle_request("TradfriService?Datarum=toggle")
+    # dev = ["65550","65553","65558","65554","65537","65539","65546","65542","65545","65547","65544","65541","65540","65555","65552","65557","65559","65536","65543","65538"]
+    dev = ["65537","65542","65539","65546","65547","65544","65541","65540","65559","65555","65545","65560","65562","65563","65567","65568","65572","65574","65575","65576","65577","65578", "65579","65580","65581","65582","65583","65584"]
+    # # #test.handle_request("TradfriService?Datarum=toggle")
     for device in dev:
         commands.get_device_status(config, device)
     # test.perform("KITCHEN","1")

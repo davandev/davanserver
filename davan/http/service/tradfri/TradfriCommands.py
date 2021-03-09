@@ -1,5 +1,4 @@
 
-
 import logging
 import os
 import re
@@ -28,10 +27,10 @@ def get_status(config):
     
     result = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
     LOGGER.debug(str(result))
-    reg_exp = re.compile(r'[65536,(.+?)]')
-    match = reg_exp.search(str(result))
+    reg_exp = re.compile(r'\[(.+?)\]')
+    match = reg_exp.search(result)
     if match:
-        LOGGER.debug("Matching:" + str(match.group(0)))
+        LOGGER.debug("Matching:[" + str(match.group(1))+"]")
         return match.group(0)
     return -1
     
@@ -58,6 +57,24 @@ def get_state(config, device):
     rsp = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
     LOGGER.debug("RSP[" + str(rsp) + "]")
     reg_exp = re.compile(r'5850\":(.+?),\"')
+    match = reg_exp.search(str(rsp))
+    if match:
+        LOGGER.debug("Matching:" + str(match.group(1)))
+        return match.group(1)
+    return -1
+
+def get_dimmer_state(config, device):
+    LOGGER.debug("get_state")
+    id = config["TRADFRI_ID"]
+    id_key = config["TRADFRI_ID_KEY"]
+    ip = config["TRADFRI_GATEWAY_IP"]
+
+    cmd = 'coap-client -m get -u ' + id + ' -k ' + id_key +  ' -B 30 coaps://' + ip + ':5684/15001/' + device.device_id
+    LOGGER.debug("Cmd["+str(cmd)+"]")
+    
+    rsp = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
+    LOGGER.debug("RSP[" + str(rsp) + "]")
+    reg_exp = re.compile(r'5851\":(.+?),\"')
     match = reg_exp.search(str(rsp))
     if match:
         LOGGER.debug("Matching:" + str(match.group(1)))

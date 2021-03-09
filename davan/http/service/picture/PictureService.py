@@ -82,12 +82,16 @@ class PictureService(BaseService):
         msg = msg.replace("/TakePicture?text=", "")
         return msg
 
-    def delete_picture(self):
+    def delete_picture(self, file="/var/tmp/snapshot.jpg"):
         '''
         Deletes the taken photo
         '''
-        self.logger.debug("Deleting picture")
-        os.remove("/var/tmp/snapshot.jpg")
+        try:
+            self.logger.debug("Deleting picture:"+file)
+            os.remove(file)
+        except:
+            self.logger.error(traceback.format_exc())
+
         
     def send_picture(self, camera):
         '''
@@ -115,10 +119,12 @@ class PictureService(BaseService):
         self.logger.info("Take picture from camera [" + camera + "]")
         if camera in self.config["CAMERAS"]:
             cam_picture_url = self.config["CAMERAS"][camera]
-            cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] +
-                                 " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
             pos = cam_picture_url.rfind('/')
             file_name = cam_picture_url[pos+1:]
+            self.delete_picture(file_name)
+
+            cmd_executor.execute("wget " + cam_picture_url + "  --user=" + self.config["CAMERA_USER"] +
+                                 " --password=" + self.config["CAMERA_PASSWORD"] + " --auth-no-challenge")
             cmd_executor.execute("sudo mv "+file_name+" /var/tmp/snapshot.jpg")
         else:
             raise Exception("No camera url for [" + camera + "] configured")   

@@ -8,7 +8,7 @@ import traceback
 import sys
 import urllib.request, urllib.parse, urllib.error
 import json
-
+import davan.util.helper_functions as helper 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.util import cmd_executor as cmd_executor
@@ -51,10 +51,15 @@ class UpsService(BaseService):
             self.increment_invoked()
             result =""
             service = self.parse_request(msg)
-            if (constants.UPS_BATTERY_MODE in service or 
-                constants.UPS_POWER_MODE in service):
-                self._update_changed_status_on_fibaro()
             
+            if constants.UPS_BATTERY_MODE in service:
+                helper.send_telegram_message(self.config, "Ingen ström i huset!")
+                self._update_changed_status_on_fibaro()
+        
+            elif constants.UPS_POWER_MODE in service:
+                helper.send_telegram_message(self.config, "Strömmen är tillbaka")
+                self._update_changed_status_on_fibaro()
+
             if constants.UPS_STATUS_REQ in service:
                 result = self._handle_status_request()
             
@@ -71,14 +76,16 @@ class UpsService(BaseService):
         Update virtual device on Fibaro system.
         """
         self.logger.info("UPS status changed")
-        
         # Build URL to Fibaro virtual device
-        pressButton_url = self.config["VD_PRESS_BUTTON_URL"].replace("<ID>", self.config['UPS_VD_ID'])
-        pressButton_url = pressButton_url.replace("<BUTTONID>", self.config["UPS_BUTTON_ID"]) 
-        #self.logger.debug(pressButton_url)
-        
+        url = helper.create_fibaro_url_press_button(
+            self.config["VD_PRESS_BUTTON_URL"], 
+            self.config['UPS_VD_ID'], 
+            self.config["UPS_BUTTON_ID"])
+
+        self.logger.debug("URL:"+url)
+            
         # Send HTTP request to notify status change
-        urllib.request.urlopen(pressButton_url)
+        helper.send_auth_request(url,self.config)
 
     def _handle_status_request(self):
         '''
@@ -88,6 +95,7 @@ class UpsService(BaseService):
         self.logger.debug("Ups status request")
         response = cmd_executor.execute_block(self.command, self.command, True)
         parsedResponse = response.rstrip().split('\n')
+        self.logger.info("Parsed:" +str(parsedResponse))
         jsonResult = "{"
         for line in parsedResponse:
             if "STATUS" in line:
@@ -105,7 +113,7 @@ class UpsService(BaseService):
                 time = line.split(":")
                 jsonResult += '"Time":"'+time[1].lstrip()+'"'
         jsonResult += "}"
-        #self.logger.info("Result: "+ jsonResult)
+        self.logger.info("Result: "+ jsonResult)
         return jsonResult
     
     def has_html_gui(self):
@@ -138,5 +146,5 @@ if __name__ == '__main__':
     config = configuration.create()
     log_config.start_logging(config['LOGFILE_PATH'],loglevel=4)
     upspath = "/Ups?text=Status"
-    test = UpsService()
-    test.start(upspath)
+    test = UpsService(None, config)
+    test._handle_status_request()
