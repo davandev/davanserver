@@ -95,7 +95,7 @@ class UpsService(BaseService):
         self.logger.debug("Ups status request")
         response = cmd_executor.execute_block(self.command, self.command, True)
         parsedResponse = response.rstrip().split('\n')
-        self.logger.info("Parsed:" +str(parsedResponse))
+        self.logger.debug("Parsed:" +str(parsedResponse))
         jsonResult = "{"
         for line in parsedResponse:
             if "STATUS" in line:

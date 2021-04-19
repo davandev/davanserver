@@ -40,7 +40,7 @@ class MoistureMonitorService(ReoccuringBaseService):
         '''
         try:
             self.fetch_moisture_value()
-            self.logger.info("Humidity:"+str(self.humidity_value))
+            self.logger.debug("Humidity:"+str(self.humidity_value))
             self.maybe_notify_value()
 
         except Exception:

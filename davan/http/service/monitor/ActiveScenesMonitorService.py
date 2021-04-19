@@ -53,11 +53,11 @@ class ActiveScenesMonitorService(ReoccuringBaseService):
                     pass
                 else:
                     self.logger.info("Scene not running")
-                    self.logger.debug("Result:" + res)    
+                    self.logger.debug("Result:" + str(res))    
                     scene_url = self.config['START_SCENE_URL'].replace("<ID>",scene)
                     self.logger.info("Starting scene " + scene_url)
                     self.restarts += 1
-                    result = urllib.request.urlopen(scene_url)        
+                    result = helper.send_auth_request(scene_url, self.config)
         except Exception:
             self.logger.error(traceback.format_exc())
             self.increment_errors()

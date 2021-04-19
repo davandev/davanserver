@@ -74,7 +74,8 @@ def get_dimmer_state(config, device):
     
     rsp = cmd_executor.execute_block(cmd, "tradfri", return_output=True)
     LOGGER.debug("RSP[" + str(rsp) + "]")
-    reg_exp = re.compile(r'5851\":(.+?),\"')
+    #reg_exp = re.compile(r'5851\":(.+?),\"')
+    reg_exp = re.compile(r'5851\":(.+?)\D')
     match = reg_exp.search(str(rsp))
     if match:
         LOGGER.debug("Matching:" + str(match.group(1)))

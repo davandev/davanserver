@@ -101,7 +101,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
                     continue
                 else:
                     if items[0] not in self.unknown_devices:
-                        self.logger.warning("Unknown: "+ items[0])
+                        self.logger.debug("Unknown: "+ items[0])
                         self.unknown_devices.append(items[0])
                     if items[3] == "REACHABLE" or items[3] == "STALE":
                         self.logger.warning("Unknown active device : "+ str(items))
@@ -118,7 +118,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         for _, device in list(monitored_devices.items()):
             if device.changed:
-#                device.toString()
+                device.toString()
                 self.notify_change(device)
                 
     def notify_change(self, device):
@@ -162,7 +162,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
             if line.startswith("192."):
                 items = line.split()
                 if items[0] in list(monitored_devices.keys()):
-#                    self.logger.info("Found a monitored device [" + items[0] +"]")
+                    self.logger.debug("Found a monitored device [" + items[0] +"]")
                     self.update_device_status(items, monitored_devices)
 
     def update_device_status(self, status, monitored_devices):
@@ -172,7 +172,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         @param monitored_devices list of configured monitored devices
         '''
         device = monitored_devices[status[0]]
-        #device.toString()
+        device.toString()
         previous_status = device.active
         
         if("REACHABLE" in status or "STALE" in status):

@@ -149,9 +149,14 @@ class PowerUsageService(ReoccuringBaseService):
         else:
             usage = self.actual_usage_time
             
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        column = column.replace("<SERVICE_VALUE>", "Status: " + str(self.current_status) + "\nTime left: " + str(self.timeleft) + "\nActual usage: "+str(usage))
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        
+        htmlresult = "<li>Status: " + str(self.current_status) + "</li>\n"
+        htmlresult += "<li>Time left: " + str(self.timeleft) + "</li>\n"
+        htmlresult += "<li>Actual usage: " + str(usage) + "</li>\n"
+        column = column.replace("<SERVICE_VALUE>", htmlresult)
+
         return column
 
     def get_announcement(self):

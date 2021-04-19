@@ -37,8 +37,7 @@ class RobomowService(BaseService):
         self.local_event = Event()
         self.isTimeToLawn = False
 
-    def init_service(self):
-        pass
+
     def parse_request(self, msg):
         '''
         '''

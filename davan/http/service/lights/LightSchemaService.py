@@ -61,7 +61,6 @@ class LightSchemaService(ReoccuringBaseService):
         self.current_time = ""
         # Current weekday (0-6)
         self.current_day = -1
-        self.config = config
         # Number of seconds until next event occur
         self.time_to_next_event = -1
   
@@ -158,6 +157,10 @@ class LightSchemaService(ReoccuringBaseService):
             if starttime == "sunset":
                 starttime = self.services.get_service(constants.SUN_SERVICE_NAME).get_sunset()
                 self.logger.debug("Sunset configured: " + str(starttime))
+            elif starttime == "dusk":
+                starttime = self.services.get_service(constants.SUN_SERVICE_NAME).get_dusk()
+                self.logger.debug("Dusk configured: " + str(starttime))
+
             starttime = timer_functions.add_random_time(starttime,int(items[7].strip()))
             
             self.todays_events.append(TimeEvent(items[0].strip(),  # Room name

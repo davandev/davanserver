@@ -165,7 +165,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
-    config["KeypadAliveServiceEnabled"] = True
+    config["KeypadAliveServiceEnabled"] = False
     # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESSES'] = {
                # Name :  IP Address 
@@ -281,11 +281,13 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Weather Service configuration
     #---------------------------------------------------------------------------------------------
-    config["WeatherEnabled"]     = False
-    config["WEATHER_API_PATH"]   = "http://api.wunderground.com/api/"
+    config["WeatherEnabled"]     = True
+    config["WEATHER_API_PATH"]   = "https://api.weather.com/v2/pws/observations/current?stationId=<STATIONID>&format=json&units=m&apiKey=<API_KEY>&numericPrecision=decimal"
+    config["WEATHER_FORECAST_PATH"] = "https://api.weather.com/v3/wx/forecast/daily/5day?geocode=<GEO_CODE>&format=json&units=s&language=sv-SE&apiKey=<API_KEY>"
     config["WEATHER_TOKEN"]      = secret_config.WEATHER_TOKEN
+    config["WEATHER_GEOCODE"]    = secret_config.WEATHER_GEOCODE
     config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
-    config["WUNDERGROUND_PATH"]  = config["WEATHER_API_PATH"] + config["WEATHER_TOKEN"] + config["WEATHER_STATION_ID"]
+    
     # Weather virtual id on fibaro system
     config["WEATHER_VD_ID"] = "79"
     # Weather button to push
@@ -304,21 +306,24 @@ def create_config(secret_config, config):
         #'RobomowService,     08:25,   16:30,  Tuesdat,      3,           -1,        267,        2,        0,         196,            0',
         #'RobomowService,     08:25,   16:30,  Friday,       3,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,           16:15,   23:45,  week,         1,           10,        65,         2,        1,         194,            0',
+        'KitchenMatsal,        18:15,   23:45,  week,         1,           10,        394,        4,        1,         194,            0',
         'KitchenFonster,       07:15,   23:45,  week,         2,           10,        179,        1,        4,         194,            0',
-        'Uterum,               sunset,  23:45,  week,         0,           -1,        360,        1,        10,        195,            0',
+        'Vitrin,               17:15,   23:45,  week,         2,           13,        179,        3,        3,         194,            0',
+        'Uterum,               dusk,    23:45,  week,         0,           -1,        360,        1,        10,        195,            0',
         'Outdoor,              sunset,  23:40,  week,         0,           -1,        359,        1,        20,        196,            0',
         'Farstukvist,          sunset,  23:55,  week,         0,           -1,        226,        1,        1,         227,            0',
-        'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
+        #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
+        'akvarium,             15:00,   23:15,  week,         2,           10,        291,        2,        3,         403,            0',
         'WilmaFonster,         sunset,  22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,         sunset,  23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
-        'WilmaBlinds,          07:30,   22:45,  weekdays,     2,           14,        180,        3,        3,         197,            0',
+        #'WilmaBlinds,          07:30,   22:45,  weekdays,     2,           14,        180,        3,        3,         197,            0',
         'WilmaBlinds,          10:00,   22:55,  week,         2,           14,        180,        3,        3,         197,            0',
         #'WilmaTak,            06:30,   08:15,  weekdays,      1,           20,        173,        4,        20,        197,            1',
         'WilmaTak,             sunset,  22:00,  week,         1,           20,        173,        5,        20,        197,            1',
-        'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
+        #'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
         'ViggoFonster,         sunset,  21:30,  weekdays,     2,           10,        181,        2,        3,         198,            0',
         'ViggoFonster,         sunset,  23:00,  weekend,      2,           10,        181,        2,        3,         198,            0',
-        'ViggoBlinds,          07:30,   22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
+        #'ViggoBlinds,          07:30,   22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
         'ViggoBlinds,          10:00,   22:30,  week,         2,           14,        181,        3,        3,         198,            0',
         #'ViggoTak,            06:30,   07:15,  weekdays,     1,           10,        177,        4,        15,        198,            1',
         'ViggoTak ,            sunset,  21:00,  week,         1,           10,        177,        5,        15,        198,            1',
@@ -329,7 +334,9 @@ def create_config(secret_config, config):
         'Gillestuga,           17:15,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
         'Sovrum,               09:15,   10:30,  weekend,      2,            1,        185,        1,        5,         308,            0',
         'Sovrum,               06:30,   10:15,  weekdays,     2,            1,        185,        2,        5,         308,            0',
-        'Sovrum,               17:15,   23:30,  week,         2,            1,        185,        3,        5,         308,            0',
+        'Sovrum,               sunset,   23:30,  week,         2,            1,        185,        3,        5,         308,            0',
+        'Hall,                 sunset,  23:40,  week,         1,            5,        375,        1,        5,         402,            0',
+        'Korridor,             sunset,  23:40,  week,         1,            5,        286,        1,        5,         402,            0',
 
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
@@ -362,16 +369,16 @@ def create_config(secret_config, config):
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | Text
         'SleepTime,        23:02,   weekdays,       night,           0,          Mia',
-        'SleepTimeViggo,   20:30,   weekdays,       night,           0,          Viggo',
-        'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
-        'Morning,          06:45,   weekdays,       morning,         0,          -',
-        'MorningWeekend,   09:00,   weekend,        morning,         0,          -',
+#        'SleepTimeViggo,   20:30,   weekdays,       night,           0,          Viggo',
+#        'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
+        'Morning,          07:15,   weekdays,       morning,         0,          -',
+        'MorningWeekend,   09:30,   weekend,        morning,         0,          -',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        0,          -',
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
         'DavidBirthDay,    08:00,   08/07,          birthday,        0,          -',
-        'RadioWeekdaysOn,  06:15,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
-        'RadioWeekdaysOff, 08:30,   weekdays,       radio,           0,          stop',
+        'RadioWeekdaysOn,  07:00,   weekdays,       radio,           0,          http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3',
+        'RadioWeekdaysOff, 09:30,   weekdays,       radio,           0,          stop',
 #        'EveningWater,     22:00,   week,           water,           0',
    ]
 
@@ -405,7 +412,7 @@ def create_config(secret_config, config):
     config['TvServiceEnabled'] = False
     config['TvServiceTimeout'] = 300
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
-    config['WATCH_TV_ACTIVITY'] = '26681450'
+    config['WATCH_TV_ACTIVITY'] = '47271415'
     
     #---------------------------------------------------------------------------------------------
     # Connectivity service
@@ -459,6 +466,7 @@ def create_config(secret_config, config):
 
     config['TRADFRI_DEVICES'] = [
               # Name        |    ID,      |      DeviceType
+              'akvarium,        65563,       SocketController',
               'ViggoWindow,     65539,       SocketController',
               'ViggoShelf,      65540,       SocketController',
               'ViggoBlind,      65584,       BlindController',                 
@@ -471,13 +479,12 @@ def create_config(secret_config, config):
               'Gillestuga,      65547,       SocketController',
               'Sovrum,          65546,       SocketController',
               'TvRoomLamp,      65577,       SocketController',
-              'TvRoomWindow,    65578,       SocketController',    
+              'TvRoomWindow,    65578,       SocketController',
               'TvRoomGroup,    [TvRoomLamp TvRoomWindow],       GroupController',
               'Kitchen2,        65545,       SocketController',
-              'Kitchen1,        65563,       SocketController',
-              'Kitchen3,        65579,       SocketController',
+              'Skrubben,        65579,       SocketController',
               'Julgran,         65580,       SocketController',
-              'KitchenGroup,    [Kitchen2 Kitchen1 Kitchen3 Julgran],       GroupController',
+              'KitchenGroup,    [Kitchen2 Kitchen1 Julgran],       GroupController',
               'Vitrin,          65581,       SocketController',
               'VitrinDimmer,    65581,       DriverController'
               ''
@@ -505,7 +512,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # ExternalEvent service
     #---------------------------------------------------------------------------------------------
-    config["ExternalEventServiceEnabled"] = True
+    config["ExternalEventServiceEnabled"] = False
 
     #---------------------------------------------------------------------------------------------
     # Tuya service

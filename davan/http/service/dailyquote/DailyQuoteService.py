@@ -25,6 +25,7 @@ class DailyQuoteService(ReoccuringBaseService):
     def __init__(self, service_provider, config ):
         '''
         Constructor
+        kjz442
         '''
         ReoccuringBaseService.__init__(self, constants.QUOTE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
@@ -61,6 +62,7 @@ class DailyQuoteService(ReoccuringBaseService):
         quote = str(urllib.request.urlopen(self.quote_url).read())
         quote = quote.split(">")[1]
         self.today_quote = quote.split("<")[0]
+        self.today_quote = helper_functions.decode_message(self.today_quote)
         #self.get_quest()
 
     def get_quest(self):

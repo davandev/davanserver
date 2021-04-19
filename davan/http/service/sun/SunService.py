@@ -70,6 +70,9 @@ class SunService(ReoccuringBaseService):
 
     def get_sunset(self):
         return self.set
+
+    def get_dusk(self):
+        return self.dusk
     
     def get_hour_and_minute(self, dateitem):    
         dateitem = dateitem.split(" ")[1]

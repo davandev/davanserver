@@ -98,7 +98,7 @@ class TradfriService(BaseService):
         '''
         try:
             device_name, action_str = self.parse_request(msg)
-            self.logger.info("Action:" +action_str)
+            self.logger.debug("Action:" +action_str)
              
             if device_name not in self.devices.keys():
                 self.logger.error("Cannot find the device_id " + device_name + " in configured devices")
@@ -132,10 +132,9 @@ class TradfriService(BaseService):
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
     def performAction(self, device, action_str):
-        # if device_name == "all":
-        #     action = self.STATES[action_str]
-        #     self.toggle_all_device_states(action)
-        #     return
+        if device.name == "all":
+            self.toggle_all_device_states(action_str)
+            return
         if action_str == "toggle":
             action = self.get_toggled_device_state(device)
 
@@ -203,9 +202,18 @@ class TradfriService(BaseService):
             self.logger.debug("Caught exception: " + str(e))
             raise Exception("Misslyckades att hamta status for "+ str(device.name))
 
-    def toggle_all_device_states(self, state):
-        self.logger.debug("Toggle all device states[" + str(state) + "]")        
-    
+    def toggle_all_device_states(self, action_str):
+        '''
+        Iterate through all devices of type socket and driver controller and perfom action
+        '''
+        self.logger.debug("Toggle all device states[" + str(action_str) + "]")        
+        items = self.devices.values()
+        for item in items:
+            if item.type_name =='SocketController':
+                self.logger.info("Device[" + item.name + "] Action[" + str(action_str) + "]")
+                self.set_state(item.name, item.get_value(action_str))
+
+
     def list_all_devices(self):
         '''
         List all devices configured in Tradfri Live
@@ -225,6 +233,8 @@ class TradfriService(BaseService):
                 items = types.split(",")          
                 device_types[items[0]] = DeviceType(items[0].strip(), items[1].strip(), items[2].strip(), items[3].strip(), items[4].strip())
                 
+            self.devices['all'] = Device('all','','','', '','','')
+
             configuration = self.config['TRADFRI_DEVICES']
             for device in configuration:
                 items = device.split(",")          
@@ -256,6 +266,7 @@ if __name__ == '__main__':
     # test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
     # dev = ["65550","65553","65558","65554","65537","65539","65546","65542","65545","65547","65544","65541","65540","65555","65552","65557","65559","65536","65543","65538"]
+    dev = ["65582","65577","65563","65540","65541","65539","65578","65547","65581","65542","65576","65572","65555","65584","65575","65583","65544","65579","65562","65537","65560","65580","65545","65546","65574","65585","65586"]
     dev = ["65537","65542","65539","65546","65547","65544","65541","65540","65559","65555","65545","65560","65562","65563","65567","65568","65572","65574","65575","65576","65577","65578", "65579","65580","65581","65582","65583","65584"]
     # # #test.handle_request("TradfriService?Datarum=toggle")
     for device in dev:

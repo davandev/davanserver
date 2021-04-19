@@ -97,6 +97,20 @@ def encode_message(message,encode_whitespace=True):
     logger.debug("Encoded message:" + message)
     return message
 
+def decode_message(message,):
+    '''
+    Encode the quote
+    '''
+    logger.debug("Decoding message")
+    message = str(message)
+    message = message.replace('&auml;','ä')        
+    message = message.replace('&aring;','å')
+    message = message.replace('&ouml;','ö') # ö
+    #message = message.replace('&ouml;','%C3%B6')   
+        
+    logger.debug("Encoded message:" + message)
+    return message
+
 def send_auth_request(url, config):
     passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
     passman.add_password(None, url, config['FIBARO_USER_NAME'], config['FIBARO_PASSWORD'])
