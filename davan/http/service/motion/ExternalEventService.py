@@ -109,18 +109,7 @@ class ExternalEventService(BaseService):
         """
         if not self.is_enabled():
             return BaseService.get_html_gui(self, column_id)
-            
-        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
-        column = column.replace("<SERVICE_NAME>", self.service_name)
-        _, _, result = self.handle_request("Status")
-        data = json.loads(result)
-        htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
-        htmlresult += "<li>Load: " + data["Load"] + " </li>\n"
-        htmlresult += "<li>Battery: " + data["Battery"] + " </li>\n"
-        htmlresult += "<li>Time: " + data["Time"] + " </li>\n"
-        column = column.replace("<SERVICE_VALUE>", htmlresult)
-        return column
-    
+                
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
 

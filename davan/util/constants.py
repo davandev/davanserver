@@ -29,7 +29,7 @@ TRADFRI_SERVICE_NAME = "TradfriService"
 
 AUTH_SERVICE_NAME = "authenticate"
 AUDIO_SERVICE_NAME = "AudioService"
-SPEEDTEST_SERVICE_NAME = "speedtest"
+SPEEDTEST_SERVICE_NAME = "SpeedtestService"
 TTS_SERVICE_NAME =  "tts"
 TTS_FETCHER_SERVICE_NAME =  "ttsCompleted"
 QUOTE_SERVICE_NAME = "DailyQuote"

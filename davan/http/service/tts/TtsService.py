@@ -41,7 +41,8 @@ class TtsService(BaseService):
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
         else:
-            self.start(msg.split('=')[1],"1")
+            decoded_msg = msg.split('=')[1]
+            self.start(decoded_msg,"1")
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")    
     def start(self, msg, speakers, cache=False):

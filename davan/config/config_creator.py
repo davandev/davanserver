@@ -243,9 +243,17 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Internet speed test configuration
     #---------------------------------------------------------------------------------------------
-    config["speedtestEnabled"]  = True
-    config['SPEED_TEST_FILE']   = config["SERVICE_PATH"] + "speedtest/internet_speed_measure.sh"
-    config['SPEED_TEST_RESULT'] = config['SERVICE_PATH'] + "speedtest/speedtest.txt"
+    config["SpeedtestServiceEnabled"]  = True
+    config['FIBARO_VD_SPEEDTEST'] = "77"
+
+    config['FIBARO_VD_SPEEDTEST_MAPPINGS'] = {
+      # User    : HC2 Virtualdevice ID
+        'Ping'     : 'ui.ping.value',
+        'Download' : 'ui.download.value',
+        'Upload'   : 'ui.upload.value',
+        'Status'   : 'ui.status.value',
+        'Time'     : 'ui.time.value'
+}
 
     #---------------------------------------------------------------------------------------------
     # Audio service configuration
@@ -303,14 +311,14 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room               | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,         06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
-        #'RobomowService,     08:25,   16:30,  Tuesdat,      3,           -1,        267,        2,        0,         196,            0',
-        #'RobomowService,     08:25,   16:30,  Friday,       3,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,       07:30,   21:00,  Tuesday,      3,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,       07:30,   21:00,  Friday,       3,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,           16:15,   23:45,  week,         1,           10,        65,         2,        1,         194,            0',
         'KitchenMatsal,        18:15,   23:45,  week,         1,           10,        394,        4,        1,         194,            0',
         'KitchenFonster,       07:15,   23:45,  week,         2,           10,        179,        1,        4,         194,            0',
         'Vitrin,               17:15,   23:45,  week,         2,           13,        179,        3,        3,         194,            0',
-        'Uterum,               dusk,    23:45,  week,         0,           -1,        360,        1,        10,        195,            0',
-        'Outdoor,              sunset,  23:40,  week,         0,           -1,        359,        1,        20,        196,            0',
+        'Uterum,               sunset,  23:45,  week,         0,           -1,        360,        1,        10,        195,            0',
+        'Outdoor,              sunset,  23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
         'Farstukvist,          sunset,  23:55,  week,         0,           -1,        226,        1,        1,         227,            0',
         #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
         'akvarium,             15:00,   23:15,  week,         2,           10,        291,        2,        3,         403,            0',
@@ -330,11 +338,11 @@ def create_config(secret_config, config):
         'Parkering,            sunset,  23:55,  week,         0,           -1,        378,        1,        1,         281,            0',
         'Datarum,              06:15,   08:30,  week,         2,            1,        182,        1,        0,         304,            0',        
         'Datarum,              sunset,  23:42,  week,         2,            1,        182,        2,        0,         304,            0',
-        'Tvrum,                17:15,   23:30,  week,         2,            2,        184,        1,        5,         307,            0',
+        'Tvrum,                17:15,   23:30,  week,         2,            1,        184,        1,        5,         307,            0',
         'Gillestuga,           17:15,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
         'Sovrum,               09:15,   10:30,  weekend,      2,            1,        185,        1,        5,         308,            0',
         'Sovrum,               06:30,   10:15,  weekdays,     2,            1,        185,        2,        5,         308,            0',
-        'Sovrum,               sunset,   23:30,  week,         2,            1,        185,        3,        5,         308,            0',
+        'Sovrum,               sunset,  23:30,  week,         2,            1,        185,        3,        5,         308,            0',
         'Hall,                 sunset,  23:40,  week,         1,            5,        375,        1,        5,         402,            0',
         'Korridor,             sunset,  23:40,  week,         1,            5,        286,        1,        5,         402,            0',
 
@@ -540,6 +548,12 @@ def create_config(secret_config, config):
         'State' : 'ui.Label1.value',
         'Changed' : 'ui.Label2.value'}
 
+    config['FIBARO_VD_ROBOMOW_ID_1'] = "424"
+    config['FIBARO_VD_ROBOMOW_MAPPINGS_1'] = {
+      # User    : HC2 Virtualdevice ID
+        'Date' : 'ui.date.value',
+        'Status' : 'ui.status.value',
+        'Activity':'ui.activity<id>.value'}
     #---------------------------------------------------------------------------------------------
     # Doorbell service
     #---------------------------------------------------------------------------------------------

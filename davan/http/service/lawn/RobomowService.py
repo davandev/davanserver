@@ -26,16 +26,18 @@ class RobomowService(BaseService):
             'Standby':8, 
             'Off':0.0, 
             'Unknown':-1}
-        self.transition_time =300 
+        self.transition_time = 300 
             
         # Hold the current state, assume start in standby
         self.current_state = "Standby"
         # Holds the expected next status
         self.next_state = "" 
+        self.max_activities = 12
         # Determine if powersocket should be turned off while not scheduled for mowing
         self.turn_off_power_on_schedule = False
         self.local_event = Event()
         self.isTimeToLawn = False
+        self.activity_counter = 0
 
 
     def parse_request(self, msg):
@@ -55,12 +57,11 @@ class RobomowService(BaseService):
             self.increment_invoked()
             if reqType =="service":
                 if value == constants.TURN_ON:
-                    self.isTimeToLawn = True
-                    self.logger.debug("Start reporting power changes")                                          
+                    self.logger.debug("Start reporting power changes")
+                    self.start_reporting()                                          
                 else:
-                     self.isTimeToLawn = False
-                     self.next_state = "Off"
                      self.logger.debug("Stop reporting power changes")                                          
+                     self.stop_reporting()
                 
             else:
                 if self.isTimeToLawn:
@@ -94,22 +95,55 @@ class RobomowService(BaseService):
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
-    def update_fibaro_device(self, state, change):
+    def stop_reporting(self):
+        self.logger.info("Stop reporting")
+        self.isTimeToLawn = False
+        self.next_state = "Off"
+        current_time , _ ,current_date = timer_functions.get_time_and_day_and_date()
+        self.update_new_fibaro_device('Deactive', current_date, current_time)
+
+    def start_reporting(self):
+        self.logger.info("Start reporting")
+        self.activity_counter = 1
+        self.isTimeToLawn = True
+
+        for  id in range(1,self.max_activities):
+            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROBOMOW_ID_1'],
+                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS_1']['Activity'],
+                                '-')
+            url = url.replace('<id>',str(id))                                
+            helper.send_auth_request(url,self.config)
+
+        current_time , _ ,current_date = timer_functions.get_time_and_day_and_date()
+        self.update_new_fibaro_device('Active', current_date, current_time)
+
+    def update_new_fibaro_device(self, state, current_date, time_changed):
         '''
         Update virtual device with current state and time when state changed.
         '''
         url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
-                                self.config['FIBARO_VD_ROBOMOW_ID'],
-                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS']['State'],
-                                state)
+                                self.config['FIBARO_VD_ROBOMOW_ID_1'],
+                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS_1']['Date'],
+                                current_date)
         helper.send_auth_request(url,self.config)
 
         url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
-                                self.config['FIBARO_VD_ROBOMOW_ID'],
-                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS']['Changed'],
-                                change)
+                                self.config['FIBARO_VD_ROBOMOW_ID_1'],
+                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS_1']['Status'],
+                                state)
+        self.logger.info("Url 1: " +str(url))
         helper.send_auth_request(url,self.config)
 
+        value = time_changed + "   " +state
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROBOMOW_ID_1'],
+                                self.config['FIBARO_VD_ROBOMOW_MAPPINGS_1']['Activity'],
+                                value)
+        url = url.replace('<id>',str(self.activity_counter))                                
+
+        self.logger.info("Url 2: " +str(url))
+        helper.send_auth_request(url,self.config)
 
     def get_state_name(self,power):
         '''
@@ -119,7 +153,7 @@ class RobomowService(BaseService):
             return "Charging"
         elif power == self.power_level['Off']:
             return "Off"
-        elif power < self.power_level['Working']:
+        elif power <= self.power_level['Working']:
             return "Working"
         elif 7.5 <= power <= 30.0:
             return "Standby"
@@ -161,8 +195,13 @@ class RobomowService(BaseService):
         helper.send_telegram_message(self.config, "Robomow["+self.next_state+"]")
         
         current_time, _ ,current_date = timer_functions.get_time_and_day_and_date()
+        self.activity_counter = self.activity_counter+1
         # Update fibaro virtual device
-        self.update_fibaro_device(self.next_state,str(current_date) +"-"+ str(current_time) )
+        #self.update_fibaro_device(self.next_state,str(current_date) +"-"+ str(current_time) )
+        try:
+            self.update_new_fibaro_device(self.next_state, current_date, current_time)
+        except:
+            self.logger.error(traceback.format_exc())
         # Change state
         self.current_state = self.next_state
         # Reset next state
