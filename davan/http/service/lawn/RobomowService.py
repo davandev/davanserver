@@ -23,7 +23,7 @@ class RobomowService(BaseService):
         self.power_level = {
             'Charging':45, # 
             'Working':7,
-            'Standby':8, 
+            'Standby':8,     
             'Off':0.0, 
             'Unknown':-1}
         self.transition_time = 300 

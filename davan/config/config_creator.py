@@ -205,7 +205,8 @@ def create_config(secret_config, config):
     config['TTS_GENERATOR_CREATE_URL'] = "http://" + config['TTS_GENERATOR_IP_ADDRESS'] + "/tts"
     # Select the speakers for plauging TTS messages, currently supports 
     # "RoxcoreService", "SonosService" or internal speaker
-    config['SPEAKER_SERVICE'] = "RoxcoreService"
+    #config['SPEAKER_SERVICE'] = "RoxcoreService"
+    config['SPEAKER_SERVICE'] = "VolumioService"
     #-----------------------------------------------------------------------------------------
     # Mp3 provider configuration
     #-----------------------------------------------------------------------------------------
@@ -311,8 +312,12 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room               | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,         06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
+        #'RobomowSocket,        07:30,   21:00,  Tuesday,      0,           2,         267,        2,        0,         196,            0',
+        #'RobomowSocket,        07:30,   21:00,  Thursday,     0,           2,         267,        2,        0,         196,            0',
+        #'RobomowSocket,        07:30,   21:00,  Saturday,     0,           2,         267,        2,        0,         196,            0',
         'RobomowService,       07:30,   21:00,  Tuesday,      3,           -1,        267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   21:00,  Friday,       3,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,       07:30,   21:00,  Thursday,     3,           -1,        267,        2,        0,         196,            0',
+        'RobomowService,       07:30,   21:00,  Saturday,     3,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,           16:15,   23:45,  week,         1,           10,        65,         2,        1,         194,            0',
         'KitchenMatsal,        18:15,   23:45,  week,         1,           10,        394,        4,        1,         194,            0',
         'KitchenFonster,       07:15,   23:45,  week,         2,           10,        179,        1,        4,         194,            0',
@@ -381,6 +386,7 @@ def create_config(secret_config, config):
 #        'SleepTimeWilma,   21:30,   weekdays,       night,           0,          Wilma',
         'Morning,          07:15,   weekdays,       morning,         0,          -',
         'MorningWeekend,   09:30,   weekend,        morning,         0,          -',
+        'Afternoon,        18:15,   week,           afternoon,        0,          -',
         'WilmaBirthDay,    08:00,   02/06,          birthday,        0,          -',
         'ViggoBirthDay,    08:00,   20/06,          birthday,        0,          -',
         'MiaBirthDay,      08:00,   30/06,          birthday,        0,          -',
@@ -558,6 +564,10 @@ def create_config(secret_config, config):
     # Doorbell service
     #---------------------------------------------------------------------------------------------
     config["DoorbellServiceEnabled"] = True
+    config["VolumioServiceEnabled"] = True
+    config["VOLUMIO_HOST"] = '192.168.2.92'
+    config["VOLUMIO_USER"] = secret_config.VOLUMIO_USER
+    config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

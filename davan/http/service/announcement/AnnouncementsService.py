@@ -134,7 +134,9 @@ class AnnouncementsService(ReoccuringBaseService):
                 result += announcements.create_theme_day_announcement(self.config)
                 result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_announcement()
                 #result += self.services.get_service(constants.QUOTE_SERVICE_NAME).get_quest_announcement()
-
+            elif event.announcement_id == "afternoon" :
+                result = announcements.create_afternoon_announcement()
+                result += announcements.create_dead_in_covid_announcement()
             elif event.announcement_id == "name":
                 result = announcements.create_name_announcement()
             elif event.announcement_id == "water":
@@ -147,6 +149,8 @@ class AnnouncementsService(ReoccuringBaseService):
                 result = announcements.create_sunset_sunrise_announcement()
             elif event.announcement_id == "pig":
                 result = "pig"
+            elif event.announcement_id == "dead":
+                result = announcements.create_dead_in_covid_announcement()
             elif event.announcement_id == "status":
                 result = "Status uppdatering. "
                 result += self.services.get_service(constants.WEATHER_SERVICE).get_announcement()
@@ -155,9 +159,9 @@ class AnnouncementsService(ReoccuringBaseService):
             elif event.announcement_id == "radio":
                 self.logger.info("Radio Event: " + event.text)
                 if event.text == 'stop':
-                    self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME).stop_playing()
+                    self.services.get_service(constants.VOLUMIO_SERVICE_NAME).stop_playing()
                 else:
-                    self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME).play_external_url(event.text)
+                    self.services.get_service(constants.VOLUMIO_SERVICE_NAME).play_external_url(event.text)
                 return False
             else:
                 self.logger.warning("Cant find announcement to play:" + event.announcement_id)

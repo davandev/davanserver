@@ -5,6 +5,7 @@
 '''
 import os
 import logging
+import json
 import traceback
 import urllib.request, urllib.error, urllib.parse
 
@@ -42,6 +43,11 @@ def create_morning_announcement():
     
     return announcement
 
+def create_afternoon_announcement():
+    logger.info("Create afternoon announcement")
+    announcement = "Halloj där, hoppas dagen varit bra. "
+    return announcement
+
 def create_night_announcement(name):
     '''
     '''
@@ -57,6 +63,29 @@ def create_water_announcement():
     logger.info("Create water announcement")
     announcement = "Kom ihåg att vattna blommorna och häcken"
     
+    return announcement
+
+def create_dead_in_covid_announcement():
+    announcement = ""
+    try:
+        request = urllib.request.Request(
+            "https://services5.arcgis.com/fsYDFeRKu1hELJJs/arcgis/rest/services/FOHM_Covid_19_FME_1/FeatureServer/3/query?f=geojson&where=1%3D1&outFields=*", 
+            headers=constants.USER_AGENT_HEADERS)
+        res = urllib.request.urlopen(request).read()
+        data = json.loads(res)
+        logger.debug("Res:" + str(data))
+
+        features = data['features']
+        dead = 0
+        for feature in features:
+            try:
+                dead += int(feature['properties']['Totalt_antal_avlidna'])
+            except:
+                logger.error(traceback.format_exc())
+        announcement = "Antalet avlidna i covid i Sverige är nu uppe i " + str(dead) + " stycken"
+        
+    except:
+        logger.error(traceback.format_exc())
     return announcement
 
 def create_sunset_sunrise_announcement():
