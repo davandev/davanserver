@@ -10,3 +10,4 @@ oauth
 configobj
 aioharmony
 tellduslive
+pyvolumio

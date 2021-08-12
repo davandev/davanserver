@@ -316,7 +316,7 @@ def create_config(secret_config, config):
         #'RobomowSocket,        07:30,   21:00,  Thursday,     0,           2,         267,        2,        0,         196,            0',
         #'RobomowSocket,        07:30,   21:00,  Saturday,     0,           2,         267,        2,        0,         196,            0',
         'RobomowService,       07:30,   21:00,  Tuesday,      3,           -1,        267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   21:00,  Thursday,     3,           -1,        267,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   21:00,  Thursday,     3,           -1,        267,        2,        0,         196,            0',
         'RobomowService,       07:30,   21:00,  Saturday,     3,           -1,        267,        2,        0,         196,            0',
         'KitchenTak,           16:15,   23:45,  week,         1,           10,        65,         2,        1,         194,            0',
         'KitchenMatsal,        18:15,   23:45,  week,         1,           10,        394,        4,        1,         194,            0',
@@ -326,7 +326,7 @@ def create_config(secret_config, config):
         'Outdoor,              sunset,  23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
         'Farstukvist,          sunset,  23:55,  week,         0,           -1,        226,        1,        1,         227,            0',
         #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
-        'akvarium,             15:00,   23:15,  week,         2,           10,        291,        2,        3,         403,            0',
+        'ljusslinga,           18:00,   23:15,  week,         2,           10,        291,        2,        3,         403,            0',
         'WilmaFonster,         sunset,  22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,         sunset,  23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
         #'WilmaBlinds,          07:30,   22:45,  weekdays,     2,           14,        180,        3,        3,         197,            0',
@@ -347,7 +347,7 @@ def create_config(secret_config, config):
         'Gillestuga,           17:15,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
         'Sovrum,               09:15,   10:30,  weekend,      2,            1,        185,        1,        5,         308,            0',
         'Sovrum,               06:30,   10:15,  weekdays,     2,            1,        185,        2,        5,         308,            0',
-        'Sovrum,               sunset,  23:30,  week,         2,            1,        185,        3,        5,         308,            0',
+        'Sovrum,               sunset,  23:30,  week,         2,            1,        185,        2,        5,         308,            0',
         'Hall,                 sunset,  23:40,  week,         1,            5,        375,        1,        5,         402,            0',
         'Korridor,             sunset,  23:40,  week,         1,            5,        286,        1,        5,         402,            0',
 
@@ -480,7 +480,7 @@ def create_config(secret_config, config):
 
     config['TRADFRI_DEVICES'] = [
               # Name        |    ID,      |      DeviceType
-              'akvarium,        65563,       SocketController',
+              'ljusslinga,      65563,       SocketController',
               'ViggoWindow,     65539,       SocketController',
               'ViggoShelf,      65540,       SocketController',
               'ViggoBlind,      65584,       BlindController',                 
@@ -560,14 +560,27 @@ def create_config(secret_config, config):
         'Date' : 'ui.date.value',
         'Status' : 'ui.status.value',
         'Activity':'ui.activity<id>.value'}
+
     #---------------------------------------------------------------------------------------------
     # Doorbell service
     #---------------------------------------------------------------------------------------------
     config["DoorbellServiceEnabled"] = True
+
+    #---------------------------------------------------------------------------------------------
+    # Volumio service
+    #---------------------------------------------------------------------------------------------
     config["VolumioServiceEnabled"] = True
     config["VOLUMIO_HOST"] = '192.168.2.92'
     config["VOLUMIO_USER"] = secret_config.VOLUMIO_USER
     config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
+
+    #---------------------------------------------------------------------------------------------
+    # Roomba service
+    #---------------------------------------------------------------------------------------------
+    config["RoombaServiceEnabled"] = True
+    config["ROOMBA_HOST"] = '192.168.2.110'
+    config["ROOMBA_USER"] = secret_config.ROOMBA_USER
+    config["ROOMBA_PWD"] = secret_config.ROOMBA_PWD
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):
