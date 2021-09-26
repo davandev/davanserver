@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 '''
 @author: davandev
 '''
@@ -13,6 +15,7 @@ import davan.config.config_creator as configuration
 import davan.util.constants as constants
 from davan.util import cmd_executor as cmd_executor
 from davan.http.service.base_service import BaseService
+import davan.util.helper_functions as helper
 
 
 class UpsService(BaseService):
@@ -51,11 +54,14 @@ class UpsService(BaseService):
             self.increment_invoked()
             result =""
             service = self.parse_request(msg)
-            if (constants.UPS_BATTERY_MODE in service or 
-                constants.UPS_POWER_MODE in service):
-                self._update_changed_status_on_fibaro()
+            if constants.UPS_BATTERY_MODE in service:
+                helper.send_telegram_message(self.config, "Strömavbrott")
+                
+            elif constants.UPS_POWER_MODE in service:
+                helper.send_telegram_message(self.config, "Strömmen tillbaka")
             
-            if constants.UPS_STATUS_REQ in service:
+            else: 
+                #constants.UPS_STATUS_REQ in service:
                 result = self._handle_status_request()
             
             return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result

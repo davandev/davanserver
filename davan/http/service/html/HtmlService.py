@@ -155,6 +155,7 @@ class HtmlService(BaseService):
         memory_used = result[0]
         memory_free = result[1]
         services = len(__builtin__.davan_services.services.keys())
+        
         json_string = '{"Uptime": "'+uptime+'", "ServerStarted":"'+str(self.start_date)+'","CpuLoad":"'+cpuload+'", "Disk":"'+diskusage+'", "Memory":"'+memory_used+'/'+memory_free+'",  "Services":"'+str(services)+'"}'
         return json_string
     

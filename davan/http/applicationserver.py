@@ -152,7 +152,9 @@ def start_server(configuration):
         # ugly way to share services
         __builtin__.davan_services = services
         server = ApplicationServer(('', config["SERVER_PORT"]), CustomRequestHandler)
-        helper.debug_big("Server started on [" + str(config["SERVER_ADRESS"]) + ":" + str(config["SERVER_PORT"]) + "] ")        
+        helper.debug_big("Server started on [" + str(config["SERVER_ADRESS"]) + ":" + str(config["SERVER_PORT"]) + "] ")      
+        helper.send_telegram_message(config, "Ssund server startad")
+  
         while 1:
             server.handle_request()
             if not __builtin__.davan_services.is_running():

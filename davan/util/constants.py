@@ -54,9 +54,11 @@ DISHWASH_SERVICE_NAME = "DishWashService"
 DEPARTURE_SERVICE_NAME = "DepartureService"
 ALARM_SERVICE_NAME = "AlarmService"
 POWER_USAGE_SERVICE_NAME = "PowerUsageService"
+EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"
+PICTURE_SERVICE_NAME = "TakePicture"
 
-UPS_BATTERY_MODE = "BatteryMode"
-UPS_POWER_MODE = "PowerMode"
+UPS_BATTERY_MODE = "Onbattery"
+UPS_POWER_MODE = "Offbattery"
 UPS_STATUS_REQ = "Status"
 
 HTML_EXTENSION = ".html"

@@ -80,11 +80,19 @@ class ExternalEventService(BaseService):
                     helper.send_telegram_message(self.config, "Dörr 3 öppnades")
                 elif msg == "door_3_closed":
                     helper.send_telegram_message(self.config, "Dörr 3 stängdes")
+                if not self.enable_pictures and msg == "motion": # Send notification if sending picture is disabled.
+                    helper.send_telegram_message(self.config, "Rörelse upptäckt framför SsundFramsida ")
             
             if self.enable_pictures:
                 if msg == "motion":
                     self.services.get_service(
                         constants.PICTURE_SERVICE_NAME).take_and_send_picture("SsundFramsida")
+                    self.services.get_service(
+                        constants.PICTURE_SERVICE_NAME).take_and_send_picture("SsundFonster")
+                    self.services.get_service(
+                        constants.PICTURE_SERVICE_NAME).take_and_send_picture("SsundGardsplan")
+                    self.services.get_service(
+                        constants.PICTURE_SERVICE_NAME).take_and_send_picture("SsundKok")
             result =""
             return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, result
   
@@ -109,12 +117,8 @@ class ExternalEventService(BaseService):
             
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        _, _, result = self.handle_request("Status")
-        data = json.loads(result)
-        htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
-        htmlresult += "<li>Load: " + data["Load"] + " </li>\n"
-        htmlresult += "<li>Battery: " + data["Battery"] + " </li>\n"
-        htmlresult += "<li>Time: " + data["Time"] + " </li>\n"
+        htmlresult = "<li>Notifications: " + str(self.enable_notifications)+ "</li>\n"
+        htmlresult += "<li>Pictures: " + str(self.enable_pictures) + " </li>\n"
         column = column.replace("<SERVICE_VALUE>", htmlresult)
         return column
     

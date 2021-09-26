@@ -24,7 +24,7 @@ class PictureService(BaseService):
         '''
         Constructor
         '''
-        BaseService.__init__(self, "TakePicture", service_provider, config)
+        BaseService.__init__(self, constants.PICTURE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
     
     def handle_request(self, msg):
@@ -34,9 +34,12 @@ class PictureService(BaseService):
         - Send pictures to all configured receivers
         - Delete pictures.
         '''
+        self.increment_invoked()
+        camera = self.parse_request(msg)
+        self.take_picture(camera)
+            
+    def take_and_send_picture(self, camera):
         try:
-            self.increment_invoked()
-            camera = self.parse_request(msg)
             self.take_picture(camera)
             self.send_picture(camera)
             self.delete_picture()

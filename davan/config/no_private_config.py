@@ -40,6 +40,12 @@ NOKIA_OAUTH_VERIFIER = "oauth verifier"
 NOKIA_ACCESS_TOKEN = 'oauthtoken'
 NOKIA_ACCESS_TOKEN_SECRET = 'oauthtokensecret'
 NOKIA_USER_ID = 'user'
+
+DEVICES_FAMILY = {}
+DEVICES_FRIEND = {}
+DEVICES_HOUSE = {}
+DEVICES_UNKNOWN = {}
+
 SL_API_KEYS = {
 'PLATS': '',
 'UPPSLAG': '',

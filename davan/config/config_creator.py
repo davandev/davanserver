@@ -14,9 +14,9 @@ def create_config(secret_config, config):
     # General server configuration
     #------------------------------------------------------------------------------------------------
     # CRITICAL=0, ERROR,WARNING,INFO,DEBUG=4
-    config["LOGLEVEL"]      = 3
-    # Root path of server
-    config["ROOT"]          = '/home/pi/share/davanserver/'
+    config["LOGLEVEL"]      = 4
+    # Root path of server 
+    config["ROOT"]          = '/share/davanserver/'
     # Log directory path
     config['LOGFILE_PATH']  = config["ROOT"] + "logs"
     config['TEMP_PATH']     = config["ROOT"] + "temp"
@@ -24,14 +24,14 @@ def create_config(secret_config, config):
     config['SERVICE_PATH']  = config["ROOT"] + "davan/http/service/"
     # Server port
     config["SERVER_PORT"]   = 8080
-    config["SERVER_ADRESS"] = "192.168.2.50"
+    config["SERVER_ADRESS"] = "192.168.1.105"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro configuration
     #---------------------------------------------------------------------------------------------
     config['FIBARO_USER_NAME']   = secret_config.FIBARO_USER
     config['FIBARO_PASSWORD']    = secret_config.FIBARO_PASSWORD
-    config['FIBARO_IP_ADDRESS']  = "192.168.2.54"
+    config['FIBARO_IP_ADDRESS']  = "192.168.2.1"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro path for common functions
@@ -63,9 +63,9 @@ def create_config(secret_config, config):
     # Telegram configuration
     #---------------------------------------------------------------------------------------------
     # Telegram chat id, stored in a dict 
-    config['CHATID'] = secret_config.TELEGRAM_CHATID
+    config['CHATID'] = ['1010365107', '206092571', '713369234']
     # Telegram token
-    config['TOKEN'] = secret_config.TELEGRAM_TOKEN
+    config['TOKEN'] = '716887335:AAFWl7fKw42ofzBEt9YI1bfRI4A2Nj-Cpvk'
     # Telegram api path for sending messages
     config['TELEGRAM_PATH'] = "https://api.telegram.org/bot"+config['TOKEN']+"/sendMessage?chat_id=<CHATID>&text="
     
@@ -73,32 +73,23 @@ def create_config(secret_config, config):
     # Outdoor camera configuration
     #---------------------------------------------------------------------------------------------
     config["TakePictureEnabled"] = True
-    config['CAMERAS'] = {'Balkong':'http://192.168.2.119:99/snapshot.cgi/snapshot.cgi',
-                         'Uterum':'http://192.168.2.76:99/snapshot.cgi/snapshot.cgi',
-                         'Farstukvist':'http://192.168.2.172/tmpfs/snap.jpg'}
+    config['CAMERAS'] = {'SsundFramsida':'http://admin:160709Ssund@192.168.1.101/image/jpeg.cgi',
+                         'SsundGardsplan':'http://admin:160709Ssund@192.168.1.110/image/jpeg.cgi',
+                         'SsundFonster':'http://admin:160709Ssund@192.168.1.111/image/jpeg.cgi',
+                         'SsundKok':'http://admin:160709Ssund@192.168.1.102/image/jpeg.cgi'}
     # Username used when accessing cameras
-    config['CAMERA_USER'] = secret_config.CAMERA_USER
+    config['CAMERA_USER'] = "admin"
     # Password used when accessing cameras
-    config['CAMERA_PASSWORD'] = secret_config.CAMERA_PASSWORD
+    config['CAMERA_PASSWORD'] = "160709Ssund"
     
     #---------------------------------------------------------------------------------------
     # Presence Service configuration
     #---------------------------------------------------------------------------------------
     config["presenceEnabled"] = False
-    # Scene ids for each user
-    config['MIA_AWAY_SCENE_ID'] = "13"
-    config['MIA_HOME_SCENE_ID'] = "12"
-    config['DAVID_AWAY_SCENE_ID'] = "10"
-    config['DAVID_HOME_SCENE_ID'] = "9"
-    config['WILMA_AWAY_SCENE_ID'] = "15"
-    config['WILMA_HOME_SCENE_ID'] = "14"
-    config['VIGGO_HOME_SCENE_ID'] = "16"
-    config['VIGGO_AWAY_SCENE_ID'] = "17"
-
     #---------------------------------------------------------------------------------------
     # Asus router presence Service configuration
     #---------------------------------------------------------------------------------------
-    config["DevicePresenceServiceEnabled"] = True
+    config["DevicePresenceServiceEnabled"] = False
     config["ROUTER_ADRESS"] = "192.168.2.1"
     config["ROUTER_USER"] = secret_config.ROUTER_USER
     config["ROUTER_PASSWORD"] = secret_config.ROUTER_PASSWORD
@@ -133,7 +124,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Telldus sensor configuration
     #---------------------------------------------------------------------------------------------
-    config["TelldusSensorServiceEnabled"] = True
+    config["TelldusSensorServiceEnabled"] = False
     config["telldusEnabled"] = True
     # Telldus public key
     config["TELLDUS_PUBLIC_KEY"] = secret_config.TELLDUS_PUBLIC_KEY
@@ -161,7 +152,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Keypad keep alive configuration   
     #---------------------------------------------------------------------------------------------
-    config["KeypadAliveServiceEnabled"] = True
+    config["KeypadAliveServiceEnabled"] = False
     # IP address of android alarm keypad
     config['KEYPAD_IP_ADDRESSES'] = {
                # Name :  IP Address 
@@ -180,7 +171,7 @@ def create_config(secret_config, config):
     #-----------------------------------------------------------------------------------------
     # TTS configuration
     #-----------------------------------------------------------------------------------------
-    config["ttsEnabled"] = True
+    config["ttsEnabled"] = False
     # VoiceRSS token
     config['VOICERSS_TOKEN'] = secret_config.VOICERSS_TOKEN
     # VoiceRSS api path for generating mp3 from message 
@@ -205,14 +196,14 @@ def create_config(secret_config, config):
     #-----------------------------------------------------------------------------------------
     # Mp3 provider configuration
     #-----------------------------------------------------------------------------------------
-    config["mp3Enabled"] = True
+    config["mp3Enabled"] = False
     config['MP3_ROOT_FOLDER'] = config['TTS_PRECOMPILED_MSG_PATH']
  
     
     #-----------------------------------------------------------------------------------------
     # DailyQuote configuration
     #-----------------------------------------------------------------------------------------
-    config["DailyQuoteEnabled"] = True
+    config["DailyQuoteEnabled"] = False
     # Path to dailyquote path
     config['TTS_DAILY_QUOTE_PATH'] = config["TTS_PRECOMPILED_MSG_PATH"] + "daily_quote/"
     # Path to dailyquote file
@@ -223,14 +214,14 @@ def create_config(secret_config, config):
     # Scenes to monitor, start if not running
     # Monitors running scens on fibaro system
     #---------------------------------------------------------------------------------------------
-    config["ActiveScenesMonitorEnabled"] = True
+    config["ActiveScenesMonitorEnabled"] = False
     # List of scenes that should be monitored
     config['MONITOR_SCENES'] = {'32'} # Clock scene
     
     #---------------------------------------------------------------------------------------------
     # UPS Virtual device configuration
     #---------------------------------------------------------------------------------------------
-    config["UpsEnabled"] = True
+    config["UpsEnabled"] = False
     # UPS virtual id on fibaro system
     config["UPS_VD_ID"] = "156"
     # 
@@ -239,14 +230,14 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Internet speed test configuration
     #---------------------------------------------------------------------------------------------
-    config["speedtestEnabled"]  = True
+    config["speedtestEnabled"]  = False
     config['SPEED_TEST_FILE']   = config["SERVICE_PATH"] + "speedtest/internet_speed_measure.sh"
     config['SPEED_TEST_RESULT'] = config['SERVICE_PATH'] + "speedtest/speedtest.txt"
 
     #---------------------------------------------------------------------------------------------
     # Audio service configuration
     #---------------------------------------------------------------------------------------------
-    config["AudioServiceEnabled"]   = True
+    config["AudioServiceEnabled"]   = False
     config['RECEIVER_TURN_ON']      = "onkyo --host 192.168.2.218 PWR01"
     config['RECEIVER_TURN_OFF']     = "onkyo --host 192.168.2.218 PWR00"
     config['RECEIVER_SELECT_INPUT'] = "onkyo --host 192.168.2.218 SLI02"
@@ -265,7 +256,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Sonos Service configuration
     #---------------------------------------------------------------------------------------------
-    config["SonosServiceEnabled"] = True
+    config["SonosServiceEnabled"] = False
     # Adress to Sonos speaker
     config['SONOS_SPEAKERS'] = [
         #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
@@ -277,7 +268,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Weather Service configuration
     #---------------------------------------------------------------------------------------------
-    config["WeatherEnabled"]     = True
+    config["WeatherEnabled"]     = False
     config["WEATHER_API_PATH"]   = "http://api.wunderground.com/api/"
     config["WEATHER_TOKEN"]      = secret_config.WEATHER_TOKEN
     config["WEATHER_STATION_ID"] = secret_config.WEATHER_STATION_ID
@@ -292,7 +283,7 @@ def create_config(secret_config, config):
     # LightSchema Service configuration
     # Room, StartTime, StopTime, Interval(week/weekdays/weekend), lightLevel(0-100), deviceId, buttonId, randomTime, virtualDeviceUpdateId
     #---------------------------------------------------------------------------------------------
-    config["LightSchemaServiceEnabled"] = True 
+    config["LightSchemaServiceEnabled"] = False 
     config['LIGHT_SCHEMA'] = [
         #Room   | start | stop | Interval | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         'Kitchen, 06:15,  08:30, weekdays,     10,        65,         1,        15,        194,            0',
@@ -311,13 +302,13 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # ReceiverBot configuration
     #---------------------------------------------------------------------------------------------
-    config["ReceiverBotServiceEnabled"] = True
-    config["RECEIVER_BOT_TOKEN"] = secret_config.RECEIVER_BOT_TOKEN
+    config["ReceiverBotServiceEnabled"] = False
+    config["RECEIVER_BOT_TOKEN"] = "668315148:AAHoAQlvemWa90O0HU5h-PLrPc1hVmE55Rc"
 
     #---------------------------------------------------------------------------------------------
     # Roxcore speaker configuration
     #---------------------------------------------------------------------------------------------
-    config["RoxcoreServiceEnabled"] = True
+    config["RoxcoreServiceEnabled"] = False
     config['ROXCORE_PORT_NR'] = "59152"
     config['ROXCORE_SPEAKERS'] = [
         #Id,    |  Slogan       | Address     |  Default  | Play Announcement msg                         
@@ -329,7 +320,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Announcement service
     #---------------------------------------------------------------------------------------------
-    config["AnnouncementsServiceEnabled"] = True
+    config["AnnouncementsServiceEnabled"] = False
     config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt"
     config["ANNOUNCEMENT_THEMEDAY_PATH"] = config["ROOT"] + "tema_dagar.txt"
     
@@ -352,19 +343,19 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Calendar service
     #---------------------------------------------------------------------------------------------
-    config['CalendarServiceEnabled'] = True
+    config['CalendarServiceEnabled'] = False
     config['GOOGLE_CALENDAR_TOKEN'] = secret_config.GOOGLE_CALENDAR_TOKEN
 
     #---------------------------------------------------------------------------------------------
     # Sun service
     #---------------------------------------------------------------------------------------------
-    config['SunServiceEnabled'] = True
+    config['SunServiceEnabled'] = False
 
     #---------------------------------------------------------------------------------------------
     # Scale service
     #---------------------------------------------------------------------------------------------
 
-    config['ScaleServiceEnabled'] = True
+    config['ScaleServiceEnabled'] = False
     config['CONSUMER_KEY']        = secret_config.NOKIA_CONSUMER_KEY
     config['CONSUMER_SECRET']     = secret_config.NOKIA_CONSUMER_SECRET
     config['OAUTH_VERIFIER']      = secret_config.NOKIA_OAUTH_VERIFIER
@@ -376,7 +367,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # TV service
     #---------------------------------------------------------------------------------------------
-    config['TvServiceEnabled'] = True
+    config['TvServiceEnabled'] = False
     config['TvServiceTimeout'] = 300
     config['HARMONY_IP_ADRESS'] = '192.168.2.143'
     config['WATCH_TV_ACTIVITY'] = '26681450'
@@ -385,13 +376,13 @@ def create_config(secret_config, config):
     # Connectivity service
     # Check internet connectivity
     #---------------------------------------------------------------------------------------------
-    config['ConnectivityServiceEnabled'] = True
+    config['ConnectivityServiceEnabled'] = False
     
     #---------------------------------------------------------------------------------------------
     # Fibaro service
     # Monitor Fibaro system alarm state.
     #---------------------------------------------------------------------------------------------
-    config['FibaroServiceEnabled'] = True
+    config['FibaroServiceEnabled'] = False
     config['FibaroTimeout'] = 300
     config['FibaroVirtualDeviceId'] = "69"
 
@@ -399,12 +390,12 @@ def create_config(secret_config, config):
     # DishWashService
     # Determine when dishwascher is ready with a Fibaro power plug
     #---------------------------------------------------------------------------------------------
-    config['DishWashServiceEnabled'] = True
+    config['DishWashServiceEnabled'] = False
     #---------------------------------------------------------------------------------------------
     # DepartureService
     # Fetch 
     #---------------------------------------------------------------------------------------------
-    config['DepartureServiceEnabled'] = True
+    config['DepartureServiceEnabled'] = False
     config['DEPARTURE_SETTING'] = secret_config.SL_API_KEYS
 
     #---------------------------------------------------------------------------------------------
@@ -417,13 +408,19 @@ def create_config(secret_config, config):
     # PowerUsageService
     # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
-    config["PowerUsageServiceEnabled"] = True
+    config["PowerUsageServiceEnabled"] = False
 
     #---------------------------------------------------------------------------------------------
     # PowerUsageService
     # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
-    config["TradfriServiceEnabled"] = True
+    config["ExternalEventServiceEnabled"] = True
+
+    #---------------------------------------------------------------------------------------------
+    # PowerUsageService
+    # Measure usage time of certain devices with a Fibaro power plug. 
+    #---------------------------------------------------------------------------------------------
+    config["TradfriServiceEnabled"] = False
     config['TRADFRI_GATEWAY_IP'] = "192.168.2.4"
     config['TRADFRI_ID'] = "tradfri-bash" 
     config['TRADFRI_ID_KEY'] = secret_config.TRADFRI_KEYS
