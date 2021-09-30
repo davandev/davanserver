@@ -23,10 +23,10 @@ TELLDUS_NOT_ANSWERING = "Telldus svarar inte"
 TRADFRI_NOT_ANSWERING = "Tradfri svarar inte"
 TUYA_NOT_ANSWERING = "Tuya svarar inte"
 ROBOMOW_FAILURE = "Fel vid hantering av request "
-
+ROOMBA_EMPTY_BIN = "Bogdas dammbehållare är full, var snäll och tömm den"
 UPS_SERVICE_NAME = "Ups"
 TRADFRI_SERVICE_NAME = "TradfriService"
-
+ECOWITT_SERVICE_NAME = "EcowittService"
 AUTH_SERVICE_NAME = "authenticate"
 AUDIO_SERVICE_NAME = "AudioService"
 SPEEDTEST_SERVICE_NAME = "SpeedtestService"

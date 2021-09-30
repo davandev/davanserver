@@ -55,10 +55,18 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
         Currently not implemented
         """
         try:
-            logger.warning("Received POST request from external host : " + self.address_string())
+            logger.debug("Received POST request from external host : " + self.address_string() + " Path "+ self.path)
+            service = services.get_service(self.path)
+            content_len = int(self.headers.get('Content-Length'))
+            data = self.rfile.read(content_len)
+            #logger.info("Received post "+str(data))
+            result_code, mime_type, result = service.handle_request(data)
 
-            ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            postvars = {}
+            self.send_response(result_code)    
+            self.send_header('Content-type',    mime_type)
+
+            #ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+            #postvars = {}
             self.send_error(404, 'File Not Found: %s' % self.path)
 
         except IOError:

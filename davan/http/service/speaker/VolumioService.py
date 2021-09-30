@@ -34,6 +34,7 @@ class VolumioService(BaseService):
         self.pwd = config['VOLUMIO_PWD']
         self.host = config['VOLUMIO_HOST']
         self.current_play = None
+        self.radio_url = "http://tx-bauerse.sharp-stream.com/http_live.php?i=mixmegapol_instream_se_mp3"
 
     def init_service(self):
         pass
@@ -73,14 +74,33 @@ class VolumioService(BaseService):
         @param msg, file to play
         '''
         try:
-            self.logger.info("Play " + str(msg) + " in volumio speaker")
-            self.maybe_save_current_play()
-            self.transfer_file(msg)
-            time.sleep(10)
-            
-            self.play_local_url(msg)
+            self.logger.debug("Msg:"+msg)
+            if "VolumioService" in msg:
+                action = (msg.split('?')[1])
+                if action == 'PlayRadio':
+                    if not self.is_playing():
+                        self.logger.info("Play radio")
+                        self.play_external_url(self.radio_url)
+                if action == 'Pause':
+                    self.pause_playing()
+                if action == 'Play':
+                    self.start_playing()
+                if action == 'Stop':
+                    self.stop_playing()
+                if action == 'IncreaseVolume':
+                    self.increase_volume()
+                if action == 'DecreaseVolume':
+                    self.decrease_volume()
 
-
+                        # Start radio
+            else:
+                self.logger.info("Play " + str(msg) + " in volumio speaker")
+                self.transfer_file(msg)
+                # Sleeep 10 seconds to allow volumio to update storage
+                time.sleep(10)
+                self.pause_current_play()
+                
+                self.play_local_url(msg)
             self.increment_invoked()
         except:
             msg = "Misslyckades att spela upp meddelande i volumio" 
@@ -91,8 +111,20 @@ class VolumioService(BaseService):
             self.increment_errors()
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
-            
-    def maybe_save_current_play(self):
+    
+    def is_playing(self):
+        resp = commands.state()
+        self.current_play = json.loads(resp.text)
+        self.logger.debug("Resp: " +str(resp.text))
+
+        if self.current_play["status"] == "play":
+            self.logger.info("Currently playing")
+            return True
+        else:
+            self.logger.info("Currently NOT playing")
+        return False        
+
+    def pause_current_play(self):
         '''
         Store the current url to be able to restore after play
         of anouncement
@@ -110,10 +142,21 @@ class VolumioService(BaseService):
             self.logger.info("Currently NOT playing")
         return False
 
-
+    def start_playing(self):
+        self.logger.info("Start playing in volumio speaker")
+        commands.play()
     def stop_playing(self):
         self.logger.info("Stop playing in volumio speaker")
         commands.stop()
+    def pause_playing(self):
+        self.logger.info("Pause playing in volumio speaker")
+        commands.pause()
+    def increase_volume(self):
+        self.logger.info("Increase volume")
+        commands.increase()
+    def decrease_volume(self):
+        self.logger.info("Decrease volume")
+        commands.decrease()
 
     def play_external_url(self, url):
         commands.play_radio(url)

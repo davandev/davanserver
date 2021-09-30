@@ -16,9 +16,22 @@ from davan.http.service.base_service import BaseService
 
 
 class UpsService(BaseService):
-    '''
+    ''' 
     classdocs
     service apcupsd restart
+
+    Called from /etc/apcupsd/apccontrol when on battery with 
+    script /etc/apcupsd/onbattery or /offbattery:
+    #!/bin/sh
+    #
+    # This shell script if placed in /etc/apcupsd
+    # will be called by /etc/apcupsd/apccontrol when the UPS
+    # goes on batteries.
+    # We send an email message to root to notify him.
+    #
+    curl http://192.168.2.44:8080/Ups?text=BatteryMode
+    exit 0
+
     '''
 
     def __init__(self, service_provider, config):

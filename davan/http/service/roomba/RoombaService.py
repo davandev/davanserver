@@ -54,7 +54,8 @@ import davan.config.config_creator as configuration
 import requests
 import time
 import json
-      
+import davan.util.helper_functions as helper 
+import davan.http.service.roomba.RoombaStateUtilities as rooombaStateUtil      
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 import asyncio
 
@@ -66,25 +67,51 @@ class RoombaService(ReoccuringBaseService):
     def __init__(self, service_provider, config):
         '''
         Constructor
+        region_id : 8 == Wilma
+        region_id : 9 == Tvattstuga
+        region_id : 7 == Viggo
+        region_id : 14 == Korridor
+        region_id : 7 == Hall
+        region_id : 7 == Kök
+        region_id : 7 == Matsal
+        region_id : 13 == Arbetsrum
+
+
         '''
         ReoccuringBaseService.__init__(self, constants.ROOMBA_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
+        logging.getLogger('Roomba.roomba.roomba980.roomba.roomba').setLevel(logging.CRITICAL)
+        logging.getLogger('Roomba.Password').setLevel(logging.CRITICAL)
+
         self.user = config['ROOMBA_USER']
         self.pwd = config['ROOMBA_PWD']
         self.host = config['ROOMBA_HOST']
         self.roomba = None
+        
         self.time_to_next_timeout = 300
-
+        self.is_running = False
+        self.state = None
+        self.current_state = "Unknown"
+        self.phase = "Unknown"
+        self.mission = None
+        self.battery = "-1"
+  
     def get_next_timeout(self):
+        if self.is_running:
+            self.logger.debug("Status is running ")
+            return 60
+        self.logger.debug("Status is NOT running ")
         return self.time_to_next_timeout
 
     def init_service(self):
         pass
 
     def handle_timeout(self):
-        self.logger.info("Timeout, check status")
+        self.logger.debug("Timeout, check status")
         loop = self._get_or_create_event_loop()
-        loop.run_until_complete(self.check_status())
+        loop.run_until_complete(self.fetch_status())
+        self.update_status()
+        self.report_status()
         
     def _get_or_create_event_loop(self):
         try:
@@ -96,30 +123,120 @@ class RoombaService(ReoccuringBaseService):
                 asyncio.set_event_loop(loop)
                 return asyncio.get_event_loop()
     
-    async def check_status(self):
+    async def fetch_status(self):
         import roomba.roomba980.roomba.roomba as roomba
         self.roomba = roomba.Roomba(self.host, self.user, self.pwd)
         self.roomba.connect()
-
+        data_received = False
         for i in range(10):
             res = json.dumps(self.roomba.master_state, indent=2)
             if len(self.roomba.master_state) > 0 :
-                self.logger.info(res)
-                break
+                self.logger.debug(res)
+                data_received = True
+                break        
             else:
-                self.logger.info("No data received")
+                self.logger.debug("No data received")
             await asyncio.sleep(1)
-
+            
         self.roomba.disconnect()
+
+        if data_received ==False:
+            self.logger.debug("No contact with roomba")
+        else:
+            self.mission = str(self.roomba.mission)
+            self.phase = str(self.roomba.phase)  
+            self.battery = str(self.roomba.batPct)
+
+    def get_latest_state(self):
+        '''
+        Detemine and return the state of roomba 
+        '''
+        try:
+            report_state = self.current_state
+            self.logger.debug("ReportState:"+ report_state + " Battery:" + self.battery)
+
+            if self.battery == "100":
+                if report_state == "charge" or report_state == "standby" :
+                    #self.logger.debug("Return standby")
+                    return "standby"
+
+            #self.logger.debug("Return "+self.roomba.phase )
+        except:
+            self.logger.warning("Failed to retrieve latest state")
+        return self.roomba.phase
+
+    def update_status(self):
+        #self.logger.debug("Updates status")
+        latest_state = self.get_latest_state()
+        if self.current_state != latest_state:
+            self.current_state = latest_state
+            state_in_swe=rooombaStateUtil.states[self.current_state]
+            helper.send_telegram_message(self.config, "Bogda[" + state_in_swe+"]")
+
+        #self.logger.debug("Current state " + str(self.current_state))
+
+        if self.roomba.bin_full == True:
+            helper.send_telegram_message(self.config, "Bogda[ Töm damm behållaren ]")
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(
+                     constants.ROOMBA_EMPTY_BIN,
+                     constants.SPEAKER_KITCHEN)
+
+        if self.current_state =="stuck" :
+            error_number = self.roomba.error_num
+            self.logger.warning("Error number: "+ str(error_number))
+            error_msg = self.roomba.error_message
+            self.logger.warning("Error msg: "+ str(error_msg))
+            
+            state_swe=rooombaStateUtil.states[self.roomba.phase]
+            self.logger.warning("Error state: "+ str(state_swe))
+            error_swe=rooombaStateUtil._ErrorMessages[error_number]
+            self.logger.warning("Error msg: "+ str(error_swe[0]))
+            helper.send_telegram_message(self.config, "Bogda[ "+error_swe[1]+" ]")
+            error_swe="Bogda har fastnat och behöver hjälp, " + error_swe[1]+" "+ error_swe[0]
+
+            self.services.get_service(constants.TTS_SERVICE_NAME).start(
+                     error_swe,
+                     constants.SPEAKER_KITCHEN)
+
+
+    def report_status(self):
+        '''
+        Send updates to fibaro virtual device
+        '''
+
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROOMBA_ID'],
+                                self.config['FIBARO_VD_ROOMBA_MAPPINGS']['State'],
+                                self.current_state)
+        helper.send_auth_request(url,self.config)
+        
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROOMBA_ID'],
+                                self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Battery'],
+                                str(self.roomba.batPct) + " %")
+        helper.send_auth_request(url,self.config)
+
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROOMBA_ID'],
+                                self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Time'],
+                                str(self.roomba.mssnM))                                
+        helper.send_auth_request(url,self.config)
+
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ROOMBA_ID'],
+                                self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Bin'],
+                                str(self.roomba.bin_full))                                
+        helper.send_auth_request(url,self.config)
+
+        if str(self.roomba.phase) == 'run':
+            self.is_running = True 
+        else:
+            self.is_running = False
 
     def do_self_test(self):
         pass
 
     def handle_request(self, msg, speaker_id="0"):
-        '''
-        Play mp3 file on volumio system.
-        @param msg, file to play
-        '''
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
             
 
@@ -136,12 +253,14 @@ class RoombaService(ReoccuringBaseService):
         if not self.is_enabled():
             return BaseService.get_html_gui(self, column_id)
 
-        column = column.replace("<SERVICE_NAME>",   self.service_name)
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
-        res = "-"
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        res = "State: " + self.current_state
+        res = "Battery: " + self.battery
         column  = column.replace("<SERVICE_VALUE>", res)
 
         return column
+
             
 if __name__ == '__main__':
 

@@ -57,11 +57,11 @@ class WeatherService(ReoccuringBaseService):
     def do_self_test(self):
         try:
             self.logger.info("Perform self test")
-            self._fetch_current_conditions()
+            #self._fetch_current_conditions()
             self._fetch_forecast()
 
-            self.check_rain()
-            self.update_virtual_device()
+            #self.check_rain()
+            #self.update_virtual_device()
         except:
             self.logger.error(traceback.format_exc())
 
@@ -101,10 +101,10 @@ class WeatherService(ReoccuringBaseService):
         '''
         self.logger.debug("Fetch weather")
         try:
-            self._fetch_current_conditions()
+            #self._fetch_current_conditions()
             self._fetch_forecast()
-            self.check_rain()
-            self.update_virtual_device()
+            #self.check_rain()
+            #0self.update_virtual_device()
         except Exception:
             self.logger.error(traceback.format_exc())
             self.increment_errors()
@@ -207,15 +207,15 @@ class WeatherService(ReoccuringBaseService):
             self.logger.warning("Cached service data is none")
             return ""
         
-        temp = str(self.weather_data['Temp']['Value'])
-        temp = temp.replace(".",",")
-        announcement = "Just nu är det "
-        announcement += temp + " grader ute. "
+#        temp = str(self.weather_data['Temp']['Value'])
+#        temp = temp.replace(".",",")
+#        announcement = "Just nu är det "
+#        announcement += temp + " grader ute. "
 
         self.forecast = self.forecast.replace('ºC', ' grader')
         self.forecast = self.forecast.replace('°', ' grader')
         self.logger.info("Dagens prognos: "+ self.forecast)
-        announcement += "Dagens väderprognos." +self.forecast
+        announcement = "Dagens väderprognos." +self.forecast+". "
         return announcement
                 
 if __name__ == '__main__':

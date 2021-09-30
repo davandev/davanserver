@@ -40,11 +40,15 @@ class TtsService(BaseService):
         '''
         if ("tts=Completed" in msg):
             self.handle_ttsCompleted_callback()
+        if "AlarmMsg" in msg:
+            decoded_msg = msg.split('=')[1]
+            self.start(decoded_msg,"2")
         else:
             decoded_msg = msg.split('=')[1]
             self.start(decoded_msg,"1")
 
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")    
+    
     def start(self, msg, speakers, cache=False):
         '''
         Recevied request from Fibaro system to speak message.
@@ -87,8 +91,12 @@ class TtsService(BaseService):
         Play the mp3 files in speakers
         """
         self.logger.info("Play file ["+ mp3_file + "] Speaker ["+ str(self.selected_speaker) + "]")
+        speaker_service = self.config['SPEAKER_SERVICE']
         
-        speaker = self.services.get_service(self.config['SPEAKER_SERVICE'])
+        if str(self.selected_speaker) in self.config['SPEAKER_SERVICES'].keys():
+            speaker_service = self.config['SPEAKER_SERVICES'][self.selected_speaker]
+        
+        speaker = self.services.get_service(speaker_service)
         speaker.handle_request(mp3_file,self.selected_speaker)
 
 #         shutil.copyfile(self.config['MP3_ROOT_FOLDER'] + mp3_file, self.config['SPEAK_FILE'])

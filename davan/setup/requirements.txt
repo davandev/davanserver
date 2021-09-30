@@ -11,3 +11,6 @@ configobj
 aioharmony
 tellduslive
 pyvolumio
+paramiko
+gtts
+oathclient

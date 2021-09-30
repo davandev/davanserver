@@ -12,6 +12,8 @@ STOP = "http://volumio.local/api/v1/commands/?cmd=stop"
 START = "http://volumio.local/api/v1/commands/?cmd=play"
 PAUSE = "http://volumio.local/api/v1/commands/?cmd=pause"
 REPLACE_AND_PLAY = "http://volumio.local/api/v1/replaceAndPlay"
+INCREASE_VOLUME = "http://volumio.local/api/v1/commands/?cmd=volume&volume=plus"
+DECREASE_VOLUME = "http://volumio.local/api/v1/commands/?cmd=volume&volume=minus"
 
 def create_play_list(file_name):
     '''
@@ -124,5 +126,15 @@ def stop():
 
 def play():
     resp = requests.get(START)
+    logger.info("Resp: " +str(resp))
+    return resp
+
+def increase():
+    resp = requests.get(INCREASE_VOLUME)
+    logger.info("Resp: " +str(resp))
+    return resp
+
+def decrease():
+    resp = requests.get(DECREASE_VOLUME)
     logger.info("Resp: " +str(resp))
     return resp
