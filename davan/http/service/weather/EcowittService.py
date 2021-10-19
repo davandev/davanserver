@@ -16,6 +16,7 @@ from davan.http.service.base_service import BaseService
 from  pyecowitt.ecowitt import EcoWittListener
 from davan.http.service.weather.PoolTempHandle import PoolTempHandle
 from davan.http.service.weather.RainHandle import RainHandle
+from davan.http.service.weather.MoistureHandle import MoistureHandle
 
        
 class EcowittService(BaseService):
@@ -29,12 +30,13 @@ class EcowittService(BaseService):
         BaseService.__init__(self,constants.ECOWITT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.aqi_active = False
-        #self.is_raining = False
         self.weather_data=[]
         self.is_dry = False
         self.handles = [
+            MoistureHandle(config),
             PoolTempHandle(config),
-            RainHandle(config)]
+            RainHandle(config)
+            ]
 
     def parse_request(self, data):
         '''
@@ -54,6 +56,10 @@ class EcowittService(BaseService):
         '''
         '''
         try:
+            if not self.is_running:
+                return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, ""
+
+
             data_dict = self.parse_request(data)
             eco = EcoWittListener()
             self.weather_data = eco.convert_units(data_dict)
@@ -92,31 +98,31 @@ class EcowittService(BaseService):
         #     self.is_raining = False
         #     helper.send_telegram_message(self.config, "Det har nog slutat regna")
 
-        dry_soil_list = self.check_soil_moisture_levels()
-        if dry_soil_list :
-            if not self.is_dry:
-                self.is_dry = True
-                msg = ""
-                for id,moisture_level in dry_soil_list.items():
-                    msg += id + " är torr och behöver vattnas ("+str(moisture_level)+" %), "
-                helper.send_telegram_message(self.config, msg )
-        else:
-            self.is_dry = False
+    #     dry_soil_list = self.check_soil_moisture_levels()
+    #     if dry_soil_list :
+    #         if not self.is_dry:
+    #             self.is_dry = True
+    #             msg = ""
+    #             for id,moisture_level in dry_soil_list.items():
+    #                 msg += id + " är torr och behöver vattnas ("+str(moisture_level)+" %), "
+    #             helper.send_telegram_message(self.config, msg )
+    #     else:
+    #         self.is_dry = False
  
-    def check_soil_moisture_levels(self):
-        result = {}
-        for x in range(1,7):
-            id = 'soilmoisture'+str(x)
-            if id in self.weather_data.keys():
+    # def check_soil_moisture_levels(self):
+    #     result = {}
+    #     for x in range(1,7):
+    #         id = 'soilmoisture'+str(x)
+    #         if id in self.weather_data.keys():
 
-                moisture = self.weather_data[id]
-                #self.logger.info("Moist "+id+" "+str(moisture))
-                if moisture < 10:
-                    name = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][1]
-                    result[name] = moisture
-                    self.logger.info(name+" behöver vattnas (" + str(moisture)+ " %)" )
-                    #helper.send_telegram_message(self.config, ""+name+" behöver vattnas (" + moisture+ " %)" )
-        return result
+    #             moisture = self.weather_data[id]
+    #             #self.logger.info("Moist "+id+" "+str(moisture))
+    #             if moisture < 10:
+    #                 name = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][1]
+    #                 result[name] = moisture
+    #                 self.logger.info(name+" behöver vattnas (" + str(moisture)+ " %)" )
+    #                 #helper.send_telegram_message(self.config, ""+name+" behöver vattnas (" + moisture+ " %)" )
+    #     return result
 
     def report_status(self):
         '''

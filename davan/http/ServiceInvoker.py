@@ -52,8 +52,10 @@ class ServiceInvoker(object):
                             service = attributes(self, self.config)
                             self.services[service.get_name()] = service
                         except :
-                            self.logger.error(traceback.format_exc())
+                            pass
+                            #self.logger.error(traceback.format_exc())
                         self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
+        self.logger.info("Discovered services")                        
         return self.services
     
     def start_services(self):
@@ -139,12 +141,24 @@ class ServiceInvoker(object):
         self.logger.info("Stopping all services")
 
         for service in self.services.values():
-            #self.logger.debug("Stopping: " + str(service.get_name()))
+            self.logger.debug("Stopping: " + str(service.get_name()))
             if service.service_name == service_name:
                 continue
             service.stop_service()
-        self.running = False
+
         self.logger.info("All started services stopped")
+
+    def start_all_except(self, service_name):
+        self.logger.info("Starting all services")
+
+        for service in self.services.values():
+            self.logger.debug("Starting: " + str(service.get_name()))
+            if service.is_enabled() and not service.is_service_running():
+                if service.service_name == service_name:
+                    continue
+                service.start_service()
+
+        self.logger.info("All started services started")
                     
     def stop_services(self):
         """

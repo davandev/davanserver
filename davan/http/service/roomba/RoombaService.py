@@ -163,6 +163,7 @@ class RoombaService(ReoccuringBaseService):
             #self.logger.debug("Return "+self.roomba.phase )
         except:
             self.logger.warning("Failed to retrieve latest state")
+            return "standby"
         return self.roomba.phase
 
     def update_status(self):

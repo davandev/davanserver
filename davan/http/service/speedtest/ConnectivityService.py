@@ -17,6 +17,51 @@ import davan.util.cmd_executor as cmd
 import davan.util.constants as constants
 import davan.util.helper_functions as helper
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
+from davan.util.StateMachine import StateMachine
+from  davan.util.StateMachine import State
+
+class Connected(State):
+    def __init__(self,  connService , firstState=False):
+        State.__init__( self)
+        self.connected = True
+        self.service = connService
+
+        if not firstState:
+            self.service.toggle_services(True)
+
+    def handle_data(self, connection_result):
+        if not self.service.is_connection_established(connection_result):
+            self.connected = False
+
+    def next(self):
+        if not self.connected:
+            return Disconnected(self.service)
+        return None
+
+    def get_message(self):
+        return "Internet är tillbaka"
+
+class Disconnected(State):
+    def __init__(self, connService):
+        State.__init__( self )
+        self.connected = False
+        self.service = connService
+        self.service.toggle_services(False)
+
+    def handle_data(self, connection_result):
+        self.logger.info("Check connection state:["+str(connection_result)+"]")
+
+        if self.service.is_connection_established(connection_result):
+            self.connected = True
+
+    def next(self):
+        if self.connected:
+            return Connected(self.service)
+        return None
+
+    def get_message(self):
+        return "Internet är borta"
+
 
 class ConnectivityService(ReoccuringBaseService):
     '''
@@ -33,62 +78,54 @@ class ConnectivityService(ReoccuringBaseService):
         self.time_to_next_timeout = 60
     
     def init_service(self):
-        current_time = datetime.datetime.now().strftime('%H:%M')
-        self.connected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
-        self.disconnected_at = None
-        self.disconnected_result =[" 100% packet loss", "Temporary failure in name resolution"]
+        self.sm = StateMachine(self.config, Connected(self, True))
 
     def handle_request(self, msg):
         '''
         Received request for the latest speedtest measurements.
         '''
-        self.logger.debug("SpeedTest content: " + self.encoded_string)
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, self.encoded_string
+        self.logger.info("Receive Msg:"+msg)
+        if "StopServices" in msg:
+            self.logger.info("Disable services")
+            self.is_enabled = False
+        if "StartServices" in msg:
+            self.logger.info("Enable services")
+            self.is_enabled = True
+
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
+
+    def is_connection_established(self, connection_string):
+        disconnected_strings=[" 100% packet loss", "Temporary failure in name resolution"]
+        for failure_string in disconnected_strings:
+            if failure_string in connection_string:
+                return False
+        return True
+
+    def toggle_services(self,enable):
+        self.logger.info("Toggle services["+str(enable)+"]")
+        if enable:
+            self.services.start_all_except(self.get_name())
+        else:
+            self.services.stop_all_except(self.get_name())
 
     def handle_timeout(self):
         self.logger.debug("Check internet connectivity")
         try:
-            result = cmd.execute_block(self.command, "ConnectivityTest", True)
+            if self.is_enabled == False: # Manually disabled
+                result =" 100% packet loss Temporary failure "
+            else:
+                result = cmd.execute_block(self.command, "ConnectivityTest", True)
         except:
-            self.logger.debug("Failed to perform ping.. : " + str(result) )
-            if self.disconnected_at == None:
-                self.disconnected_at = datetime.datetime.now().strptime('%H:%M')
-
+            self.logger.warning("Failed to perform ping.. : " + str(result) )
             self.logger.error(traceback.format_exc())
             self.increment_errors()        
-            
-#        isFailure = False
-#        for failure_string in self.disconnected_result:
-#            if failure_string in str(result):
-#                isFailure = True
-#                self.increment_errors()        
-#                if self.disconnected_at == None:
-#                    self.logger.error("Lost internet connectivity")
-#                    self.raise_alarm(constants.CONNECTIVITY_SERVICE_NAME, "Warning", "Inget internet")
-#                    current_time = datetime.datetime.now().strftime('%H:%M')
-#                    self.disconnected_at = datetime.datetime.now().strptime(current_time,'%H:%M')
-#                    self.logger.info("Stopp all services until internet is back")
-#                    self.services.stop_all_except(self.get_name())
-#                    #self.disconnected_at = time.time()
-#        if not isFailure:
-#            #self.logger.info("Result:[" + str(result) +"]") 
-#            self.increment_invoked()
-#            if self.disconnected_at != None:
-#                self.clear_alarm(constants.CONNECTIVITY_SERVICE_NAME)
-#                # Got connection back again'
-#                current_time = datetime.datetime.now().strftime('%H:%M')
-#                self.connected_at = datetime.datetime.now().strptime(current_time, '%H:%M')
-#                self.report_down_time()
-#                self.services.start_services()
-    
-    def report_down_time(self):
-        result = "No internet connectivity from ["+ str(self.disconnected_at) +"] to [" + str(self.connected_at) + "]"
-        self.logger.warning(result)
-        diff = self.connected_at - self.disconnected_at
-        if diff.seconds > 120:
-            helper.send_telegram_message(self.config, result )
-        self.disconnected_at = None
         
+        self.sm.handle_data(result)
+        next_state = self.sm.next() 
+        
+        if next_state:
+            self.sm.change_state(next_state)     
+
     def get_next_timeout(self):
         '''
         Return time to next speed measuring

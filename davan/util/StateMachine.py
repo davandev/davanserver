@@ -1,6 +1,13 @@
 import logging
 import os
 import davan.util.helper_functions as helper 
+import inspect
+
+
+STARTED = 1
+CANCELLED = 0
+INITIAL = 0
+LIMIT = 3
 
 class State:
     def __init__(self):
@@ -16,7 +23,9 @@ class State:
 
 class StateMachine():
     def __init__(self, config, initialState):
-        self.logger = logging.getLogger(os.path.basename(__file__))
+        stack = inspect.stack()
+        the_class = stack[1][0].f_locals["self"].__class__.__name__
+        self.logger = logging.getLogger(the_class)
         self.currentState = initialState
         self.config = config
     
@@ -36,7 +45,7 @@ class StateMachine():
         '''
         Change to new state
         '''
-        self.logger.info("["+self.currentState.name+"] --> ["+ str(new_state.name)+"]")
+        self.logger.info("["+self.currentState.__class__.__name__+"] --> ["+ str(new_state.__class__.__name__)+"]")
         self.currentState = new_state
         helper.send_telegram_message(self.config, new_state.get_message())
 

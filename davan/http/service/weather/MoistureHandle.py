@@ -1,7 +1,43 @@
 import logging
 import os
 import davan.util.helper_functions as helper 
+from davan.util.StateMachine import StateMachine
+from  davan.util.StateMachine import State
 
+
+class MoistureStateBase(State):
+    def __init__(self, id, name, level, limit):
+        State.__init__( self )
+        self.limit = limit 
+        self.device_name = name
+        self.id = id
+        self.level =level
+
+    def handle_data(self, current_level):
+        self.logger.debug(self.device_name+": State["+self.__class__.__name__+"] Current["+str(current_level)+"] Limit["+ str(self.limit)+"] ")
+        self.level = current_level
+
+class WetState(MoistureStateBase):
+    def __init__(self, id, name, level, limit):
+        MoistureStateBase.__init__(self, id, name, level, limit)
+
+    def next(self):
+        if self.level < self.limit :
+            return DryState(self.id, self.device_name, self.level, self.limit)
+
+    def get_message(self):
+        return "Fuktnivån "+self.device_name+" ["+str(self.level)+"% ] är ok"
+
+class DryState(MoistureStateBase):
+    def __init__(self, id, name, level, limit):
+        MoistureStateBase.__init__(self, id, name, level, limit)
+
+    def next(self):
+        if self.level > self.limit :
+            return WetState(self.id, self.device_name, self.level, self.limit)
+
+    def get_message(self):
+        return self.device_name+"[ "+str(self.level)+"% ] behöver vattnas"
 
 class MoistureHandle():
     '''
@@ -11,43 +47,30 @@ class MoistureHandle():
         self.logger = logging.getLogger(os.path.basename(__file__))
 
         self.config = config
-        self.is_dry = False
+#        self.is_dry = False
+        self.sm = []
 
+        for id in self.config['FIBARO_VD_ECOWITT_MAPPINGS'].keys():
+            if 'soilmoisture' in id:
+
+                name = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][1]
+                limit = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][2]
+                state = WetState(id, name, -1, limit)
+                self.sm.append(StateMachine(config, state))
+                self.logger.info("Adding monitoring of moisture device "+name+"["+str(limit)+"]")
 
     def handle_data(self, data):
         '''
         Process the recevied rain rate data
+        Iterate all configured sensors and compare with limits 
         '''
-        dry_soil_list = self.check_soil_moisture_levels(data)
-        if dry_soil_list :
-            if not self.is_dry:
-                self.is_dry = True
-                msg = ""
-                for id,moisture_level in dry_soil_list.items():
-                    msg += id + " är torr och behöver vattnas ("+str(moisture_level)+" %), "
-                self._notify_state_change( msg )
-        else:
-            self.is_dry = False
- 
-    def check_soil_moisture_levels(self,data):
-        result = {}
-        for x in range(1,7):
-            id = 'soilmoisture'+str(x)
+
+        for monitor in self.sm:
+            id = monitor.currentState.id
             if id in data.keys():
-
-                moisture = data[id]
-                name = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][1]
-                limit = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][2]
-                self.logger.info(name + " Moisture["+str(moisture)+"] Limit["+str(limit)+"]")
-                if moisture < limit:
-                    result[name] = moisture
-                    self.logger.info(name+" behöver vattnas (" + str(moisture)+ " %)")
-        return result
-
-
-    def _notify_state_change(self,msg):
-        '''
-        Update any pool temp change
-        '''
-        self.logger.debug(msg)
-        helper.send_telegram_message(self.config, msg)
+                
+                current_level = data[id]
+                monitor.handle_data(current_level)
+                next = monitor.next()
+                if next:
+                    monitor.change_state(next) 
