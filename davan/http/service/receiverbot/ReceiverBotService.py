@@ -94,10 +94,11 @@ class ReceiverBotService(BaseService):
 #         bot.send_document(chat_id=update.message.chat_id, document=open(file_name, 'r'))
 #         return "Logfile sent"
 
-    def audio(self, bot, update):
+    def audio(self, update, context):
         '''
         Recieved a voice message, play it in speakers 
         '''
+        bot = context.bot
         self.handle_voice_message(bot, update.message)
         self.increment_invoked()
         update.message.reply_text('Voice message played in speaker ' +str(self.current_speaker))
@@ -164,7 +165,7 @@ class ReceiverBotService(BaseService):
         newFile = bot.get_file(file_id)
         newFile.download(ogg_file)        
         wav_file = converter.ogg_to_wav(self.config, ogg_file)
-        speaker = self.services.get_service(constants.ROXCORE_SPEAKER_SERVICE_NAME)
+        speaker = self.services.get_service(constants.VOLUMIO_SERVICE_NAME)
         speaker.handle_request(wav_file,self.current_speaker)
         return "Voice message played in speaker " + str(self.current_speaker)
     
