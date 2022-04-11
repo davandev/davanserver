@@ -63,6 +63,7 @@ TUYA_SERVICE_NAME ="TuyaService"
 ROBOMOW_SERVICE_NAME ="RobomowService"
 DOORBELL_SERVICE_NAME ="DoorbellService"
 PICTURE_SERVICE_NAME="TakePicture"
+CAMERA_SERVICE_NAME="CameraService"
 ROOMBA_SERVICE_NAME="RoombaService"
 
 EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"

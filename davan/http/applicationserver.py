@@ -112,6 +112,9 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(b"hai")
                     self.server.socket.close()
             else:
+                logger.warning("Unexpected request:"+str(self.path))
+                logger.warning(str(self.headers.getheader('Authorization')))
+
                 self.send_error(404, 'File Not Found: %s' % self.path)
 
             return

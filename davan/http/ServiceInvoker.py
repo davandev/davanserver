@@ -51,10 +51,10 @@ class ServiceInvoker(object):
                             attributes = getattr(mod, module_name)
                             service = attributes(self, self.config)
                             self.services[service.get_name()] = service
+                            self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
                         except :
                             pass
                             #self.logger.error(traceback.format_exc())
-                        self.logger.debug("Discovered service [" + module_name + "] Service key[" + service.get_name()+"]")
         self.logger.info("Discovered services")                        
         return self.services
     

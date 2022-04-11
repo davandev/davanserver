@@ -1,6 +1,7 @@
 '''
 @author: davandev
 '''
+# -*- coding: utf-8 -*- 
 
 import logging
 import os
@@ -33,6 +34,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
     interpreted as being available on wifi network.
     At state change a telegram message is sent to the receivers. Virtual device on Fibaro HC2 is also updated 
     with the state change.
+
+    Set to failed : ip neighbour change to 192.168.2.30 dev br0 lladdr 3a:15:70:6c:c8:f4 nud failed
     '''
 
     def __init__(self, service_provider, config ):
@@ -76,7 +79,6 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         return self.time_to_next_timeout
     
     def handle_timeout(self):
-        #self.logger.info("Check presence of monitored devices")
 
         active_devices = self.fetch_active_devices()
         # Check family status
@@ -86,10 +88,8 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         # check house devices
         self.check_device_group(self.house_devices, active_devices)
         
-        self.check_unknown_devices(active_devices)
     
     def check_unknown_devices(self, active_devices):
-        #self.logger.info("Check unknown devices")
         for line in active_devices:
             if line.startswith("192."):
                 items = line.split()
@@ -116,11 +116,73 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         self.update_presence(monitored_devices, active_devices)
         
+        user_groups = self.group_user_devices(monitored_devices)
+        self.check_user_devices(user_groups)
+        self.reset_active_devices(monitored_devices)
+    
+    def group_user_devices(self, monitored_devices):
+        user_groups = {}
         for _, device in list(monitored_devices.items()):
-            if device.changed:
-                device.toString()
-                self.notify_change(device)
-                
+            if device.user in user_groups:
+                user_groups[device.user].append(device)
+            else:
+                user_groups[device.user] = [device]
+        return user_groups
+    
+    def reset_active_devices(self, monitored_devices):
+        '''
+        Fetch a list of all devices status from router. 
+        @return list of found devices
+        '''
+        #self.logger.info('reset_active_devices')
+        p = paramiko.SSHClient()
+        p.set_missing_host_key_policy(paramiko.AutoAddPolicy())   # This script doesn't work for me unless this line is added!
+        p.connect(self.config['ROUTER_ADRESS'], 
+                  port=1025, 
+                  username=self.config['ROUTER_USER'], 
+                  password=self.config['ROUTER_PASSWORD'])
+        for ip, _ in monitored_devices.items():
+            reset_string = "/usr/sbin/ip neigh change to "+ip+" dev br0 nud failed"
+            stdin, stdout, stderr = p.exec_command(reset_string)
+            result = stdout.readlines()
+            #self.logger.info("result:" +str(result))
+
+        p.close()
+
+    def check_user_devices(self, user_groups):
+        for user, devices in list(user_groups.items()):
+            if len(devices) == 1:
+                if devices[0].changed:
+                    devices[0].toString()
+                    self.notify_change(devices[0])
+            else:
+                changedDevice = self.get_user_state_changed(devices[0],devices[1])
+                if changedDevice != None:
+                    changedDevice.toString()
+                    self.notify_change(changedDevice)
+
+    def get_user_state_changed(self, device1, device2):
+        if device1.changed and device2.changed:
+            if device1.active or device2.active:
+                return device1
+            elif not device1.active and not device2.active:
+                return device1
+
+        if device1.changed :
+            if device1.active and not device2.active:
+                return device1
+            if not device1.active and not device2.active:
+                return device1
+
+        if device2.changed:
+            if device2.active and not device1.active:
+                return device2
+            if not device2.active and not device1.active:
+                return device2
+
+        self.logger.info("no device change or no change to update")
+        return None
+
     def notify_change(self, device):
         '''
         Update Virtual device on Fibaro system and send Telegram messages
@@ -177,22 +239,18 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         
         if("REACHABLE" in status or "STALE" in status):
             device.active = True
-            if status[4].strip() != device.mac:
-                self.logger.info(device.user +"["+device.ip_adress+"] do not match received[" + status[4].strip() + "] != stored[" + device.mac+"]")
         elif "FAILED" in status:
             device.active = False
-            
         if (previous_status == device.active): # No state changed
- #           self.logger.info("No change of status for device[" + status[0] + "]")
+            self.logger.debug("No change of status for device[" + status[0] + "]")
             device.changed = False
             if device.active:
                 device.last_active = str(datetime.datetime.now())
         else: # State is changed
-#            self.logger.info("Change of status for device[" + status[0] + "]")
+            self.logger.debug("Change of status for device[" + status[0] + "]")
             device.changed = True
             if device.active:
                 device.first_active = str(datetime.datetime.now())
-        #self.family_devices[status[0]] = device
 
 
     def get_announcement(self):
@@ -201,7 +259,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
         '''
         announcement = ""
         for _, device in list(self.family_devices.items()):
-            announcement += device.user + " �r " + device.active_toString()+", "
+            announcement += device.user + " är " + device.active_toString()+", "
         
         return announcement
     

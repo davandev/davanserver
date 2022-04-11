@@ -64,7 +64,7 @@ class EcowittService(BaseService):
             eco = EcoWittListener()
             self.weather_data = eco.convert_units(data_dict)
             self.logger.debug("Converted: " + str(self.weather_data) )
-            self.update_status()
+            #self.update_status()
             self.report_status()
             
             for handle in self.handles:
@@ -80,49 +80,18 @@ class EcowittService(BaseService):
 
     def update_status(self):
         self.logger.debug("Update status")
-
-        air_quality = self.weather_data['pm25_ch1']
-        if air_quality > 12 and self.aqi_active==False:
-            self.aqi_active = True
-            helper.send_telegram_message(self.config, "Inomhusluften har försämrats ["+str(air_quality)+"]")
-        if air_quality <= 12 and self.aqi_active==True:
-            self.aqi_active = False
-            helper.send_telegram_message(self.config, "Inomhusluften är bra")
-
-        # rainrate = self.weather_data['rainratemm']
-        # if rainrate > 0 and self.is_raining == False:                
-        #     self.is_raining = True
-        #     helper.send_telegram_message(self.config, "Det kan ha börjat regna")
-        
-        # if rainrate <= 0 and self.is_raining == True:
-        #     self.is_raining = False
-        #     helper.send_telegram_message(self.config, "Det har nog slutat regna")
-
-    #     dry_soil_list = self.check_soil_moisture_levels()
-    #     if dry_soil_list :
-    #         if not self.is_dry:
-    #             self.is_dry = True
-    #             msg = ""
-    #             for id,moisture_level in dry_soil_list.items():
-    #                 msg += id + " är torr och behöver vattnas ("+str(moisture_level)+" %), "
-    #             helper.send_telegram_message(self.config, msg )
-    #     else:
-    #         self.is_dry = False
- 
-    # def check_soil_moisture_levels(self):
-    #     result = {}
-    #     for x in range(1,7):
-    #         id = 'soilmoisture'+str(x)
-    #         if id in self.weather_data.keys():
-
-    #             moisture = self.weather_data[id]
-    #             #self.logger.info("Moist "+id+" "+str(moisture))
-    #             if moisture < 10:
-    #                 name = self.config['FIBARO_VD_ECOWITT_MAPPINGS'][id][1]
-    #                 result[name] = moisture
-    #                 self.logger.info(name+" behöver vattnas (" + str(moisture)+ " %)" )
-    #                 #helper.send_telegram_message(self.config, ""+name+" behöver vattnas (" + moisture+ " %)" )
-    #     return result
+        try:
+            air_quality = self.weather_data['pm25_ch1']
+            if air_quality > 12 and self.aqi_active==False:
+                self.aqi_active = True
+                helper.send_telegram_message(self.config, "Inomhusluften har försämrats ["+str(air_quality)+"]")
+            if air_quality <= 12 and self.aqi_active==True:
+                self.aqi_active = False
+                helper.send_telegram_message(self.config, "Inomhusluften är bra")
+        except:
+            self.logger.info("Failed to extract value")
+            self.increment_errors()
+            traceback.print_exc(sys.exc_info())
 
     def report_status(self):
         '''

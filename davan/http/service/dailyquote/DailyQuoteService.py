@@ -117,8 +117,10 @@ class DailyQuoteService(ReoccuringBaseService):
         Compile and return announcment.
         @return html encoded result
         '''
-        result = "Dagens citat. "
-        result += self.today_quote +"."
+        result = ""
+        if self.today_quote:
+            result = "Dagens citat. "
+            result += self.today_quote +"."
         
         return result
 

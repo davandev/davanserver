@@ -4,6 +4,7 @@ import time
 import os
 import traceback
 from threading import Thread,Event
+from datetime import datetime, timedelta
 
 import davan.util.helper_functions as helper 
 import davan.util.timer_functions as timer_functions
@@ -38,6 +39,7 @@ class RobomowService(BaseService):
         self.local_event = Event()
         self.isTimeToLawn = False
         self.activity_counter = 0
+        self.expected_charging_time=None
 
 
     def parse_request(self, msg):
@@ -53,7 +55,7 @@ class RobomowService(BaseService):
         '''
         try:
             reqType,value = self.parse_request(msg)
-            self.logger.debug("Request[" + msg +"] ReqType["+reqType+"] Value["+value+"]")
+            #self.logger.debug("Request[" + msg +"] ReqType["+reqType+"] Value["+value+"]")
             self.increment_invoked()
             if reqType =="service":
                 if value == constants.TURN_ON:
@@ -84,8 +86,10 @@ class RobomowService(BaseService):
                                 self.stop_timer()
                             self.next_state = new_state
                             self.start_transition_timer()
-                else:
-                    self.logger.debug("Not scheduled to lawn, skip report")
+                    if self.expected_charging_time and datetime.now() > self.expected_charging_time:
+                        self.logger.warning("Lawn has moved too long, check state")
+                #else:
+                #    self.logger.debug("Not scheduled to lawn, skip report")
 
 
         except Exception as e:
@@ -200,6 +204,14 @@ class RobomowService(BaseService):
         #self.update_fibaro_device(self.next_state,str(current_date) +"-"+ str(current_time) )
         try:
             self.update_new_fibaro_device(self.next_state, current_date, current_time)
+            if self.next_state == 'Working':
+                #Changed to working, calculate when to expect mower to charge
+                self.expected_charging_time = datetime.now() + timedelta(hours=2)
+                self.logger.debug("Expected mower to change state at "+ self.expected_charging_time.strftime('%H:%M:%S'))
+            else:
+                self.expected_charging_time = None
+                self.logger.debug("Mower changed state")
+
         except:
             self.logger.error(traceback.format_exc())
         # Change state

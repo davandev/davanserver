@@ -74,9 +74,10 @@ def create_config(secret_config, config):
     # Outdoor camera configuration
     #---------------------------------------------------------------------------------------------
     config["TakePictureEnabled"] = True
-    config['CAMERAS'] = {'Balkong':'http://192.168.2.119:99/snapshot.cgi/snapshot.cgi',
-                         'Uterum':'http://192.168.2.76:99/snapshot.cgi/snapshot.cgi',
-                         'Farstukvist':'http://192.168.2.172/tmpfs/snap.jpg'}
+    config['CAMERAS'] = {'Balkong':'http://192.168.2.193:99/snapshot.cgi/snapshot.cgi',
+                         'Uterum':'http://192.168.2.77:99/snapshot.cgi/snapshot.cgi',
+                         'Farstukvist':'http://192.168.2.172/tmpfs/snap.jpg',
+                         'Dlink2':'http://192.168.2.117/image/jpeg.cgi'}
     # Username used when accessing cameras
     config['CAMERA_USER'] = secret_config.CAMERA_USER
     # Password used when accessing cameras
@@ -319,21 +320,31 @@ def create_config(secret_config, config):
         'RobomowService,       07:30,   21:00,  Tuesday,      3,           -1,        267,        2,        0,         196,            0',
         'RobomowService,       07:30,   21:00,  Thursday,     3,           -1,        267,        2,        0,         196,            0',
         'RobomowService,       07:30,   21:00,  Saturday,     3,           -1,        267,        2,        0,         196,            0',
-        'KitchenTak,           16:15,   23:45,  week,         1,           10,        65,         2,        1,         194,            0',
-        'KitchenMatsal,        18:15,   23:45,  week,         1,           10,        394,        4,        1,         194,            0',
-        'Vitrin,               17:15,   23:45,  week,         2,            6,        179,        3,        3,         194,            0',
-        'ljusslinga,           18:00,   23:15,  week,         2,            2,        179,        1,        3,         194,            0',
-        'Uterum,               sunset,  23:45,  week,         0,           -1,        360,        1,        10,        195,            0',
+        #'ljusslinga,           07:00,   09:05,  weekdays,     2,           2,         179,        1,        3,         194,            0',
+        #'ljusslinga,           18:00,   23:15,  week,         2,           2,         179,        2,        3,         194,            0',
+        #'KitchenGroup,         06:30,   10:30,  weekdays,     2,           16,        179,       11,       3,         194,            0',
+        'KitchenGroup,         15:00,   23:55,  weekdays,     2,           16,        179,       11,       3,         194,            0',
+        #'KitchenGroup,         08:00,   23:55,  weekend,      2,           16,        179,       11,       3,         194,            0',
+        #'KitchenTak,           06:50,   09:00,  weekdays,     1,           5,         65,         3,        1,         194,            0',
+        'KitchenTak,           16:15,   23:15,  week,         1,           5,         65,         4,        1,         194,            0',
+        #'Vitrin,               06:52,   09:02,  weekdays,     2,           6,         179,        5,        3,         194,            0',
+        #'Vitrin,               17:15,   23:45,  week,         2,           6,         179,        6,        3,         194,            0',
+        #'KitchenMatsal,        06:55,   09:01,  weekdays,     1,           5,         394,        7,        1,         194,            0',
+        'KitchenMatsal,        16:15,   23:30,  week,         1,           5,         394,        8,        1,         194,            0',
+        #'KitchenLampa,         06:45,   08:05,  weekdays,     1,           10,        397,        9,        1,         194,            0',
+        'KitchenLampa,         16:30,   22:05,  week,         1,           10,        397,        10,        1,         194,            0',
+        #'Uterum,               07:05,   08:15,  week,         0,           -1,        360,        1,        10,        195,            0',
+        'Uterum,               sunset,  23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
         'Outdoor,              sunset,  23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
         'Farstukvist,          sunset,  23:55,  week,         0,           -1,        226,        1,        1,         227,            0',
-        'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
+        #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
         'WilmaFonster,         sunset,  22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,         sunset,  23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
-        'WilmaBlinds,          08:30,   22:45,  weekdays,     2,           14,        180,        3,        3,         197,            0',
+        'WilmaBlinds,          08:30,   22:45,  weekdays,     2,           18,        180,        3,        3,         197,            0',
         'WilmaBlinds,          10:00,   22:55,  week,         2,           18,        180,        3,        3,         197,            0',
         #'WilmaTak,            06:30,   08:15,  weekdays,      1,           20,        173,        4,        20,        197,            1',
         'WilmaTak,             sunset,  22:00,  week,         1,           20,        173,        5,        20,        197,            1',
-        'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
+        #'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
         'ViggoFonster,         sunset,  21:30,  weekdays,     2,           10,        181,        2,        3,         198,            0',
         'ViggoFonster,         sunset,  23:00,  weekend,      2,           10,        181,        2,        3,         198,            0',
         'ViggoBlinds,          07:30,   22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
@@ -341,16 +352,17 @@ def create_config(secret_config, config):
         #'ViggoTak,            06:30,   07:15,  weekdays,     1,           10,        177,        4,        15,        198,            1',
         'ViggoTak ,            sunset,  21:00,  week,         1,           10,        177,        5,        15,        198,            1',
         'Parkering,            sunset,  23:55,  week,         0,           -1,        378,        1,        1,         281,            0',
-        'Datarum,              06:15,   08:30,  week,         2,            2,        182,        1,        0,         304,            0',        
+        #'Datarum,              06:15,   12:30,  week,         2,            2,        182,        1,        0,         304,            0',        
         'Datarum,              sunset,  23:42,  week,         2,            2,        182,        2,        0,         304,            0',
         'Tvrum,                17:15,   23:30,  week,         2,            2,        184,        1,        5,         307,            0',
         'Gillestuga,           17:15,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
         'Tavla,                18:30,   23:45,  week,         2,            14,       339,        2,        4,         390,            0',
-        'Sovrum,               09:15,   10:30,  weekend,      2,            1,        185,        1,        5,         308,            0',
-        'Sovrum,               06:30,   10:15,  weekdays,     2,            1,        185,        2,        5,         308,            0',
-        'Sovrum,               sunset,  23:30,  week,         2,            1,        185,        2,        5,         308,            0',
-        'Hall,                 sunset,  23:40,  week,         1,            5,        375,        1,        5,         402,            0',
-        'Korridor,             sunset,  23:40,  week,         1,            5,        286,        1,        5,         402,            0',
+        #'Sovrum,               09:15,   10:30,  weekend,      2,            2,        185,        1,        5,         308,            0',
+        #'Sovrum,               06:30,   10:15,  weekdays,     2,            2,        185,        2,        5,         308,            0',
+        'Sovrum,               sunset,  23:30,  week,         2,            2,        185,        2,        5,         308,            0',
+        #'Hall,                 06:30,   09:00,  weekdays,     1,            5,        375,        1,        5,         402,            0',
+        'Hall,                 sunset,  23:40,  week,         1,            5,        375,        2,        5,         402,            0',
+        'Korridor,             sunset,  23:40,  week,         1,            5,        286,        3,        5,         402,            0',
 
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
@@ -482,6 +494,7 @@ def create_config(secret_config, config):
     config['TRADFRI_DEVICES'] = [
               # Name        |    ID,      |      DeviceType
               'ljusslinga,      65563,       SocketController',
+              'Julgran,         65591,       SocketController',
               'ViggoWindow,     65539,       SocketController',
               'ViggoShelf,      65540,       SocketController',
               'ViggoBlind,      65584,       BlindController',                 
@@ -499,7 +512,8 @@ def create_config(secret_config, config):
               'Skrubben,        65579,       SocketController',
               'Sminklampa,      65580,       SocketController',
               'Vitrin,          65581,       SocketController',
-              'VitrinDimmer,    65581,       DriverController'
+              'VitrinDimmer,    65581,       DriverController',
+              'KitchenGroup,    [ljusslinga Vitrin],       GroupController'
               ''
     ]
 
@@ -521,6 +535,8 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     config["AlarmServiceEnabled"] = True
     config["DatabaseServiceEnabled"] = True
+    config["DataBaseTablePath"] = config["ROOT"] + '/db/davan.db'
+    #/opt/grafana/davan.db
 
     #---------------------------------------------------------------------------------------------
     # ExternalEvent service
@@ -573,6 +589,10 @@ def create_config(secret_config, config):
     config["VOLUMIO_USER"] = secret_config.VOLUMIO_USER
     config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
 
+
+
+    config["CameraServiceEnabled"] = False
+
     #---------------------------------------------------------------------------------------------
     # Roomba service
     #---------------------------------------------------------------------------------------------
@@ -587,6 +607,14 @@ def create_config(secret_config, config):
         'State'   : 'ui.state.value',
         'Bin'    : 'ui.bin.value',
         'Time'    : 'ui.time.value'}
+    config['ROOMBA_ROOM_MAPPINGS'] = {
+      # Roomname    : Roomba ID
+        'wilma'       : '2',
+        'viggo'       : '8',
+        'kok'         : '16',
+        'matsal'      : '15',
+        'tvattstuga'  : '17',
+        'hall'        : '1'}
 
     config["EcowittServiceEnabled"] = True
     config['FIBARO_VD_ECOWITT_ID'] = "435"
@@ -597,7 +625,7 @@ def create_config(secret_config, config):
         'soilmoisture1' : ['ui.soil1.value','Doftdraena',20],
         'soilmoisture2' : ['ui.soil2.value','Paprika',30],
         'temp1c' : ['ui.pool.value',''],
-        'pm25_ch1' : ['ui.air.value',''],
+        #'pm25_ch1' : ['ui.air.value',''],
         'rainratemm'      : ['ui.now.value',''],
         'hourlyrainmm'     : ['ui.hour.value',''],
         'dailyrainmm'     : ['ui.day.value',''],

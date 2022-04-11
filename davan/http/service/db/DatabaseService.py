@@ -22,7 +22,7 @@ class DatabaseService(BaseService):
         '''
         BaseService.__init__(self, constants.DATABASE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        self.db_path = '/home/pi/davanserver/db/davan.db'
+        self.db_path = config["DataBaseTablePath"]
         self.table_exist = False
 
     def has_html_gui(self):

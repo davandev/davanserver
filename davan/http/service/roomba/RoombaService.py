@@ -1,4 +1,9 @@
 '''
+
+
+
+
+
 Robot Data:
 {
   ver: '3',
@@ -55,191 +60,110 @@ import requests
 import time
 import json
 import davan.util.helper_functions as helper 
-import davan.http.service.roomba.RoombaStateUtilities as rooombaStateUtil      
-from davan.http.service.reoccuring_base_service import ReoccuringBaseService
-import asyncio
+import davan.http.service.roomba.RoombaStateUtilities as StateUtil      
+from davan.http.service.base_service import BaseService
+from davan.http.service.roomba.RoombaHandle import RoombaHandle
+from davan.http.service.roomba.RoombaHandle import ManualRun
 
-class RoombaService(ReoccuringBaseService):
+import davan.http.service.roomba.RoombaCommands as RoombaCommands  
+import asyncio
+import davan.http.service.roomba.MqttClient as MqttClient 
+import davan.util.cmd_executor as cmd_executor
+
+class RoombaService(BaseService):
     '''
     Control roomba     
+    Dependent on receiving MQTT data from
     '''
 
     def __init__(self, service_provider, config):
         '''
         Constructor
-        region_id : 8 == Wilma
-        region_id : 9 == Tvattstuga
-        region_id : 7 == Viggo
-        region_id : 14 == Korridor
-        region_id : 7 == Hall
-        region_id : 7 == Kök
-        region_id : 7 == Matsal
-        region_id : 13 == Arbetsrum
-
-
         '''
-        ReoccuringBaseService.__init__(self, constants.ROOMBA_SERVICE_NAME, service_provider, config)
+        BaseService.__init__(self, constants.ROOMBA_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        logging.getLogger('Roomba.roomba.roomba980.roomba.roomba').setLevel(logging.CRITICAL)
-        logging.getLogger('Roomba.Password').setLevel(logging.CRITICAL)
-
         self.user = config['ROOMBA_USER']
         self.pwd = config['ROOMBA_PWD']
         self.host = config['ROOMBA_HOST']
-        self.roomba = None
         
-        self.time_to_next_timeout = 300
-        self.is_running = False
-        self.state = None
-        self.current_state = "Unknown"
-        self.phase = "Unknown"
-        self.mission = None
-        self.battery = "-1"
-  
-    def get_next_timeout(self):
-        if self.is_running:
-            self.logger.debug("Status is running ")
-            return 60
-        self.logger.debug("Status is NOT running ")
-        return self.time_to_next_timeout
+        self.handle = None
+        self.cmd = None
+        self.client = None 
+
+    def _parse_request(self,msg):
+        self.logger.info("Parse request:" + msg)
+        msg = msg.replace("/RoombaService?", "")
+        cmds = msg.split("=")
+        return  cmds[0], cmds[1]
+
+    def handle_request(self, msg):
+        '''
+        Received request to start cleaning a room from HC2.
+        '''
+        try:
+           self.logger.info("Handle request :" + msg)
+           roomname, action = self._parse_request(msg)
+           self.handle.data.roomname = roomname
+           self.handle.sm.change_state( ManualRun( self.handle.data ))
+           message = RoombaCommands.build_cmd( roomname, self.config )
+           self.logger.info("Command:" + message )
+           self.client.publish('/roomba/command/Bogda/',message)
+           self.increment_invoked()
+        except Exception as ex:
+           self.logger.info("Caught exception " + str(ex))
+        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
+
 
     def init_service(self):
-        pass
-
-    def handle_timeout(self):
-        self.logger.debug("Timeout, check status")
-        loop = self._get_or_create_event_loop()
-        loop.run_until_complete(self.fetch_status())
-        self.update_status()
-        self.report_status()
-        
-    def _get_or_create_event_loop(self):
         try:
-            return asyncio.get_event_loop()
+           if not cmd_executor.execute_block('pgrep mosquitto',return_output=True):
+               self.raise_alarm("Mosquitte not running","Error","Mosquitto not running") 
+               self.logger.error("Mosquitto is NOT running")
+           else:
+               self.logger.info("Mosquitto is running")
 
-        except RuntimeError as ex:
-            if "There is no current event loop in thread" in str(ex):
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                return asyncio.get_event_loop()
+           self.handle = RoombaHandle( self.config, self.services )
+           self.client = MqttClient.MyMqttClient(self)
+           self.client.start()
+
+        except Exception as ex:
+           self.logger.info("Caught exception " + str(ex))
+             
     
-    async def fetch_status(self):
-        import roomba.roomba980.roomba.roomba as roomba
-        self.roomba = roomba.Roomba(self.host, self.user, self.pwd)
-        self.roomba.connect()
-        data_received = False
-        for i in range(10):
-            res = json.dumps(self.roomba.master_state, indent=2)
-            if len(self.roomba.master_state) > 0 :
-                self.logger.debug(res)
-                data_received = True
-                break        
-            else:
-                self.logger.debug("No data received")
-            await asyncio.sleep(1)
-            
-        self.roomba.disconnect()
-
-        if data_received ==False:
-            self.logger.debug("No contact with roomba")
-        else:
-            self.mission = str(self.roomba.mission)
-            self.phase = str(self.roomba.phase)  
-            self.battery = str(self.roomba.batPct)
-
-    def get_latest_state(self):
-        '''
-        Detemine and return the state of roomba 
-        '''
+    def message_received(self, message):
         try:
-            report_state = self.current_state
-            self.logger.debug("ReportState:"+ report_state + " Battery:" + self.battery)
+            self.handle.handle_data(message)
+            StateUtil.notify( self.handle.data )
+            self.report_status( self.handle.data )
+        except Exception as ex:
+           self.logger.info("Caught exception " + str(ex))
 
-            if self.battery == "100":
-                if report_state == "charge" or report_state == "standby" :
-                    #self.logger.debug("Return standby")
-                    return "standby"
-
-            #self.logger.debug("Return "+self.roomba.phase )
-        except:
-            self.logger.warning("Failed to retrieve latest state")
-            return "standby"
-        return self.roomba.phase
-
-    def update_status(self):
-        #self.logger.debug("Updates status")
-        latest_state = self.get_latest_state()
-        if self.current_state != latest_state:
-            self.current_state = latest_state
-            state_in_swe=rooombaStateUtil.states[self.current_state]
-            helper.send_telegram_message(self.config, "Bogda[" + state_in_swe+"]")
-
-        #self.logger.debug("Current state " + str(self.current_state))
-
-        if self.roomba.bin_full == True:
-            helper.send_telegram_message(self.config, "Bogda[ Töm damm behållaren ]")
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(
-                     constants.ROOMBA_EMPTY_BIN,
-                     constants.SPEAKER_KITCHEN)
-
-        if self.current_state =="stuck" :
-            error_number = self.roomba.error_num
-            self.logger.warning("Error number: "+ str(error_number))
-            error_msg = self.roomba.error_message
-            self.logger.warning("Error msg: "+ str(error_msg))
-            
-            state_swe=rooombaStateUtil.states[self.roomba.phase]
-            self.logger.warning("Error state: "+ str(state_swe))
-            error_swe=rooombaStateUtil._ErrorMessages[error_number]
-            self.logger.warning("Error msg: "+ str(error_swe[0]))
-            helper.send_telegram_message(self.config, "Bogda[ "+error_swe[1]+" ]")
-            error_swe="Bogda har fastnat och behöver hjälp, " + error_swe[1]+" "+ error_swe[0]
-
-            self.services.get_service(constants.TTS_SERVICE_NAME).start(
-                     error_swe,
-                     constants.SPEAKER_KITCHEN)
-
-
-    def report_status(self):
+    def report_status(self, stateData):
         '''
         Send updates to fibaro virtual device
         '''
-
-        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+        
+        if stateData.current_phase:
+            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                 self.config['FIBARO_VD_ROOMBA_ID'],
                                 self.config['FIBARO_VD_ROOMBA_MAPPINGS']['State'],
-                                self.current_state)
-        helper.send_auth_request(url,self.config)
+                                StateUtil.states[stateData.current_phase])
+            helper.send_auth_request(url,self.config)
         
         url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                 self.config['FIBARO_VD_ROOMBA_ID'],
                                 self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Battery'],
-                                str(self.roomba.batPct) + " %")
-        helper.send_auth_request(url,self.config)
-
-        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
-                                self.config['FIBARO_VD_ROOMBA_ID'],
-                                self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Time'],
-                                str(self.roomba.mssnM))                                
+                                stateData.batPct + " %")
         helper.send_auth_request(url,self.config)
 
         url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                 self.config['FIBARO_VD_ROOMBA_ID'],
                                 self.config['FIBARO_VD_ROOMBA_MAPPINGS']['Bin'],
-                                str(self.roomba.bin_full))                                
+                                str(stateData.bin_full))                                
         helper.send_auth_request(url,self.config)
-
-        if str(self.roomba.phase) == 'run':
-            self.is_running = True 
-        else:
-            self.is_running = False
 
     def do_self_test(self):
         pass
-
-    def handle_request(self, msg, speaker_id="0"):
-        return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
-            
 
     def has_html_gui(self):
         """
@@ -256,8 +180,8 @@ class RoombaService(ReoccuringBaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        res = "State: " + self.current_state
-        res = "Battery: " + self.battery
+        res = "State: " + self.handle.data.current_phase
+        res = "Battery: " + self.handle.data.batPct
         column  = column.replace("<SERVICE_VALUE>", res)
 
         return column

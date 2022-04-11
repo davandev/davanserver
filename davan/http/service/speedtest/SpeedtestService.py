@@ -14,6 +14,7 @@ import davan.util.helper_functions as helper
 import davan.config.config_creator as configuration
 import davan.util.cmd_executor as cmd
 import davan.util.constants as constants
+from davan.http.service.speedtest.db_handle import DatabaseHandle
 from davan.http.service.reoccuring_base_service import ReoccuringBaseService
 
 class SpeedtestService(ReoccuringBaseService):
@@ -37,7 +38,14 @@ class SpeedtestService(ReoccuringBaseService):
         self.download = "-"
         self.upload = "-"
         self.time_to_next_timeout = 900
-        
+        self.db = DatabaseHandle(config)
+
+    def init_service(self):
+        '''
+        Create db table if not already present
+        '''
+        self.db.init_db()
+
     def handle_request(self, msg):
         '''
         Received request for the latest speedtest measurements.
@@ -45,6 +53,8 @@ class SpeedtestService(ReoccuringBaseService):
         self.logger.info("Manual invoked SpeedTest")
         self.increment_invoked()
         self.handle_timeout()
+        self.db.insert(self.upload,self.download,self.ping)
+
         return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, constants.RESPONSE_EMPTY_MSG.encode("utf-8")
 
     def calculate_speed(self, measure):
@@ -57,6 +67,11 @@ class SpeedtestService(ReoccuringBaseService):
         return int(Mbits*downloaded_bytes/elapsed)
 
     def update_virtual_device(self, item, value):
+        '''
+        Send current statistics to fibaro
+        @param item, name of the fibaro field
+        @param value, value to update
+        '''
         url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                 self.config['FIBARO_VD_SPEEDTEST'],
                                 self.config['FIBARO_VD_SPEEDTEST_MAPPINGS'][item],
@@ -64,6 +79,9 @@ class SpeedtestService(ReoccuringBaseService):
         helper.send_auth_request(url,self.config)
 
     def handle_timeout(self):
+        '''
+        Timeout, time to measure speed
+        '''
         self.logger.debug("Measure internet speed")
         self.measure_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())
         self.ping = "0"
@@ -78,6 +96,9 @@ class SpeedtestService(ReoccuringBaseService):
 
             self.download = str(self.calculate_speed(data['download']))
             self.upload = str(self.calculate_speed(data['upload']))
+
+            self.db.insert(self.upload,self.download,self.ping)
+
             self.update_virtual_device("Time",self.measure_time)
             self.update_virtual_device("Upload",self.upload + " Mbps")
             self.update_virtual_device("Download",self.download+ " Mbps")

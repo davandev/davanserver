@@ -129,6 +129,7 @@ class PoolTempHandle():
 
         # Check limit
         if current_temp < 10 :    
+            self.logger.warning("Temperaturen i pool är "+current_temp+" grader, vilket är för lågt!")
             helper.send_telegram_message(self.config, "Temperaturen i pool är "+current_temp+" grader, vilket är för lågt!") 
 
         self.sm.handle_data(current_temp)
