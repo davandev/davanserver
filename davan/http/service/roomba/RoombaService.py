@@ -106,7 +106,7 @@ class RoombaService(BaseService):
            self.handle.data.roomname = roomname
            self.handle.sm.change_state( ManualRun( self.handle.data ))
            message = RoombaCommands.build_cmd( roomname, self.config )
-           self.logger.info("Command:" + message )
+           self.logger.debug("Command:" + message )
            self.client.publish('/roomba/command/Bogda/',message)
            self.increment_invoked()
         except Exception as ex:

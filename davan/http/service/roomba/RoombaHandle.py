@@ -18,7 +18,11 @@ class RoombaBaseState:
         assert 0, "next not implemented"
     def get_message(self):
         assert 0, "next not implemented"
-
+    def enter(self):
+        pass
+    def exit(self):
+        pass
+    
 class Initial(RoombaBaseState):
     def __init__(self, stateData):
         RoombaBaseState.__init__( self, stateData )

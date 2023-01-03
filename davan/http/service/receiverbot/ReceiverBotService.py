@@ -40,9 +40,9 @@ class ReceiverBotService(BaseService):
         '''
         BaseService.__init__(self,constants.RECEIVER_BOT_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))
-        logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
-        logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
-        logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
+        #logging.getLogger('telegram.bot').setLevel(logging.CRITICAL)
+        #logging.getLogger('telegram.ext').setLevel(logging.CRITICAL)        
+        #logging.getLogger('telegram.vendor').setLevel(logging.CRITICAL)
         self.current_speaker = "0"
         self.selected_service = None
         self.TAG_RE = re.compile(r'<[^>]+>')
@@ -107,7 +107,7 @@ class ReceiverBotService(BaseService):
         '''
         Stop telegram-bot 
         '''
-        self.logger.debug("Stopping service")
+        self.logger.info("Stopping service")
         try:
             self.bot.stop()
             self.event.set()
@@ -118,7 +118,7 @@ class ReceiverBotService(BaseService):
         '''
         Start a telegram-bot and register command and message handlers.
         '''
-        self.logger.debug("Starting telegram conversation bot")
+        self.logger.info("Starting telegram conversation bot")
         self.bot = Updater(token=self.config["RECEIVER_BOT_TOKEN"],use_context=True)
         self.bot.dispatcher.add_handler(MessageHandler(Filters.voice, self.audio))
         # Get the dispatcher to register handlers

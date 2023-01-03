@@ -115,3 +115,16 @@ def get_currrent_day_name():
     n = datetime.datetime.now()
     return calendar.day_name[n.weekday()]
     
+def get_seconds_to_next_hour():
+    delta = datetime.timedelta(hours=1)
+    now = datetime.datetime.now()
+    next_hour = (now + delta).replace(microsecond=0, second=0, minute=2)
+
+    wait_seconds = (next_hour - now).seconds  
+    return wait_seconds
+
+def get_time( wait_in_seconds):
+    delta = datetime.timedelta(seconds=wait_in_seconds)
+    now = datetime.datetime.now()
+    sum = (now + delta) 
+    return format(sum, '%H:%M')

@@ -178,38 +178,60 @@ def create_random_idiom(config):
     logger.debug("Create idiom announcement")
     menu = ""
     try:
-        line_number, idiom = get_random_idiom(config)
+        file_name = config['ANNOUNCEMENT_IDIOM']
+        line_number, idiom = get_random_text_string(file_name)
         logger.debug("Found an idom: " + idiom )
         menu = "Dagens idiom. "
         menu += idiom
         menu = menu.rstrip()
         menu += " "
-        update_idiom_file(config,line_number)
+        update_file(file_name,line_number)
     except:
         logger.error(traceback.format_exc())
 
     return menu
 
-def update_idiom_file(config, line):
-    logger.debug("Update idiom announcement")
-    with open(config['IDIOM_ANNOUNCEMENTS'], 'r') as file_handler:
+def create_random_fact(config):
+    '''
+    '''
+    import random
+    logger.debug("Create fact announcement")
+    menu = ""
+    try:
+        file_name = config['ANNOUNCEMENT_FACT']
+        line_number, text = get_random_text_string(file_name)
+        logger.debug("Found text: " + text )
+        menu = "Dagens fakta. "
+        menu += text
+        menu = menu.rstrip()
+        menu += " "
+        update_file(file_name,line_number)
+    except:
+        logger.error(traceback.format_exc())
+
+    return menu
+
+def update_file(file_name, line):
+    logger.debug("Update announcement file["+file_name+"]")
+    with open(file_name, 'r') as file_handler:
         contents= file_handler.readlines()
 
         contents[line] = '--' + contents[line]
 
-    with open(config['IDIOM_ANNOUNCEMENTS'], 'w') as file_handler:
+    with open(file_name, 'w') as file_handler:
         file_handler.writelines(contents)
         
-def get_random_idiom(config):
-    logger.debug("Get a random idiom announcement")
+def get_random_text_string(file_name):
+    logger.debug("Get a random text string from " + file_name)
     import random
-    with open(config['IDIOM_ANNOUNCEMENTS']) as f:
-        unique_idiom_found = False
+    with open( file_name ) as f:
+        unique_text_found = False
         content = f.readlines()
-        while not unique_idiom_found:
-            line = random.randint(1, 1459)  
+
+        while not unique_text_found:
+            line = random.randint(1, len(content))  
             if not content[line].startswith('--'):
-                unique_idiom_found = True
+                unique_text_found = True
 
         return line, content[line]
                 

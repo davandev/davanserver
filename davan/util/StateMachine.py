@@ -15,10 +15,16 @@ class State:
 
     def handle_data(self, rainrate):
         assert 0, "run not implemented"
+    def get_timeout( self ):
+        assert 0, "run not implemented"
     def next(self):
         assert 0, "next not implemented"
     def get_message(self):
         assert 0, "next not implemented"
+    def enter(self):
+        pass
+    def exit(self):
+        pass
 
 
 class StateMachine():
@@ -29,6 +35,9 @@ class StateMachine():
         self.currentState = initialState
         self.config = config
     
+    def get_timeout(self):
+        return self.currentState.get_timeout()
+
     def handle_data(self,temp_change):
         '''
         Pass data to current state
@@ -46,6 +55,10 @@ class StateMachine():
         Change to new state
         '''
         self.logger.info("["+self.currentState.__class__.__name__+"] --> ["+ str(new_state.__class__.__name__)+"]")
+        self.currentState.exit()
         self.currentState = new_state
-        helper.send_telegram_message(self.config, new_state.get_message())
+        self.currentState.enter()
+        msg = new_state.get_message()
+        if msg:
+           helper.send_telegram_message(self.config, msg)
 

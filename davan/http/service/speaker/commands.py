@@ -21,6 +21,17 @@ def create_play_list(file_name):
     '''
     logger.info('Play file '+ file_name)
     payload = {
+       "item": {
+        "uri": "music-library/INTERNAL/announcement.mp3",
+        "service": "mpd",
+        "title": "Announcement_tone",
+        "artist": "DavanServer",
+        "album": "",
+        "type": "song",
+        "tracknumber": 0,
+        "duration": 5,
+        "trackType": "mp3"
+        },        
         "list": [
         {
         "uri": "music-library/INTERNAL/announcement.mp3",
@@ -40,7 +51,7 @@ def create_play_list(file_name):
         "artist": "DavanServer",
         "album": "",
         "type": "song",
-        "tracknumber": 1,
+        "tracknumber": 0,
         "duration": 180,
         "trackType": "mp3"
         }
@@ -74,7 +85,7 @@ def create_play_list_and_restore(file_name, current_play):
         "artist": "DavanServer",
         "album": "",
         "type": "song",
-        "tracknumber": 1,
+        "tracknumber": 0,
         "duration": 180,
         "trackType": "mp3"
         },

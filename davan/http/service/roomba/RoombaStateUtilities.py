@@ -142,10 +142,9 @@ def notify( stateData ):
 def get_ids( stateData ):
     ids = []
     try:
-       logger.info("get_id")
        regions = stateData.region.split('),')
        for region in regions:
-          logger.info("Region: "+str(region))
+          logger.debug("Region: "+str(region))
           if 'region_id' in region:
               region = region.replace("(","")
               region = region.replace(")","")
@@ -162,8 +161,8 @@ def get_roomname_from_region( stateData ):
     rooms = stateData.config['ROOMBA_ROOM_MAPPINGS']
     for id in ids:
         for name, room_id in rooms.items():
-            logger.info('Name:' + name + " Id:" + room_id)
+            logger.debug('Name:' + name + " Id:" + room_id)
             if id == room_id:
-                logger.info("Dammsuger:" + name)
+                logger.info("Dammsuger[" + name + "]")
                 roomnames.append( name + " ")
     return s.join(roomnames) 

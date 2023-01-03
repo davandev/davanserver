@@ -8,6 +8,7 @@ import traceback
 import sys
 import urllib.request, urllib.parse, urllib.error
 import json
+import time
 import davan.util.helper_functions as helper 
 import davan.config.config_creator as configuration
 import davan.util.constants as constants
@@ -37,6 +38,7 @@ class EcowittService(BaseService):
             PoolTempHandle(config),
             RainHandle(config)
             ]
+        self.is_active = True
 
     def parse_request(self, data):
         '''
@@ -61,9 +63,12 @@ class EcowittService(BaseService):
 
 
             data_dict = self.parse_request(data)
+            self.logger.debug("Raw: " + str(data_dict) )
+
             eco = EcoWittListener()
             self.weather_data = eco.convert_units(data_dict)
             self.logger.debug("Converted: " + str(self.weather_data) )
+            self.is_active = True
             #self.update_status()
             self.report_status()
             
@@ -74,9 +79,9 @@ class EcowittService(BaseService):
             return constants.RESPONSE_OK, constants.MIME_TYPE_HTML, ""
   
         except:
-            self.logger.info("Exception when processing request")
+            self.logger.warning("Exception when processing request")
             self.increment_errors()
-            traceback.print_exc(sys.exc_info())
+            self.logger.error(traceback.format_exc())
 
     def update_status(self):
         self.logger.debug("Update status")
@@ -93,19 +98,53 @@ class EcowittService(BaseService):
             self.increment_errors()
             traceback.print_exc(sys.exc_info())
 
+    def get_data(self, key):
+        if key in self.weather_data:
+           return self.weather_data[key]
+        else:
+            return None
+
     def report_status(self):
         '''
         Update fibaro virtual device
         '''
         for key, values in self.config['FIBARO_VD_ECOWITT_MAPPINGS'].items():
-
-            url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+            try:
+                url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
                                 self.config['FIBARO_VD_ECOWITT_ID'],
                                 values[0],
                                 str(self.weather_data[key]))
-            helper.send_auth_request(url,self.config)
-
+                helper.send_auth_request(url,self.config)
+  
+            except:
+                self.logger.warning("Failed to update fibaro device: " + key)
+                self.increment_errors()
+                self.logger.error(traceback.format_exc())
        
+        for key, values in self.config['FIBARO_VD_ECOWITT_POOL_MAPPINGS'].items():
+            try:
+                url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                                self.config['FIBARO_VD_ECOWITT_POOL_ID'],
+                                values[0],
+                                str(self.weather_data[key]))
+                helper.send_auth_request(url , self.config )
+            except:
+                self.logger.warning("Failed to update fibaro pool device: " + key)
+                self.increment_errors()
+                self.logger.error(traceback.format_exc())
+        
+        current_time = time.strftime("%Y-%m-%d %H:%M", time.localtime())                
+        url = helper.createFibaroUrl(self.config['UPDATE_DEVICE'], 
+                            self.config['FIBARO_VD_ECOWITT_POOL_ID'],
+                            'ui.update.value',
+                            str(current_time))
+        helper.send_auth_request(url,self.config)
+    
+    def is_request_received(self):
+        if self.is_active:
+           self.is_active = False
+           return True
+        return False
 
     def has_html_gui(self):
         """
@@ -119,16 +158,16 @@ class EcowittService(BaseService):
         """
         if not self.is_enabled():
             return BaseService.get_html_gui(self, column_id)
+        if not self.weather_data:
+            return
             
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        _, _, result = self.handle_request("Status")
-        data = json.loads(result)
-        htmlresult = "<li>Status: " + data["Status"] + "</li>\n"
-        htmlresult += "<li>Load: " + data["Load"] + " </li>\n"
-        htmlresult += "<li>Battery: " + data["Battery"] + " </li>\n"
-        htmlresult += "<li>Time: " + data["Time"] + " </li>\n"
-        column = column.replace("<SERVICE_VALUE>", htmlresult)
+        result = ""
+        for key, values in self.config['FIBARO_VD_ECOWITT_MAPPINGS'].items():
+            result +=  values[0] + " " + str(self.weather_data[key]) + "\n"
+                                
+        column = column.replace("<SERVICE_VALUE>", result)
         return column
 
     def get_announcement(self):

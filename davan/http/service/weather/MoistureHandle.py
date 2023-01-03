@@ -2,7 +2,7 @@ import logging
 import os
 import davan.util.helper_functions as helper 
 from davan.util.StateMachine import StateMachine
-from  davan.util.StateMachine import State
+from davan.util.StateMachine import State
 
 
 class MoistureStateBase(State):
@@ -47,7 +47,6 @@ class MoistureHandle():
         self.logger = logging.getLogger(os.path.basename(__file__))
 
         self.config = config
-#        self.is_dry = False
         self.sm = []
 
         for id in self.config['FIBARO_VD_ECOWITT_MAPPINGS'].keys():

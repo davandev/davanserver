@@ -136,7 +136,7 @@ def create_config(secret_config, config):
     # Telldus sensor configuration
     #---------------------------------------------------------------------------------------------
     config["TelldusSensorServiceEnabled"] = False
-    config["telldusEnabled"] = True
+    config["telldusEnabled"] = False
     # Telldus public key
     config["TELLDUS_PUBLIC_KEY"] = secret_config.TELLDUS_PUBLIC_KEY
     # Telldus private key
@@ -314,55 +314,63 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room               | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,         06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
+        'Outdoor,             dusk,   23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
+        #'Bevattning,          19:00,  22:10,   week,        0,            2,        441,        2,        0,         196,            0',      
+        #'Poolpump,            03:00,  05:00,   week,        0,            2,        267,        3,        0,         196,            0',      
+        #'Poolpump,            15:00,  17:00,   week,        0,            2,        267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Tuesday,      0,           2,         267,        2,        0,         196,            0',
+        #'PoolService,          01:00,   09:00,  week,         3,          -1,         267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Thursday,     0,           2,         267,        2,        0,         196,            0',
         #'RobomowSocket,        07:30,   21:00,  Saturday,     0,           2,         267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   21:00,  Tuesday,      3,           -1,        267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   21:00,  Thursday,     3,           -1,        267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   21:00,  Saturday,     3,           -1,        267,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   21:00,  Tuesday,      3,          -1,         267,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   21:00,  Thursday,     3,          -1,         267,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   21:00,  Saturday,     3,          -1,         267,        2,        0,         196,            0',
         #'ljusslinga,           07:00,   09:05,  weekdays,     2,           2,         179,        1,        3,         194,            0',
         #'ljusslinga,           18:00,   23:15,  week,         2,           2,         179,        2,        3,         194,            0',
-        #'KitchenGroup,         06:30,   10:30,  weekdays,     2,           16,        179,       11,       3,         194,            0',
-        'KitchenGroup,         15:00,   23:55,  weekdays,     2,           16,        179,       11,       3,         194,            0',
-        #'KitchenGroup,         08:00,   23:55,  weekend,      2,           16,        179,       11,       3,         194,            0',
+        'ljusstakar,            07:00,   09:15,  weekdays,     2,           19,        179,        7,        3,         194,            0',
+        'ljusstakar,            10:00,   17:59,  weekend,      2,           19,        179,        7,        3,         194,            0',
+
+        'ljusstakar,           18:00,   23:15,  week,          2,           19,        179,        7,        3,         194,            0',
+        'KitchenGroup,         06:30,    08:30,  weekdays,     2,           11,        179,        1,        3,         194,            0',
+        'KitchenGroup,         sunset,   23:55,  week,         2,           11,        179,        2,        3,         194,            0',
+        #'KitchenGroup,         08:00,   23:55,  weekend,      2,           11,        179,        1,        3,         194,            0',
         #'KitchenTak,           06:50,   09:00,  weekdays,     1,           5,         65,         3,        1,         194,            0',
-        'KitchenTak,           16:15,   23:15,  week,         1,           5,         65,         4,        1,         194,            0',
-        #'Vitrin,               06:52,   09:02,  weekdays,     2,           6,         179,        5,        3,         194,            0',
-        #'Vitrin,               17:15,   23:45,  week,         2,           6,         179,        6,        3,         194,            0',
+        'KitchenTak,           sunset,   23:15,  week,         1,           1,         65,         3,        1,         194,            0',
+        'Vitrin,                06:30,   08:30,  weekdays,     2,           6,         179,        4,        3,         194,            0',
+        'Vitrin,                17:15,   23:45,  week,         2,           6,         179,        4,        3,         194,            0',
         #'KitchenMatsal,        06:55,   09:01,  weekdays,     1,           5,         394,        7,        1,         194,            0',
-        'KitchenMatsal,        16:15,   23:30,  week,         1,           5,         394,        8,        1,         194,            0',
+        'KitchenMatsal,        sunset,   23:30,  week,         1,           1,         394,        5,        1,         194,            0',
         #'KitchenLampa,         06:45,   08:05,  weekdays,     1,           10,        397,        9,        1,         194,            0',
-        'KitchenLampa,         16:30,   22:05,  week,         1,           10,        397,        10,        1,         194,            0',
+        'KitchenLampa,         sunset,   22:05,  week,         1,           10,        397,        6,        1,         194,            0',
         #'Uterum,               07:05,   08:15,  week,         0,           -1,        360,        1,        10,        195,            0',
-        'Uterum,               sunset,  23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
-        'Outdoor,              sunset,  23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
-        'Farstukvist,          sunset,  23:55,  week,         0,           -1,        226,        1,        1,         227,            0',
-        #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
-        'WilmaFonster,         sunset,  22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
-        'WilmaFonster,         sunset,  23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
-        'WilmaBlinds,          08:30,   22:45,  weekdays,     2,           18,        180,        3,        3,         197,            0',
-        'WilmaBlinds,          10:00,   22:55,  week,         2,           18,        180,        3,        3,         197,            0',
-        #'WilmaTak,            06:30,   08:15,  weekdays,      1,           20,        173,        4,        20,        197,            1',
-        'WilmaTak,             sunset,  22:00,  week,         1,           20,        173,        5,        20,        197,            1',
-        #'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
-        'ViggoFonster,         sunset,  21:30,  weekdays,     2,           10,        181,        2,        3,         198,            0',
-        'ViggoFonster,         sunset,  23:00,  weekend,      2,           10,        181,        2,        3,         198,            0',
-        'ViggoBlinds,          07:30,   22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
-        'ViggoBlinds,          10:00,   22:30,  week,         2,           14,        181,        3,        3,         198,            0',
-        #'ViggoTak,            06:30,   07:15,  weekdays,     1,           10,        177,        4,        15,        198,            1',
-        'ViggoTak ,            sunset,  21:00,  week,         1,           10,        177,        5,        15,        198,            1',
-        'Parkering,            sunset,  23:55,  week,         0,           -1,        378,        1,        1,         281,            0',
+        'Uterum,               dusk,     23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
+        'Farstukvist,          dusk,     23:30,  week,         0,           -1,        226,        1,        1,         227,            0',
+        'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
+        'WilmaFonster,         sunset,   22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
+        'WilmaFonster,         sunset,   23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
+        'WilmaBlinds,          08:30,    22:45,  weekdays,     2,           18,        180,        3,        3,         197,            0',
+        'WilmaBlinds,          10:00,    22:55,  week,         2,           18,        180,        3,        3,         197,            0',
+        #'WilmaTak,            06:30,    08:15,  weekdays,     1,           20,        173,        4,        20,        197,            1',
+        'WilmaTak,             sunset,   22:00,  week,         1,           20,        173,        5,        20,        197,            1',
+        'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
+        'ViggoFonster,         sunset,   21:30,  weekdays,     2,           10,        181,        2,        3,         198,            0',
+        'ViggoFonster,         sunset,   23:00,  weekend,      2,           10,        181,        2,        3,         198,            0',
+        'ViggoBlinds,          07:30,    22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
+        'ViggoBlinds,          10:00,    22:30,  week,         2,           14,        181,        3,        3,         198,            0',
+        #'ViggoTak,            06:30,    07:15,  weekdays,     1,           10,        177,        4,        15,        198,            1',
+        'ViggoTak ,            sunset,   21:00,  week,         1,           10,        177,        5,        15,        198,            1',
+        #'Parkering,           19:00,    22:10,  week,         0,            2,        441,        1,        1,         281,            0',
         #'Datarum,              06:15,   12:30,  week,         2,            2,        182,        1,        0,         304,            0',        
-        'Datarum,              sunset,  23:42,  week,         2,            2,        182,        2,        0,         304,            0',
-        'Tvrum,                17:15,   23:30,  week,         2,            2,        184,        1,        5,         307,            0',
-        'Gillestuga,           17:15,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
-        'Tavla,                18:30,   23:45,  week,         2,            14,       339,        2,        4,         390,            0',
+        'Datarum,              sunset,   23:42,  week,         2,            2,        182,        2,        0,         304,            0',
+        'Tvrum,                dusk,     23:30,  week,         2,            2,        184,        1,        5,         307,            0',
+        'Gillestuga,           dusk,     23:30,  week,         2,            10,       339,        1,        5,         390,            0',
+        'Tavla,                sunset,   23:45,  week,         2,            14,       339,        2,        4,         390,            0',
         #'Sovrum,               09:15,   10:30,  weekend,      2,            2,        185,        1,        5,         308,            0',
-        #'Sovrum,               06:30,   10:15,  weekdays,     2,            2,        185,        2,        5,         308,            0',
-        'Sovrum,               sunset,  23:30,  week,         2,            2,        185,        2,        5,         308,            0',
-        #'Hall,                 06:30,   09:00,  weekdays,     1,            5,        375,        1,        5,         402,            0',
-        'Hall,                 sunset,  23:40,  week,         1,            5,        375,        2,        5,         402,            0',
-        'Korridor,             sunset,  23:40,  week,         1,            5,        286,        3,        5,         402,            0',
+        'Sovrum,               06:30,    07:15,  weekdays,     2,            2,        185,        2,        5,         308,            0',
+        'Sovrum,               sunset,   23:30,  week,         2,            2,        185,        2,        5,         308,            0',
+        'Hall,                 06:30,    09:00,  weekdays,     1,            5,        375,        1,        5,         402,            0',
+        'Hall,                 sunset,   23:40,  week,         1,            5,        375,        2,        5,         402,            0',
+        'Korridor,             sunset,   23:40,  week,         1,            5,        286,        3,        5,         402,            0',
 
    ]
     config['LABEL_SCHEDULE'] = "ui.Schedule<BID>.value"
@@ -391,7 +399,8 @@ def create_config(secret_config, config):
     config["AnnouncementsServiceEnabled"] = True
     config["ANNOUNCEMENT_MENU_PATH"] = config["ROOT"] + "menu.txt"
     config["ANNOUNCEMENT_THEMEDAY_PATH"] = config["ROOT"] + "tema_dagar.txt"
-    config["IDIOM_ANNOUNCEMENTS"] = config["ROOT"] + "idiomatisk.txt"
+    config["ANNOUNCEMENT_IDIOM"] = config["ROOT"] + "idiomatisk.txt"
+    config["ANNOUNCEMENT_FACT"] = config["ROOT"] + "funfact.txt"
     config['ANNOUNCEMENTS_SCHEMA'] = [
         #Slogan          | Time, | Interval | | announcementname | speaker id | Text
         'SleepTime,        23:02,   weekdays,       night,           0,          Mia',
@@ -493,28 +502,32 @@ def create_config(secret_config, config):
 
     config['TRADFRI_DEVICES'] = [
               # Name        |    ID,      |      DeviceType
-              'ljusslinga,      65563,       SocketController',
-              'Julgran,         65591,       SocketController',
-              'ViggoWindow,     65539,       SocketController',
-              'ViggoShelf,      65540,       SocketController',
-              'ViggoBlind,      65584,       BlindController',                 
-              'WilmaWindow,     65541,       SocketController',
-              'WilmaSlinga,     65542,       SocketController',
-              'WilmaBlindRight, 65587,       BlindController',                 
-              'WilmaBlindLeft,  65555,       BlindController',                 
-              'Datarum,         65544,       SocketController',
-              'Tavla,           65545,       SocketController',
-              'Gillestuga,      65547,       SocketController',
-              'Sovrum,          65546,       SocketController',
-              'TvRoomLamp,      65577,       SocketController',
-              'TvRoomWindow,    65578,       SocketController',
+              'ljusslinga,      65563,         SocketController',
+              'Julgran,         65591,         SocketController',
+              'ViggoWindow,     65539,         SocketController',
+              'ViggoShelf,      65540,         SocketController',
+              'ViggoBlind,      65584,         BlindController',                 
+              'WilmaWindow,     65541,         SocketController',
+              'WilmaSlinga,     65542,         SocketController',
+              'WilmaBlindRight, 65598,         BlindController',                 
+              'WilmaBlindLeft,  65599,         BlindController',                 
+              'Datarum,         65544,         SocketController',
+              'Tavla,           65545,         SocketController',
+              'Gillestuga,      65547,         SocketController',
+              'Sovrum,          65546,         SocketController',
+              'TvRoomLamp,      65577,         SocketController',
+              'TvRoomWindow,    65578,         SocketController',
               'TvRoomGroup,    [TvRoomLamp TvRoomWindow],       GroupController',
-              'Skrubben,        65579,       SocketController',
-              'Sminklampa,      65580,       SocketController',
-              'Vitrin,          65581,       SocketController',
-              'VitrinDimmer,    65581,       DriverController',
-              'KitchenGroup,    [ljusslinga Vitrin],       GroupController'
-              ''
+              'Skrubben,        65579,         SocketController',
+              'Sminklampa,      65580,         SocketController',
+              'Vitrin,          65581,         SocketController',
+              'VitrinDimmer,    65581,         DriverController',
+              'KitchenGroup,    [ljusslinga Vitrin],       GroupController',
+              'EcowittGateway,     65585,      SocketController',
+              'TvRumTvToggle,      65604,      SocketController',
+              'KitchenLjusstakar,  65605,      SocketController',
+              'KitchenTvToggle,    65608,      SocketController',
+              'GillestugaTvToggle, 65607,      SocketController',
     ]
 
 
@@ -585,7 +598,7 @@ def create_config(secret_config, config):
     # Volumio service
     #---------------------------------------------------------------------------------------------
     config["VolumioServiceEnabled"] = True
-    config["VOLUMIO_HOST"] = '192.168.2.92'
+    config["VOLUMIO_HOST"] = '192.168.2.93'
     config["VOLUMIO_USER"] = secret_config.VOLUMIO_USER
     config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
 
@@ -597,7 +610,7 @@ def create_config(secret_config, config):
     # Roomba service
     #---------------------------------------------------------------------------------------------
     config["RoombaServiceEnabled"] = True
-    config["ROOMBA_HOST"] = '192.168.2.110'
+    config["ROOMBA_HOST"] = '192.168.2.155'
     config["ROOMBA_USER"] = secret_config.ROOMBA_USER
     config["ROOMBA_PWD"] = secret_config.ROOMBA_PWD
     config['FIBARO_VD_ROOMBA_ID'] = "433"
@@ -609,22 +622,29 @@ def create_config(secret_config, config):
         'Time'    : 'ui.time.value'}
     config['ROOMBA_ROOM_MAPPINGS'] = {
       # Roomname    : Roomba ID
-        'wilma'       : '2',
-        'viggo'       : '8',
-        'kok'         : '16',
-        'matsal'      : '15',
-        'tvattstuga'  : '17',
-        'hall'        : '1'}
+        'wilma'       : '15',
+        'viggo'       : '14',
+        'kok'         : '9',
+        'matsal'      : '1',
+        'tvattstuga'  : '16',
+        'hall'        : '12'}
 
     config["EcowittServiceEnabled"] = True
     config['FIBARO_VD_ECOWITT_ID'] = "435"
+    config['FIBARO_VD_ECOWITT_POOL_ID'] = "439"
+    config['FIBARO_VD_ECOWITT_POOL_MAPPINGS'] = {
+      # User    : HC2 Virtualdevice ID
+      #  'temp1c'    : ['ui.utespa.value',''],
+        'temp2c' : ['ui.pool.value','']
+}
+
     config['FIBARO_VD_ECOWITT_MAPPINGS'] = {
       # User    : HC2 Virtualdevice ID
         'tempc' : ['ui.temp.value'],
         'humidity' : ['ui.humidity.value',''],
-        'soilmoisture1' : ['ui.soil1.value','Doftdraena',20],
-        'soilmoisture2' : ['ui.soil2.value','Paprika',30],
-        'temp1c' : ['ui.pool.value',''],
+      #  'soilmoisture1' : ['ui.soil1.value','Tomat',20],
+      #  'soilmoisture2' : ['ui.soil2.value','Gurka',30],
+      #  'temp1c' : ['ui.pool.value',''],
         #'pm25_ch1' : ['ui.air.value',''],
         'rainratemm'      : ['ui.now.value',''],
         'hourlyrainmm'     : ['ui.hour.value',''],
@@ -632,6 +652,26 @@ def create_config(secret_config, config):
         'yearlyrainmm'    : ['ui.year.value',''],
         'totalrainmm'     : ['ui.total.value',''],
         'weeklyrainmm'    : ['ui.week.value','']}
+
+    config["EcowittMonitorServiceEnabled"] = True
+    config["EcowittMonitorSocketController"] ="EcowittGateway"
+
+    config['WaterLevelMonitorServiceEnabled'] = False
+    config['WaterLevelMinLimit'] = 55
+    config['WaterLevelMaxLimit'] = 20
+
+    config['IceBreakerServiceEnabled'] = False
+    config['ICEBREAKER_ID'] = "441"
+
+    config['PumpMonitorServiceEnabled'] = True
+    config['FIBARO_VD_PUMP_ID'] = "449"
+    config['FIBARO_VD_PUMP_MAP'] = {
+        'volume' : 'ui.volume.value',
+        'interval' : 'ui.interval.value',
+        'date' : 'ui.date.value',
+        'distance' : 'ui.distance.value'
+     }
+
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):
     if (not private_config_file == None and len(private_config_file) > 0 and os.path.exists(private_config_file)):

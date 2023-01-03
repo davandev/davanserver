@@ -258,7 +258,26 @@ class TradfriService(BaseService):
             device_string += device.toString() + "\n"
         
         self.logger.debug(device_string)
+        return device_string
 
+    def has_html_gui(self):
+        """
+        Override if service has gui
+        """
+        return True
+    
+    def get_html_gui(self, column_id):
+        """
+        Override and provide gui
+        """
+        if not self.is_enabled():
+            return BaseService.get_html_gui(self, column_id)
+        self.list_all_devices()
+        devices = self.log_devices()
+        column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
+        column = column.replace("<SERVICE_VALUE>", str(devices))
+        return column
         
 if __name__ == '__main__':
     from davan.util import application_logger as app_logger
@@ -269,9 +288,10 @@ if __name__ == '__main__':
     test = TradfriService("", config)
     # test.get_toggle_device_state("KITCHEN")
     devices = test.list_all_devices()
-    #    dev = [65585,65579,65582,65539,65562,65586,65542,65583,65546,65540,65581,65578,65544,65555,65574,65584,65577,65563,65541,65572,65547,65537,65560,65580,65545,65587,65590]
-    dev = [65586,65537,65582,65579,65578,65555,65587,65577,65584,65574,65581,65546,65540,65539,65545,65583,65542,65562,65547,65563,65580,65541,65560,65544,65585,65572,65590,65591]
+    #dev = [65601,65597,65540,65577,65579,65605,65606,65591,65593,65563,65547,65585,65545,65580,65604,65546,65599,65541,65578,65544,65539,65592,65542,65581,65603,65583,65598,65560,65586]
+    dev = [65592,65603,65599,65597,65583,65546,65541,65542,65539,65540,65580,65601,65598,65604,65581,65585,65579,65545,65578,65605,65547,65544,65577,65563,65560,65586,65591,65593,65606,65607,65608]
 
+    #dev = []
     # # #test.handle_request("TradfriService?Datarum=toggle")
     for device in dev:
         commands.get_device_status(config, str(device))

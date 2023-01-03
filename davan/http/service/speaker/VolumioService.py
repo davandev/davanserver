@@ -53,6 +53,7 @@ class VolumioService(BaseService):
         self.logger.info('Transfer file '+ file_path)
         sftp.put(file_path, '/mnt/INTERNAL/' + file_name)
         sftp.close()
+        client.exec_command("/usr/bin/mpc update")
 
     def play_local_url(self, file_name):
         '''

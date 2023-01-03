@@ -180,7 +180,7 @@ class AsusRouterPresenceService(ReoccuringBaseService):
             if not device2.active and not device1.active:
                 return device2
 
-        self.logger.info("no device change or no change to update")
+        self.logger.debug("no device change or no change to update")
         return None
 
     def notify_change(self, device):

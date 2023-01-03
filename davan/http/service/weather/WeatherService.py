@@ -202,22 +202,25 @@ class WeatherService(ReoccuringBaseService):
         '''
         Compose and encode announcement data
         '''
+        
         self.logger.info("Create weather announcement")
         if self.weather_data == None:
             self.logger.warning("Cached service data is none")
             return ""
-        
+        try:
 #        temp = str(self.weather_data['Temp']['Value'])
 #        temp = temp.replace(".",",")
 #        announcement = "Just nu är det "
 #        announcement += temp + " grader ute. "
 
-        self.forecast = self.forecast.replace('ºC', ' grader')
-        self.forecast = self.forecast.replace('°', ' grader')
-        self.logger.info("Dagens prognos: "+ self.forecast)
-        announcement = "Dagens väderprognos." +self.forecast+". "
-        return announcement
-                
+           self.forecast = self.forecast.replace('ºC', ' grader')
+           self.forecast = self.forecast.replace('°', ' grader')
+           self.logger.info("Dagens prognos: "+ self.forecast)
+           announcement = "Dagens väderprognos." +self.forecast+". "
+           return announcement
+        except Exception:
+            return ""
+            
 if __name__ == '__main__':
     from davan.util import application_logger as log_config
 

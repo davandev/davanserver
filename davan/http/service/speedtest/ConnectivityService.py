@@ -21,12 +21,12 @@ from davan.util.StateMachine import StateMachine
 from  davan.util.StateMachine import State
 
 class Connected(State):
-    def __init__(self,  connService , firstState=False):
+    def __init__(self,  connService , servicesRunning=False):
         State.__init__( self)
         self.connected = True
         self.service = connService
 
-        if not firstState:
+        if not servicesRunning:
             self.service.toggle_services(True)
 
     def handle_data(self, connection_result):
@@ -35,11 +35,43 @@ class Connected(State):
 
     def next(self):
         if not self.connected:
-            return Disconnected(self.service)
+            return Disconnecting(self.service)
         return None
 
     def get_message(self):
         return "Internet är tillbaka"
+
+class Disconnecting(State):
+    def __init__(self, connService):
+        State.__init__( self )
+        self.lost_count = 0
+        self.service = connService
+        self.lost_limit = 5
+        self.disconnected = False
+        self.connected = False
+
+    def handle_data(self, connection_result):
+        self.logger.info("Check connection state:["+str(connection_result)+"]")
+
+        if self.service.is_connection_established(connection_result):
+            self.connected = True
+        else:
+            self.lost_count += 1
+            if self.lost_count >= self.lost_limit:
+                self.disconnected = True
+
+    def next(self):
+        if self.disconnected:
+            return Disconnected(self.service)
+        if self.connected:
+            return Connected(self.service, servicesRunning=True)
+
+
+        return None
+
+    def get_message(self):
+        return "Internet är kanske borta"
+
 
 class Disconnected(State):
     def __init__(self, connService):
