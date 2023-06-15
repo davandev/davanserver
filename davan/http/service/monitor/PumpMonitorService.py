@@ -42,7 +42,7 @@ class ActiveState(BaseState):
 
     def next(self):
         if self.value == "inactive":
-           self.service.logger.info("Change state to inactive")
+           self.service.logger.debug("Change state to inactive")
            return InactiveState(self.service, self.nr_invocations)
 
     def get_message(self):
@@ -58,7 +58,7 @@ class InactiveState(BaseState):
 
     def next(self):
         if self.value == "active":
-            self.service.logger.info("Change state to active")
+            self.service.logger.debug("Change state to active")
             return ActiveState(self.service, self.nr_invocations)
 
     def get_message(self):
@@ -79,11 +79,9 @@ class PumpMonitorService(ReoccuringBaseService):
         self.logger = logging.getLogger(os.path.basename(__file__))
         self.first_invoked = time.localtime()
         self.last_invoked = self.first_invoked
+        self.max_wait = 0 
 
         self.interval = datetime.timedelta(seconds=120)
-        self.sm = StateMachine(config, InactiveState(self,0))
-        self.max_wait = 0 
-        self.previous_invocations = 0
         self.db = PumpMonitorDbHandle( config )
 
     def init_service(self):
@@ -91,13 +89,20 @@ class PumpMonitorService(ReoccuringBaseService):
         Create db table if not already present
         '''
         self.db.init_db()
+        res = self.db.read_last_entry()
+        self.previous_invocations = res[0]
+        self.interval = datetime.timedelta(seconds=res[1])
+
+        self.logger.info("Invocation[" + str(self.previous_invocations) + "] Interval[" + str(self.interval) + "]")
+        self.sm = StateMachine(self.config, InactiveState(self, self.previous_invocations))
+        
 
     def get_next_timeout(self):
         '''
         Return time until next timeout, only once per day.
         '''
         self.time_to_next_event =  self.interval.total_seconds() + self.max_wait
-        self.logger.info("Next timeout in [" + str(self.time_to_next_event) +  "] seconds")
+        self.logger.debug("Next timeout in [" + str(self.time_to_next_event) +  "] seconds")
         return self.time_to_next_event
     
     def handle_timeout(self):
@@ -109,10 +114,10 @@ class PumpMonitorService(ReoccuringBaseService):
         
 
         if self.sm.currentState.nr_invocations != self.previous_invocations:
-           self.logger.info("Pumpbrunn has been invoked during last timeout")
+           self.logger.debug("Pumpbrunn has been invoked during last timeout")
         else:
-           self.logger.info("Pumpbrunn NOT invoked!!")
-           msg = "Intervallet ["+str(self.interval)+ "] för pumpbrunnen har passerats ["+str(self.sm.currentState.last_invoked)+"]"
+           self.logger.warning("Pumpbrunn NOT invoked!!")
+           msg = "Intervallet ["+str(self.interval)+ "] för pumpbrunnen har passerats ["+str(self.last_invoked)+"]"
            helper.send_telegram_message(self.config, msg)
 
         # Set max time to wait before reporting
@@ -180,7 +185,9 @@ class PumpMonitorService(ReoccuringBaseService):
 
         result = "Volym: " + str(volume) + "</br>\n"
         result +="Startad: " + str(self.first_invoked) + "</br>\n" 
-        result +="Senast tömd: " + str(self.sm.currentState.last_invoked) + "</br>\n" 
+        result +="Senast tömd: " + str(self.last_invoked) + "</br>\n" 
+        result +="Interval: " + str(self.interval) + "</br>\n" 
+        result +="Tömningar: " + str(self.previous_invocations) + "</br>\n" 
          
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)

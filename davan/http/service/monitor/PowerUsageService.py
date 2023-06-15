@@ -149,8 +149,8 @@ class PowerUsageService(ReoccuringBaseService):
         else:
             usage = self.actual_usage_time
             
-        column = column.replace("<SERVICE_NAME>", self.service_name)
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
+        column = column.replace("<SERVICE_NAME>", self.service_name)
         
         htmlresult = "<li>Status: " + str(self.current_status) + "</li>\n"
         htmlresult += "<li>Time left: " + str(self.timeleft) + "</li>\n"

@@ -177,11 +177,6 @@ class VolumioService(BaseService):
 
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
-        res = "Speakers:\n"
-        for _,speaker in list(self.speakers.items()):
-            res += speaker.slogan + ":" + speaker.address + "\n"
-        column  = column.replace("<SERVICE_VALUE>", res)
-
         return column
             
 if __name__ == '__main__':

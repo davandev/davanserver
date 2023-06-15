@@ -70,8 +70,7 @@ class Disconnecting(State):
         return None
 
     def get_message(self):
-        return "Internet är kanske borta"
-
+        return None
 
 class Disconnected(State):
     def __init__(self, connService):

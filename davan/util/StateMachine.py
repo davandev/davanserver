@@ -15,6 +15,8 @@ class State:
 
     def handle_data(self, rainrate):
         assert 0, "run not implemented"
+    def handle_timeout(self):
+        assert 0, "run not implemented"
     def get_timeout( self ):
         assert 0, "run not implemented"
     def next(self):
@@ -38,11 +40,14 @@ class StateMachine():
     def get_timeout(self):
         return self.currentState.get_timeout()
 
-    def handle_data(self,temp_change):
+    def handle_timeout(self):
+        return self.currentState.handle_timeout()
+
+    def handle_data(self, value):
         '''
         Pass data to current state
         '''
-        return self.currentState.handle_data(temp_change)
+        return self.currentState.handle_data(value)
 
     def next(self):
         '''

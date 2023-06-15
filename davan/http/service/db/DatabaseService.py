@@ -19,6 +19,10 @@ class DatabaseService(BaseService):
     def __init__(self, service_provider, config):
         '''
         Constructor
+        Fix sqlite datasource in grafana
+        mkdir -p /grafana
+        mkdir -p /grafana/redirect
+        sudo mount -r --bind /home/pi/davanserver/db/ /grafana/redirect
         '''
         BaseService.__init__(self, constants.DATABASE_SERVICE_NAME, service_provider, config)
         self.logger = logging.getLogger(os.path.basename(__file__))

@@ -17,7 +17,7 @@ class RainingState(State):
             self.logger.debug("Verkar slutat regna "+ str(self.transition))
 
     def next(self):
-        if self.transition == 3:
+        if self.transition == 5:
             return NoRainState()
         return None
 
@@ -25,7 +25,7 @@ class RainingState(State):
         return "Det har börjat regna"
 
 
-class NoRainState(State):
+class NoRainState(State): 
     def __init__(self):
         State.__init__( self )
         self.transition = 0
@@ -38,7 +38,7 @@ class NoRainState(State):
             self.transition = 0
 
     def next(self):
-        if self.transition == 3:
+        if self.transition == 5:
             return RainingState()
         return None
 

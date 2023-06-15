@@ -57,7 +57,7 @@ class DatabaseHandle():
         '''
         Insert data into db table
         '''
-        self.logger.info("Insert into SpeedtestServiceTable db")
+        self.logger.debug("Insert into SpeedtestServiceTable db")
         conn=sqlite3.connect(self.db_path)
 
         curs=conn.cursor()

@@ -24,14 +24,14 @@ def create_config(secret_config, config):
     config['SERVICE_PATH']  = config["ROOT"] + "davan/http/service/"
     # Server port
     config["SERVER_PORT"]   = 8080
-    config["SERVER_ADRESS"] = "192.168.2.44"
+    config["SERVER_ADRESS"] = "192.168.50.43"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro configuration
     #---------------------------------------------------------------------------------------------
     config['FIBARO_USER_NAME']   = secret_config.FIBARO_USER
     config['FIBARO_PASSWORD']    = secret_config.FIBARO_PASSWORD
-    config['FIBARO_IP_ADDRESS']  = "192.168.2.54"
+    config['FIBARO_IP_ADDRESS']  = "192.168.50.174"
 
     #---------------------------------------------------------------------------------------------
     # Fibaro path for common functions
@@ -100,8 +100,8 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------
     # Asus router presence Service configuration
     #---------------------------------------------------------------------------------------
-    config["DevicePresenceServiceEnabled"] = True
-    config["ROUTER_ADRESS"] = "192.168.2.1"
+    config["DevicePresenceServiceEnabled"] = False
+    config["ROUTER_ADRESS"] = "192.168.50.1"
     config["ROUTER_USER"] = secret_config.ROUTER_USER
     config["ROUTER_PASSWORD"] = secret_config.ROUTER_PASSWORD
     # Virtual device id of the virtual device in HC2 that shows the presence of the users 
@@ -261,7 +261,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Audio service configuration
     #---------------------------------------------------------------------------------------------
-    config["AudioServiceEnabled"]   = True
+    config["AudioServiceEnabled"]   = False
     config['RECEIVER_TURN_ON']      = "onkyo --host 192.168.2.218 PWR01"
     config['RECEIVER_TURN_OFF']     = "onkyo --host 192.168.2.218 PWR00"
     config['RECEIVER_SELECT_INPUT'] = "onkyo --host 192.168.2.218 SLI02"
@@ -315,28 +315,28 @@ def create_config(secret_config, config):
         #Room               | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,         06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
         'Outdoor,             dusk,   23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
-        #'Bevattning,          19:00,  22:10,   week,        0,            2,        441,        2,        0,         196,            0',      
-        #'Poolpump,            03:00,  05:00,   week,        0,            2,        267,        3,        0,         196,            0',      
-        #'Poolpump,            15:00,  17:00,   week,        0,            2,        267,        4,        0,         196,            0',      
+        'Bevattning,          21:00,  21:10,   week,        0,            2,        441,        2,        0,         196,            0',      
+        'Poolpump,            08:00,  12:00,   week,        0,            2,        267,        3,        0,         196,            0',      
+        'Poolpump,            14:00,  17:00,   week,        0,            2,        267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Tuesday,      0,           2,         267,        2,        0,         196,            0',
         #'PoolService,          01:00,   09:00,  week,         3,          -1,         267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Thursday,     0,           2,         267,        2,        0,         196,            0',
         #'RobomowSocket,        07:30,   21:00,  Saturday,     0,           2,         267,        2,        0,         196,            0',
-        #'RobomowService,       07:30,   21:00,  Tuesday,      3,          -1,         267,        2,        0,         196,            0',
-        #'RobomowService,       07:30,   21:00,  Thursday,     3,          -1,         267,        2,        0,         196,            0',
-        #'RobomowService,       07:30,   21:00,  Saturday,     3,          -1,         267,        2,        0,         196,            0',
+        'RobomowService,       07:30,   17:00,  Monday,       3,          -1,         13,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   21:00,  Wednesday,    3,          -1,         13,        2,        0,         196,            0',
+        'RobomowService,       07:30,   17:00,  Friday,       3,          -1,         13,        2,        0,         196,            0',
         #'ljusslinga,           07:00,   09:05,  weekdays,     2,           2,         179,        1,        3,         194,            0',
         #'ljusslinga,           18:00,   23:15,  week,         2,           2,         179,        2,        3,         194,            0',
-        'ljusstakar,            07:00,   09:15,  weekdays,     2,           19,        179,        7,        3,         194,            0',
-        'ljusstakar,            10:00,   17:59,  weekend,      2,           19,        179,        7,        3,         194,            0',
+        #'ljusstakar,            07:00,   09:15,  weekdays,     2,           19,        179,        7,        3,         194,            0',
+        #'ljusstakar,            10:00,   17:59,  weekend,      2,           19,        179,        7,        3,         194,            0',
 
         'ljusstakar,           18:00,   23:15,  week,          2,           19,        179,        7,        3,         194,            0',
-        'KitchenGroup,         06:30,    08:30,  weekdays,     2,           11,        179,        1,        3,         194,            0',
+        #'KitchenGroup,         06:30,    08:30,  weekdays,     2,           11,        179,        1,        3,         194,            0',
         'KitchenGroup,         sunset,   23:55,  week,         2,           11,        179,        2,        3,         194,            0',
         #'KitchenGroup,         08:00,   23:55,  weekend,      2,           11,        179,        1,        3,         194,            0',
         #'KitchenTak,           06:50,   09:00,  weekdays,     1,           5,         65,         3,        1,         194,            0',
         'KitchenTak,           sunset,   23:15,  week,         1,           1,         65,         3,        1,         194,            0',
-        'Vitrin,                06:30,   08:30,  weekdays,     2,           6,         179,        4,        3,         194,            0',
+        #'Vitrin,                06:30,   08:30,  weekdays,     2,           6,         179,        4,        3,         194,            0',
         'Vitrin,                17:15,   23:45,  week,         2,           6,         179,        4,        3,         194,            0',
         #'KitchenMatsal,        06:55,   09:01,  weekdays,     1,           5,         394,        7,        1,         194,            0',
         'KitchenMatsal,        sunset,   23:30,  week,         1,           1,         394,        5,        1,         194,            0',
@@ -345,14 +345,14 @@ def create_config(secret_config, config):
         #'Uterum,               07:05,   08:15,  week,         0,           -1,        360,        1,        10,        195,            0',
         'Uterum,               dusk,     23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
         'Farstukvist,          dusk,     23:30,  week,         0,           -1,        226,        1,        1,         227,            0',
-        'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
+        #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
         'WilmaFonster,         sunset,   22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,         sunset,   23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
         'WilmaBlinds,          08:30,    22:45,  weekdays,     2,           18,        180,        3,        3,         197,            0',
         'WilmaBlinds,          10:00,    22:55,  week,         2,           18,        180,        3,        3,         197,            0',
         #'WilmaTak,            06:30,    08:15,  weekdays,     1,           20,        173,        4,        20,        197,            1',
         'WilmaTak,             sunset,   22:00,  week,         1,           20,        173,        5,        20,        197,            1',
-        'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
+        #'ViggoFonster,         06:30,   08:00,  weekdays,     2,           10,        181,        1,        3,         198,            0',
         'ViggoFonster,         sunset,   21:30,  weekdays,     2,           10,        181,        2,        3,         198,            0',
         'ViggoFonster,         sunset,   23:00,  weekend,      2,           10,        181,        2,        3,         198,            0',
         'ViggoBlinds,          07:30,    22:00,  weekdays,     2,           14,        181,        3,        3,         198,            0',
@@ -368,7 +368,7 @@ def create_config(secret_config, config):
         #'Sovrum,               09:15,   10:30,  weekend,      2,            2,        185,        1,        5,         308,            0',
         'Sovrum,               06:30,    07:15,  weekdays,     2,            2,        185,        2,        5,         308,            0',
         'Sovrum,               sunset,   23:30,  week,         2,            2,        185,        2,        5,         308,            0',
-        'Hall,                 06:30,    09:00,  weekdays,     1,            5,        375,        1,        5,         402,            0',
+        #'Hall,                 06:30,    09:00,  weekdays,     1,            5,        375,        1,        5,         402,            0',
         'Hall,                 sunset,   23:40,  week,         1,            5,        375,        2,        5,         402,            0',
         'Korridor,             sunset,   23:40,  week,         1,            5,        286,        3,        5,         402,            0',
 
@@ -488,7 +488,7 @@ def create_config(secret_config, config):
     # Measure usage time of certain devices with a Fibaro power plug. 
     #---------------------------------------------------------------------------------------------
     config["TradfriServiceEnabled"] = True
-    config['TRADFRI_GATEWAY_IP'] = "192.168.2.6"
+    config['TRADFRI_GATEWAY_IP'] = "192.168.50.4"
     config['TRADFRI_ID'] = "tradfri-pi-bash" 
     config['TRADFRI_ID_KEY'] = secret_config.TRADFRI_KEYS
 
@@ -598,7 +598,7 @@ def create_config(secret_config, config):
     # Volumio service
     #---------------------------------------------------------------------------------------------
     config["VolumioServiceEnabled"] = True
-    config["VOLUMIO_HOST"] = '192.168.2.93'
+    config["VOLUMIO_HOST"] = '192.168.50.92'
     config["VOLUMIO_USER"] = secret_config.VOLUMIO_USER
     config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
 
@@ -671,6 +671,7 @@ def create_config(secret_config, config):
         'date' : 'ui.date.value',
         'distance' : 'ui.distance.value'
      }
+    config['LogDatabaseServiceEnabled'] = True
 
 
 def create(private_config_file="/home/pi/private_config.py", debugPrint=False):

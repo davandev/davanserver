@@ -49,6 +49,18 @@ class PumpMonitorDbHandle():
             conn.commit()
             #close the connection
             conn.close()
+    
+    def read_last_entry(self):
+        '''
+        Read last entry
+        '''
+        self.logger.info("Read invocation from PumpMonitorServiceTable db")
+        conn=sqlite3.connect(self.db_path)
+
+        curs=conn.cursor()
+        curs.execute("SELECT invocations, interval FROM PumpMonitorServiceTable ORDER BY invocations DESC limit 1")
+ 
+        return curs.fetchone()
 
     def insert(self, invocations, interval):
         '''

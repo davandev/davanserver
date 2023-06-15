@@ -121,6 +121,13 @@ class RoombaService(BaseService):
                self.logger.error("Mosquitto is NOT running")
            else:
                self.logger.info("Mosquitto is running")
+           result = cmd_executor.execute_block('ps -ef |grep roomba_to_mqtt_generator.py |wc -l',return_output=True)
+           if int(result)<2: 
+               self.raise_alarm("Roomba mqtt subscriber not running","Error","Roomba mqtt subscriber not running") 
+               self.logger.error("Roomba mqtt subscriber not running")
+           else:
+               self.logger.info("Roomba mqtt subscriber running")
+
 
            self.handle = RoombaHandle( self.config, self.services )
            self.client = MqttClient.MyMqttClient(self)

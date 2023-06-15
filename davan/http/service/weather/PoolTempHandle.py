@@ -131,9 +131,9 @@ class PoolTempHandle():
         #self._log_state(current_temp)
 
         # Check limit
-        if current_temp < 5 :    
-            self.logger.warning("Temperaturen i pool är " + str(current_temp) + " grader, vilket är för lågt!")
-            helper.send_telegram_message(self.config, "Temperaturen i pool är " + str( current_temp) + " grader, vilket är för lågt!") 
+        #if current_temp < 5 :    
+        #    self.logger.warning("Temperaturen i pool är " + str(current_temp) + " grader, vilket är för lågt!")
+        #    helper.send_telegram_message(self.config, "Temperaturen i pool är " + str( current_temp) + " grader, vilket är för lågt!") 
 
         self.sm.handle_data(current_temp)
         next_state = self.sm.next() 

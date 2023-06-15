@@ -66,7 +66,7 @@ DOORBELL_SERVICE_NAME ="DoorbellService"
 PICTURE_SERVICE_NAME="TakePicture"
 CAMERA_SERVICE_NAME="CameraService"
 ROOMBA_SERVICE_NAME="RoombaService"
-
+DATABASE_LOGS_SERVICE_NAME="LogDatabaseService"
 EXTERNAL_EVENT_SERVICE_NAME = "ExternalEventService"
 
 MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"
