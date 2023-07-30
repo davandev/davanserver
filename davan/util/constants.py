@@ -73,6 +73,8 @@ MOISTURE_MONITOR_SERVICE_NAME = "MoistureMonitorService"
 WATER_LEVEL_MONITOR_SERVICE_NAME = "WaterLevelMonitorService"
 PUMP_MONITOR_SERVICE_NAME = "PumpMonitorService"
 ICE_BREAKER_SERVICE_NAME = "IceBreakerService"
+IMOU_CAMERA_SERVICE_NAME ="ImouCameraService"
+HARMONY_SERVICE_NAME ="HarmonyService"
 
 UPS_BATTERY_MODE = "BatteryMode"
 UPS_POWER_MODE = "PowerMode"

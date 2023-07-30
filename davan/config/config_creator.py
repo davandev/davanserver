@@ -246,7 +246,7 @@ def create_config(secret_config, config):
     #---------------------------------------------------------------------------------------------
     # Internet speed test configuration
     #---------------------------------------------------------------------------------------------
-    config["SpeedtestServiceEnabled"]  = True
+    config["SpeedtestServiceEnabled"]  = False
     config['FIBARO_VD_SPEEDTEST'] = "77"
 
     config['FIBARO_VD_SPEEDTEST_MAPPINGS'] = {
@@ -314,23 +314,23 @@ def create_config(secret_config, config):
     config['LIGHT_SCHEMA'] = [
         #Room               | start | stop | Interval | deviceType | lightlevel | deviceId | labelid | random | virtualdevice | Only when armed 
         #'KitchenTak,         06:15,   08:30, weekdays,     1,           10,        65,         1,        15,        194,            0',
-        'Outdoor,             dusk,   23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
-        'Bevattning,          21:00,  21:10,   week,        0,            2,        441,        2,        0,         196,            0',      
-        'Poolpump,            08:00,  12:00,   week,        0,            2,        267,        3,        0,         196,            0',      
-        'Poolpump,            14:00,  17:00,   week,        0,            2,        267,        4,        0,         196,            0',      
+        'Outdoor,             21:15,   23:20,  week,         0,           -1,        359,        1,        20,        196,            0',
+        'Bevattning,          21:00,  21:12,   week,        0,            2,        441,        2,        0,         196,            0',      
+        'Poolpump,            10:00,  16:00,   week,        0,            2,        267,        3,        0,         196,            0',      
+        #'Poolpump,            02:00,  04:00,   week,        0,            2,        267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Tuesday,      0,           2,         267,        2,        0,         196,            0',
         #'PoolService,          01:00,   09:00,  week,         3,          -1,         267,        4,        0,         196,            0',      
         #'RobomowSocket,        07:30,   21:00,  Thursday,     0,           2,         267,        2,        0,         196,            0',
         #'RobomowSocket,        07:30,   21:00,  Saturday,     0,           2,         267,        2,        0,         196,            0',
-        'RobomowService,       07:30,   17:00,  Monday,       3,          -1,         13,        2,        0,         196,            0',
+        #'RobomowService,       07:30,   17:00,  Monday,       3,          -1,         13,        2,        0,         196,            0',
         #'RobomowService,       07:30,   21:00,  Wednesday,    3,          -1,         13,        2,        0,         196,            0',
-        'RobomowService,       07:30,   17:00,  Friday,       3,          -1,         13,        2,        0,         196,            0',
+        'RobomowService,       07:00,   17:00,  Saturday,       3,          -1,         13,        2,        0,         196,            0',
         #'ljusslinga,           07:00,   09:05,  weekdays,     2,           2,         179,        1,        3,         194,            0',
         #'ljusslinga,           18:00,   23:15,  week,         2,           2,         179,        2,        3,         194,            0',
         #'ljusstakar,            07:00,   09:15,  weekdays,     2,           19,        179,        7,        3,         194,            0',
         #'ljusstakar,            10:00,   17:59,  weekend,      2,           19,        179,        7,        3,         194,            0',
 
-        'ljusstakar,           18:00,   23:15,  week,          2,           19,        179,        7,        3,         194,            0',
+        #'ljusstakar,           18:00,   23:15,  week,          2,           19,        179,        7,        3,         194,            0',
         #'KitchenGroup,         06:30,    08:30,  weekdays,     2,           11,        179,        1,        3,         194,            0',
         'KitchenGroup,         sunset,   23:55,  week,         2,           11,        179,        2,        3,         194,            0',
         #'KitchenGroup,         08:00,   23:55,  weekend,      2,           11,        179,        1,        3,         194,            0',
@@ -343,8 +343,8 @@ def create_config(secret_config, config):
         #'KitchenLampa,         06:45,   08:05,  weekdays,     1,           10,        397,        9,        1,         194,            0',
         'KitchenLampa,         sunset,   22:05,  week,         1,           10,        397,        6,        1,         194,            0',
         #'Uterum,               07:05,   08:15,  week,         0,           -1,        360,        1,        10,        195,            0',
-        'Uterum,               dusk,     23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
-        'Farstukvist,          dusk,     23:30,  week,         0,           -1,        226,        1,        1,         227,            0',
+        'Uterum,               21:00,     23:30,  week,         0,           -1,        360,        1,        10,        195,            0',
+        'Farstukvist,          21:00,     23:30,  week,         0,           -1,        226,        1,        1,         227,            0',
         #'WilmaFonster,         06:30,   08:10,  week,         2,           10,        180,        1,        3,         197,            0',
         'WilmaFonster,         sunset,   22:15,  weekdays,     2,           10,        180,        2,        3,         197,            0',
         'WilmaFonster,         sunset,   23:15,  weekend,      2,           10,        180,        2,        3,         197,            0',
@@ -362,8 +362,8 @@ def create_config(secret_config, config):
         #'Parkering,           19:00,    22:10,  week,         0,            2,        441,        1,        1,         281,            0',
         #'Datarum,              06:15,   12:30,  week,         2,            2,        182,        1,        0,         304,            0',        
         'Datarum,              sunset,   23:42,  week,         2,            2,        182,        2,        0,         304,            0',
-        'Tvrum,                dusk,     23:30,  week,         2,            2,        184,        1,        5,         307,            0',
-        'Gillestuga,           dusk,     23:30,  week,         2,            10,       339,        1,        5,         390,            0',
+        'Tvrum,                sunset,   23:30,  week,         2,            2,        184,        1,        5,         307,            0',
+        'Gillestuga,           sunset,   23:30,  week,         2,            10,       339,        1,        5,         390,            0',
         'Tavla,                sunset,   23:45,  week,         2,            14,       339,        2,        4,         390,            0',
         #'Sovrum,               09:15,   10:30,  weekend,      2,            2,        185,        1,        5,         308,            0',
         'Sovrum,               06:30,    07:15,  weekdays,     2,            2,        185,        2,        5,         308,            0',
@@ -603,7 +603,7 @@ def create_config(secret_config, config):
     config["VOLUMIO_PWD"] = secret_config.VOLUMIO_PWD
 
 
-
+    config["HarmonyServiceEnabled"]=True
     config["CameraServiceEnabled"] = False
 
     #---------------------------------------------------------------------------------------------

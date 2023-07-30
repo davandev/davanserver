@@ -54,7 +54,7 @@ class RobomowService(ReoccuringBaseService):
         Return time until next timeout.
         '''
         self.time_to_next_event =  self.sm.get_timeout()
-        self.logger.info("Next timeout in [" + str(self.time_to_next_event) +  "] seconds")
+        self.logger.debug("Next timeout in [" + str(self.time_to_next_event) +  "] seconds")
         return self.time_to_next_event
     
     def handle_timeout(self):
@@ -81,7 +81,7 @@ class RobomowService(ReoccuringBaseService):
         '''
         try:
             reqType, value = self.parse_request(msg)
-            self.logger.info("Request[" + msg +"] ReqType["+reqType+"] Value["+value+"]")
+            self.logger.debug("Request[" + msg +"] ReqType["+reqType+"] Value["+value+"]")
             self.increment_invoked()
 
             if reqType =="service":
@@ -175,7 +175,6 @@ class RobomowService(ReoccuringBaseService):
                                 value)
         url = url.replace('<id>',str(activity_counter))                                
 
-        self.logger.info("Url 2: " +str(url))
         helper.send_auth_request(url,self.config)
 
     def reset_fibaro_device(self):
@@ -208,7 +207,6 @@ class RobomowService(ReoccuringBaseService):
                                     "")
             url = url.replace('<id>',str(activity))                                
 
-            self.logger.info("Url 2: " +str(url))
             helper.send_auth_request(url,self.config)
 
     def has_html_gui(self):
@@ -224,7 +222,7 @@ class RobomowService(ReoccuringBaseService):
         if not self.is_enabled():
             return ReoccuringBaseService.get_html_gui(self, column_id)
 
-        result = "State: " + str(self.currentState.__class__.__name__) + "</br>\n"
+        result = "State: " + str(self.sm.currentState.__class__.__name__) + "</br>\n"
          
         column = constants.COLUMN_TAG.replace("<COLUMN_ID>", str(column_id))
         column = column.replace("<SERVICE_NAME>", self.service_name)
